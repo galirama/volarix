@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VolariX — Risk-First Options Intelligence</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;0,500&family=Bricolage+Grotesque:opsz,wght@12..96,300;12..96,400;12..96,500;12..96,600;12..96,700;12..96,800&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#0D0F1A;--bg2:#13162A;--bg3:#1A1D30;--bg4:#22253C;
+  --border:rgba(255,255,255,0.07);--border2:rgba(255,255,255,0.13);
+  --text:#F0EFF8;--text2:#9896B0;--text3:#555370;
+  --cyan:#00D4AA;--cyan-bg:rgba(0,212,170,0.1);--cyan-dim:rgba(0,212,170,0.25);
+  --red:#FF4757;--red-bg:rgba(255,71,87,0.1);--red-dim:rgba(255,71,87,0.25);
+  --amber:#FFB830;--amber-bg:rgba(255,184,48,0.1);--amber-dim:rgba(255,184,48,0.25);
+  --purple:#8B7FFF;--purple-bg:rgba(139,127,255,0.12);--purple-dim:rgba(139,127,255,0.28);
+  --blue:#4DACFF;--blue-bg:rgba(77,172,255,0.1);
+  --font:'Bricolage Grotesque',sans-serif;--mono:'DM Mono',monospace;
+  --r:10px;--rl:16px;--rxl:22px;--sw:224px;
+}
+html,body{font-family:var(--font);background:var(--bg);color:var(--text);font-size:14px;min-height:100vh}
+
+/* ── TICKER ── */
+.ticker-bar{background:var(--bg2);border-bottom:1px solid var(--border);overflow:hidden;padding:7px 0}
+.ticker-track{display:flex;width:max-content;animation:scrollLeft 42s linear infinite}
+.ticker-track:hover{animation-play-state:paused}
+@keyframes scrollLeft{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
+.tick-item{display:flex;align-items:center;gap:10px;padding:0 22px;border-right:1px solid var(--border);white-space:nowrap}
+.tick-label{font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--text3)}
+.tick-val{font-family:var(--mono);font-size:12.5px;font-weight:500}
+
+/* ── NAV ── */
+nav{position:sticky;top:0;z-index:50;display:flex;align-items:center;justify-content:space-between;padding:0 48px;height:60px;background:rgba(13,15,26,.92);backdrop-filter:blur(14px);border-bottom:1px solid var(--border)}
+.logo{font-size:20px;font-weight:800;letter-spacing:-.03em;display:flex;align-items:center;gap:8px;text-decoration:none;color:var(--text)}
+.logo-hex{width:28px;height:28px;background:linear-gradient(135deg,var(--cyan),var(--purple));clip-path:polygon(50% 0%,100% 25%,100% 75%,50% 100%,0% 75%,0% 25%);flex-shrink:0}
+.nav-links{display:flex;gap:28px;align-items:center}
+.nav-link{font-size:13px;font-weight:600;color:var(--text3);text-decoration:none;transition:color .15s}
+.nav-link:hover{color:var(--text)}
+.badge{font-size:10px;font-weight:700;padding:3px 9px;border-radius:20px;letter-spacing:.03em;display:inline-flex;align-items:center;gap:4px;white-space:nowrap}
+.badge-cyan{background:var(--cyan-bg);color:var(--cyan);border:1px solid var(--cyan-dim)}
+.live-dot{width:7px;height:7px;border-radius:50%;background:var(--cyan);display:inline-block;animation:livePulse 2s infinite}
+@keyframes livePulse{0%,100%{box-shadow:0 0 0 0 var(--cyan-dim)}50%{box-shadow:0 0 0 5px transparent}}
+
+/* ── BUTTONS ── */
+.btn{display:inline-flex;align-items:center;gap:6px;font-family:var(--font);font-size:13px;font-weight:600;padding:9px 20px;border-radius:var(--r);cursor:pointer;border:1px solid transparent;transition:all .15s;text-decoration:none}
+.btn-primary{background:var(--purple);color:#fff;border-color:var(--purple)}.btn-primary:hover{opacity:.85;transform:translateY(-1px)}
+.btn-secondary{background:var(--bg3);color:var(--text2);border-color:var(--border2)}.btn-secondary:hover{background:var(--bg4);color:var(--text)}
+.btn-hero{padding:13px 32px;font-size:14px;font-weight:700;border-radius:var(--rl)}
+.btn-hero-grad{background:linear-gradient(135deg,var(--cyan),var(--purple));color:#fff;border:none}.btn-hero-grad:hover{opacity:.88;transform:translateY(-2px)}
+
+/* ── LAYOUT ── */
+.container{max-width:1100px;margin:0 auto;padding:0 48px}
+section{padding:80px 0}
+
+/* ── HERO ── */
+.hero{text-align:left;padding:80px 0 60px}
+.hero-tag{background:var(--cyan-bg);color:var(--cyan);border:1px solid var(--cyan-dim);font-size:11px;font-weight:700;padding:5px 14px;border-radius:20px;letter-spacing:.05em;margin-bottom:24px;display:inline-flex;align-items:center;gap:7px}
+h1{font-size:clamp(32px,4.5vw,60px);font-weight:800;line-height:1.07;letter-spacing:-.025em;margin-bottom:22px}
+.gradient-text{background:linear-gradient(90deg,var(--cyan),var(--purple));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.hero-sub{font-size:17px;color:var(--text2);line-height:1.7;max-width:580px;margin-bottom:36px}
+.hero-btns{display:flex;gap:14px;flex-wrap:wrap;margin-bottom:60px}
+.hero-mockup{background:var(--bg2);border:1px solid var(--border);border-radius:var(--rxl);overflow:hidden;margin-top:60px;box-shadow:0 40px 120px rgba(0,0,0,.5)}
+.mockup-bar{height:36px;background:var(--bg3);border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px;padding:0 14px}
+.mockup-dot{width:10px;height:10px;border-radius:50%}
+
+/* ── STATS ── */
+.stats-grid{display:grid;grid-template-columns:repeat(4,1fr);border:1px solid var(--border);border-radius:var(--rl);overflow:hidden;background:var(--bg2)}
+.stat-cell{padding:24px 28px;border-right:1px solid var(--border)}
+.stat-cell:last-child{border-right:none}
+.stat-num{font-family:var(--mono);font-size:26px;font-weight:700;color:var(--cyan);letter-spacing:-.02em}
+.stat-lbl{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:var(--text3);margin-top:5px}
+
+/* ── FEATURES ── */
+.section-label{font-size:11px;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:var(--text3);text-align:center;margin-bottom:16px}
+.section-title{font-size:clamp(24px,3vw,38px);font-weight:800;text-align:center;letter-spacing:-.02em;margin-bottom:12px}
+.section-sub{font-size:15px;color:var(--text2);text-align:center;max-width:560px;margin:0 auto 48px;line-height:1.65}
+.feat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--border);border-radius:var(--rl);overflow:hidden}
+.feat-cell{background:var(--bg2);padding:30px 26px;transition:background .15s;cursor:default}
+.feat-cell:hover{background:var(--bg3)}
+.feat-icon{font-size:28px;margin-bottom:14px}
+.feat-title{font-size:14px;font-weight:700;margin-bottom:8px}
+.feat-desc{font-size:12.5px;color:var(--text2);line-height:1.65}
+.feat-badge{display:inline-flex;align-items:center;gap:4px;font-size:9px;font-weight:700;padding:2px 7px;border-radius:20px;margin-top:8px;background:var(--purple-bg);color:var(--purple);border:1px solid var(--purple-dim)}
+
+/* ── SIDEBAR PREVIEW ── */
+.preview-wrap{display:grid;grid-template-columns:200px 1fr;background:var(--bg2);border:1px solid var(--border);border-radius:var(--rxl);overflow:hidden;height:420px;box-shadow:0 24px 80px rgba(0,0,0,.4)}
+.preview-sidebar{background:var(--bg3);border-right:1px solid var(--border);padding:12px 8px;overflow:hidden}
+.preview-nav-section{font-size:8px;font-weight:700;letter-spacing:.13em;text-transform:uppercase;color:var(--text3);padding:10px 10px 4px}
+.preview-nav-item{display:flex;align-items:center;gap:8px;padding:7px 10px;border-radius:8px;font-size:12px;font-weight:500;color:var(--text3);margin-bottom:1px}
+.preview-nav-item.active{background:var(--purple-bg);color:var(--purple)}
+.preview-nav-dot{width:5px;height:5px;border-radius:50%;background:var(--cyan);margin-left:auto;box-shadow:0 0 5px var(--cyan)}
+.preview-content{padding:20px;overflow:hidden;display:flex;flex-direction:column;gap:12px}
+.preview-stat-row{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.preview-stat{background:var(--bg3);border:1px solid var(--border);border-radius:10px;padding:12px}
+.preview-stat-lbl{font-size:8px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--text3);margin-bottom:4px}
+.preview-stat-val{font-family:var(--mono);font-size:18px;font-weight:700}
+
+/* ── PRICING ── */
+.pricing-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.pricing-card{padding:28px;background:var(--bg2);border:1px solid var(--border);border-radius:var(--rxl);transition:border-color .2s}
+.pricing-card.featured{border-color:var(--purple-dim);box-shadow:0 0 0 1px var(--purple-dim),0 20px 60px rgba(139,127,255,.1)}
+.pricing-name{font-size:18px;font-weight:800;margin-bottom:4px}
+.pricing-price{font-family:var(--mono);font-size:32px;font-weight:700;margin:14px 0 4px}
+.pricing-period{font-size:12px;color:var(--text3)}
+.pricing-divider{height:1px;background:var(--border);margin:18px 0}
+.pricing-feature{display:flex;align-items:flex-start;gap:8px;font-size:13px;color:var(--text2);margin-bottom:10px;line-height:1.5}
+.pricing-check{flex-shrink:0;margin-top:1px}
+
+/* ── CTA STRIP ── */
+.cta-strip{background:var(--bg2);border:1px solid var(--border);border-radius:var(--rxl);padding:48px;text-align:center}
+.cta-strip h2{font-size:clamp(22px,3vw,36px);font-weight:800;margin-bottom:12px;letter-spacing:-.02em}
+.cta-strip p{font-size:15px;color:var(--text2);margin-bottom:28px}
+
+/* ── FOOTER ── */
+footer{border-top:1px solid var(--border);padding:32px 48px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:16px;font-size:11px;color:var(--text3)}
+
+/* ── SIDEBAR LAYOUT ── */
+.with-sidebar{display:flex;gap:0}
+.sidebar-nav{width:var(--sw);flex-shrink:0;background:var(--bg2);border-right:1px solid var(--border)}
+
+::-webkit-scrollbar{width:5px;height:5px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--bg4);border-radius:3px}
+
+@media(max-width:768px){
+  nav,footer{padding:0 20px}
+  nav{height:54px}
+  .container{padding:0 20px}
+  section{padding:48px 0}
+  .stats-grid{grid-template-columns:repeat(2,1fr)}
+  .feat-grid{grid-template-columns:1fr}
+  .pricing-grid{grid-template-columns:1fr}
+  .preview-wrap{grid-template-columns:1fr;height:auto}
+  .preview-sidebar{display:none}
+  .hero{padding:40px 0 40px}
+}
+</style>
+</head>
+<body>
+
+<!-- Ticker -->
+<div class="ticker-bar"><div class="ticker-track" id="ticker"></div></div>
+
+<!-- Nav -->
+<nav>
+  <a href="index.html" class="logo"><div class="logo-hex"></div>Volari<span style="color:var(--cyan)">X</span></a>
+  <div class="nav-links">
+    <a href="#features" class="nav-link">Features</a>
+    <a href="#pricing" class="nav-link">Pricing</a>
+    <a href="#preview" class="nav-link">Preview</a>
+    <span style="display:flex;align-items:center;gap:6px;font-size:11px;color:var(--text3)"><span class="live-dot"></span>Live data</span>
+  </div>
+  <div style="display:flex;gap:10px;align-items:center">
+    <a href="login.html" class="btn btn-secondary" style="font-size:12px;padding:7px 16px">Sign In</a>
+    <a href="login.html?mode=register" class="btn btn-primary" style="font-size:12px;padding:7px 16px">Get Started Free →</a>
+  </div>
+</nav>
+
+<!-- Hero -->
+<div class="container">
+  <div class="hero">
+    <div class="hero-tag"><span class="live-dot"></span> Live Beta — Free Access</div>
+    <h1>Welcome to the Future of<br><span class="gradient-text">Risk-First Options Trading</span></h1>
+    <p class="hero-sub">VolariX protects your capital by combining institutional-grade alternative data, precision technical indicators, and automated pre-trade risk management — before you ever hit execute.</p>
+    <div class="hero-btns">
+      <a href="login.html?mode=register" class="btn btn-hero btn-hero-grad">Launch Platform Free →</a>
+      <a href="#preview" class="btn btn-hero btn-secondary">See the Dashboard</a>
+    </div>
+    <!-- Stats -->
+    <div class="stats-grid">
+      <div class="stat-cell"><div class="stat-num">2.4M+</div><div class="stat-lbl">Options Screened Daily</div></div>
+      <div class="stat-cell"><div class="stat-num">18,200+</div><div class="stat-lbl">Risk Alerts Fired</div></div>
+      <div class="stat-cell"><div class="stat-num">94,000+</div><div class="stat-lbl">Paper Trades Analyzed</div></div>
+      <div class="stat-cell"><div class="stat-num">68th %</div><div class="stat-lbl">Avg IV Rank Threshold</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- Features -->
+<section id="features">
+  <div class="container">
+    <div class="section-label">Platform Capabilities</div>
+    <h2 class="section-title">Everything an options trader needs</h2>
+    <p class="section-sub">From live market intelligence to AI-powered trade analysis — VolariX covers the full options trading workflow in one place.</p>
+    <div class="feat-grid" id="featGrid"></div>
+  </div>
+</section>
+
+<!-- App Preview -->
+<section id="preview" style="padding-top:0">
+  <div class="container">
+    <div class="section-label">Dashboard Preview</div>
+    <h2 class="section-title">Built like a trading terminal</h2>
+    <p class="section-sub">Every screen you need — from the capital flow matrix to the AI post-mortem log — in one clean, fast interface.</p>
+    <div class="preview-wrap">
+      <!-- Sidebar preview -->
+      <div class="preview-sidebar">
+        <div class="preview-nav-section">Markets</div>
+        <div class="preview-nav-item active">📊 Overview <span class="preview-nav-dot"></span></div>
+        <div class="preview-nav-item">🔍 Ticker Analyzer</div>
+        <div class="preview-nav-item">📡 IV Screener</div>
+        <div class="preview-nav-item">🎯 Options Chain</div>
+        <div class="preview-nav-section">Intelligence</div>
+        <div class="preview-nav-item">🏛️ Alt Data <span class="preview-nav-dot"></span></div>
+        <div class="preview-nav-item">🏆 Track Record</div>
+        <div class="preview-nav-item">🌀 Sector Rotation</div>
+        <div class="preview-nav-section">Trading</div>
+        <div class="preview-nav-item">📝 Paper Trading</div>
+        <div class="preview-nav-item">⚡ Live Trading</div>
+        <div class="preview-nav-item">🔁 Backtesting</div>
+        <div class="preview-nav-section">Risk</div>
+        <div class="preview-nav-item">🛡️ Risk Shield</div>
+        <div class="preview-nav-item">🔔 Alerts</div>
+      </div>
+      <!-- Content preview -->
+      <div class="preview-content">
+        <div class="preview-stat-row">
+          <div class="preview-stat" style="border-color:var(--cyan-dim)">
+            <div class="preview-stat-lbl">Portfolio P&L</div>
+            <div class="preview-stat-val" style="color:var(--cyan)">+$730</div>
+            <div style="font-size:10px;color:var(--cyan);margin-top:3px">▲ 14.6% this month</div>
+          </div>
+          <div class="preview-stat">
+            <div class="preview-stat-lbl">Fear &amp; Greed</div>
+            <div class="preview-stat-val" style="color:var(--amber)">38</div>
+            <div style="font-size:10px;color:var(--amber);margin-top:3px">😨 FEAR zone</div>
+          </div>
+          <div class="preview-stat">
+            <div class="preview-stat-lbl">VIX</div>
+            <div class="preview-stat-val">18.42</div>
+            <div style="font-size:10px;color:var(--text3);margin-top:3px">Elevated</div>
+          </div>
+        </div>
+        <!-- Mini positions table -->
+        <div style="background:var(--bg3);border:1px solid var(--border);border-radius:10px;overflow:hidden">
+          <div style="padding:10px 14px;border-bottom:1px solid var(--border);font-size:12px;font-weight:700;display:flex;justify-content:space-between">
+            <span>📋 Current Positions</span>
+            <span style="font-size:10px;color:var(--text3)">4 open</span>
+          </div>
+          <div id="previewPositions"></div>
+        </div>
+        <!-- Mini Risk Shield hint -->
+        <div style="background:var(--red-bg);border:1px solid var(--red-dim);border-radius:10px;padding:12px 14px;display:flex;align-items:center;justify-content:space-between">
+          <div style="font-size:12px;font-weight:700;color:var(--red)">🛡️ Risk Shield — 2 warnings on current portfolio</div>
+          <span style="font-size:10px;font-weight:700;padding:3px 9px;border-radius:20px;background:var(--red-bg);color:var(--red);border:1px solid var(--red-dim)">View →</span>
+        </div>
+        <div style="text-align:center;padding:8px;font-size:11px;color:var(--text3)">
+          <a href="login.html" style="color:var(--purple);text-decoration:none;font-weight:600">Sign in to access the full dashboard →</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Pricing -->
+<section id="pricing">
+  <div class="container">
+    <div class="section-label">Pricing</div>
+    <h2 class="section-title">Start free. Upgrade when ready.</h2>
+    <p class="section-sub">No credit card required to get started. Upgrade to Premium to unlock institutional-grade tools.</p>
+    <div class="pricing-grid" id="pricingGrid"></div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section style="padding-bottom:80px">
+  <div class="container">
+    <div class="cta-strip">
+      <h2>Introducing VolariX<span style="color:var(--cyan)">.</span></h2>
+      <p>Institutional risk intelligence. Zero compromise. Free to start.</p>
+      <a href="login.html?mode=register" class="btn btn-hero btn-hero-grad">Create Free Account →</a>
+    </div>
+  </div>
+</section>
+
+<!-- Footer -->
+<footer>
+  <div class="logo" style="font-size:16px"><div class="logo-hex" style="width:22px;height:22px"></div>Volari<span style="color:var(--cyan)">X</span></div>
+  <div style="font-size:10px;color:var(--text3);max-width:500px;text-align:center;line-height:1.6">
+    ⚠️ VolariX provides educational and analytical tools only. All signals, risk metrics, and data points are not financial advice. Trade at your own risk.
+  </div>
+  <div style="display:flex;gap:20px">
+    <a href="#" style="color:var(--text3);text-decoration:none;font-size:11px">Privacy</a>
+    <a href="#" style="color:var(--text3);text-decoration:none;font-size:11px">Terms</a>
+    <a href="login.html" style="color:var(--text3);text-decoration:none;font-size:11px">Sign In</a>
+  </div>
+</footer>
+
+<script>
+// ── Ticker ──
+const TICKS=[{l:'VIX',v:'18.42',b:'ELEVATED',c:'amber'},{l:'Fear & Greed',v:'38',b:'FEAR',c:'amber'},{l:'S&P 500',v:'$5,287',b:'+0.34%',c:'cyan'},{l:'NVDA',v:'$875.40',b:'+2.11%',c:'cyan'},{l:'TSLA',v:'$177.88',b:'−1.45%',c:'red'},{l:'AAPL',v:'$189.45',b:'+0.18%',c:'cyan'},{l:'QQQ',v:'$441.22',b:'+0.61%',c:'cyan'},{l:'MSFT',v:'$415.60',b:'+0.54%',c:'cyan'},{l:'AMD',v:'$148.20',b:'−0.82%',c:'red'},{l:'META',v:'$504.33',b:'+1.02%',c:'cyan'},{l:'10Y',v:'4.31%',b:'Stable',c:'neutral'},{l:'Put/Call',v:'0.76',b:'Bullish',c:'cyan'}];
+const BS={cyan:'background:rgba(0,212,170,0.15);color:#00D4AA;border:1px solid rgba(0,212,170,0.3)',red:'background:rgba(255,71,87,0.15);color:#FF4757;border:1px solid rgba(255,71,87,0.3)',amber:'background:rgba(255,184,48,0.15);color:#FFB830;border:1px solid rgba(255,184,48,0.3)',neutral:'background:rgba(255,255,255,0.06);color:#9896B0;border:1px solid rgba(255,255,255,0.1)'};
+const items=[...TICKS,...TICKS];
+document.getElementById('ticker').innerHTML=items.map(t=>`<div class="tick-item"><span class="tick-label">${t.l}</span><span class="tick-val">${t.v}</span><span style="font-size:9px;font-weight:700;padding:2px 8px;border-radius:20px;${BS[t.c]}">${t.b}</span></div>`).join('');
+
+// ── Features ──
+const FEATS=[
+  ['📡','Global Risk Ticker','Live VIX & CNN Fear/Greed Index streamed across every screen.',''],
+  ['🔍','Ticker Analyzer','Full fundamentals, SMA/EMA/RSI charts, and auto bullish/bearish signals.',''],
+  ['🔥','High-IV Screener','Screen thousands of options for premium-selling opportunities by IV Rank.',''],
+  ['🏛️','Congressional & Insider','Follow smart money from Capitol Hill and corporate insiders instantly.',''],
+  ['🛡️','Risk Shield','Pre-trade AI warns before excessive delta, over-leverage, or concentration risk.',''],
+  ['🎯','Greek Visualizer','Color-coded P&L risk graphs tracking Delta, Gamma, Theta, and Vega.','PRO'],
+  ['🤖','AI Post-Mortem','Every closed paper trade reviewed by AI. Know why you won or lost.',''],
+  ['🔁','Backtesting Engine','Run strategies against 2 years of real Yahoo Finance data. Free.',''],
+  ['🌀','Sector Rotation','Capital Flow Matrix ranking 11 SPDR sectors + SMH/SOXX by momentum.','PRO'],
+];
+document.getElementById('featGrid').innerHTML=FEATS.map(([ic,t,d,pro])=>`<div class="feat-cell"><div class="feat-icon">${ic}</div><div class="feat-title">${t}</div><div class="feat-desc">${d}</div>${pro?`<div class="feat-badge">✨ ${pro}</div>`:''}</div>`).join('');
+
+// ── Preview positions ──
+const POS=[['AAPL','Call','+$340','cyan'],['TSLA','Put','−$210','red'],['NVDA','Put','+$580','cyan'],['SPY','Call','+$120','cyan']];
+document.getElementById('previewPositions').innerHTML=POS.map(([t,type,pnl,c])=>`<div style="display:flex;align-items:center;gap:10px;padding:8px 14px;border-bottom:1px solid var(--border);font-size:11px"><span style="font-family:var(--mono);font-weight:700;width:44px">${t}</span><span style="background:var(--${type==='Call'?'cyan':'red'}-bg);color:var(--${type==='Call'?'cyan':'red'});border:1px solid var(--${type==='Call'?'cyan':'red'}-dim);font-size:9px;padding:2px 7px;border-radius:20px;font-weight:700">${type}</span><span style="flex:1"></span><span style="font-family:var(--mono);font-weight:700;color:var(--${c})">${pnl}</span></div>`).join('');
+
+// ── Pricing ──
+const TIERS=[
+  ['Free','$0','month','cyan',false,[
+    ['✓','Basic stock search & technical charts'],['✓','Paper trading (stocks + options)'],
+    ['✓','Ticker banner & market data'],['✓','Backtesting engine'],['✓','Push & in-app alerts'],
+  ]],
+  ['Premium','$29','month','purple',true,[
+    ['✓','Everything in Free +'],['✓','🛡️ Risk Shield pre-trade AI'],
+    ['✓','🎯 Greek Visualizer full access'],['✓','🏛️ Congressional & Insider data'],
+    ['✓','🤖 AI Post-Mortem analysis'],['✓','🌀 Sector Rotation & Capital Flow'],
+    ['✓','📱 SMS real-time alerts'],['✓','⚡ Live brokerage integration'],
+  ]],
+];
+document.getElementById('pricingGrid').innerHTML=TIERS.map(([name,price,period,c,featured,feats])=>`
+<div class="pricing-card${featured?' featured':''}">
+  <div class="pricing-name" style="color:var(--${c})">${name}</div>
+  <div style="font-size:12px;color:var(--text3)">For ${featured?'serious':'new'} options traders</div>
+  <div class="pricing-price" style="color:var(--text)">${price}<span style="font-size:16px;color:var(--text3);font-weight:400">/ ${period}</span></div>
+  <a href="login.html?mode=register" class="btn btn-${featured?'primary':'secondary'}" style="width:100%;justify-content:center;margin-bottom:4px">${featured?'Start Premium →':'Get Started Free'}</a>
+  <div class="pricing-divider"></div>
+  ${feats.map(([ic,f])=>`<div class="pricing-feature"><span class="pricing-check" style="color:var(--${c})">${ic}</span><span>${f}</span></div>`).join('')}
+</div>`).join('');
+
+// ── Smooth scroll ──
+document.querySelectorAll('a[href^="#"]').forEach(a=>{a.addEventListener('click',e=>{e.preventDefault();const t=document.querySelector(a.getAttribute('href'));if(t)t.scrollIntoView({behavior:'smooth'});});});
+</script>
+</body>
+</html>

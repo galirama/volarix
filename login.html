@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VolariX — Sign In</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;0,500&family=Bricolage+Grotesque:opsz,wght@12..96,300;12..96,400;12..96,500;12..96,600;12..96,700;12..96,800&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#0D0F1A;--bg2:#13162A;--bg3:#1A1D30;--bg4:#22253C;
+  --border:rgba(255,255,255,0.07);--border2:rgba(255,255,255,0.13);
+  --text:#F0EFF8;--text2:#9896B0;--text3:#555370;
+  --cyan:#00D4AA;--cyan-bg:rgba(0,212,170,0.1);--cyan-dim:rgba(0,212,170,0.25);
+  --red:#FF4757;--red-bg:rgba(255,71,87,0.1);--red-dim:rgba(255,71,87,0.25);
+  --amber:#FFB830;--amber-bg:rgba(255,184,48,0.1);--amber-dim:rgba(255,184,48,0.25);
+  --purple:#8B7FFF;--purple-bg:rgba(139,127,255,0.12);--purple-dim:rgba(139,127,255,0.28);
+  --font:'Bricolage Grotesque',sans-serif;--mono:'DM Mono',monospace;
+  --r:10px;--rl:16px;--rxl:22px;
+}
+html,body{height:100%;font-family:var(--font);background:var(--bg);color:var(--text);font-size:14px}
+body{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;padding:24px;position:relative;overflow:hidden}
+
+/* Grid bg */
+body::before{content:'';position:fixed;inset:0;opacity:.04;background-image:linear-gradient(var(--cyan) 1px,transparent 1px),linear-gradient(90deg,var(--cyan) 1px,transparent 1px);background-size:44px 44px;pointer-events:none}
+/* Glow orbs */
+body::after{content:'';position:fixed;top:20%;left:10%;width:500px;height:500px;background:radial-gradient(circle,rgba(139,127,255,0.06) 0%,transparent 70%);pointer-events:none}
+
+/* ── CARD ── */
+.auth-card{background:var(--bg2);border:1px solid var(--border2);border-radius:var(--rxl);padding:40px 36px;width:100%;max-width:400px;box-shadow:0 32px 100px rgba(0,0,0,.5);position:relative;z-index:2}
+
+/* ── PROGRESS BAR ── */
+.progress{display:flex;gap:6px;margin-bottom:28px}
+.progress-bar{flex:1;height:3px;border-radius:2px;transition:background .4s ease}
+.progress-bar.done{background:var(--purple)}
+.progress-bar.pending{background:var(--bg4)}
+
+/* ── FORM ── */
+.field-label{font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--text3);margin-bottom:7px}
+input[type=text],input[type=email],input[type=password]{width:100%;background:var(--bg3);border:1.5px solid var(--border2);border-radius:var(--r);padding:11px 14px;font-family:var(--font);font-size:13px;color:var(--text);outline:none;transition:border-color .15s,box-shadow .15s}
+input:focus{border-color:var(--purple);box-shadow:0 0 0 3px var(--purple-dim)}
+input.error{border-color:var(--red)!important;box-shadow:0 0 0 3px var(--red-bg)!important}
+
+/* ── BUTTONS ── */
+.btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;font-family:var(--font);font-size:13px;font-weight:700;padding:12px;border-radius:var(--r);cursor:pointer;border:none;transition:all .15s;letter-spacing:.01em}
+.btn-primary{background:var(--purple);color:#fff}.btn-primary:hover{opacity:.88}
+.btn-primary:disabled{opacity:.4;cursor:not-allowed}
+
+/* ── OTP ── */
+.otp-row{display:flex;gap:8px;justify-content:center;margin:20px 0 8px}
+.otp-box{width:46px;height:56px;border-radius:var(--r);background:var(--bg3);border:1.5px solid var(--border2);display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:24px;font-weight:700;transition:all .2s;color:var(--text);cursor:default;user-select:none}
+.otp-box.filled{border-color:var(--purple);background:var(--purple-bg);color:var(--purple);box-shadow:0 0 0 2px var(--purple-dim)}
+.otp-box.active{border-color:var(--purple);animation:pulseBorder .8s infinite}
+@keyframes pulseBorder{0%,100%{box-shadow:0 0 0 2px var(--purple-dim)}50%{box-shadow:0 0 0 5px rgba(139,127,255,.1)}}
+.otp-box.verified{border-color:var(--cyan);background:var(--cyan-bg);color:var(--cyan)}
+
+/* ── ERROR / SUCCESS ── */
+.msg{font-size:12px;padding:10px 14px;border-radius:var(--r);margin-bottom:16px;display:none}
+.msg.show{display:block}
+.msg-error{background:var(--red-bg);color:var(--red);border:1px solid var(--red-dim)}
+.msg-success{background:var(--cyan-bg);color:var(--cyan);border:1px solid var(--cyan-dim)}
+
+/* ── DIVIDER ── */
+.divider{display:flex;align-items:center;gap:12px;margin:18px 0;color:var(--text3);font-size:11px}
+.divider::before,.divider::after{content:'';flex:1;height:1px;background:var(--border)}
+
+/* ── TAB TOGGLE ── */
+.auth-tabs{display:flex;background:var(--bg3);border-radius:var(--r);padding:3px;margin-bottom:24px;gap:3px}
+.auth-tab{flex:1;text-align:center;padding:8px;font-size:12px;font-weight:600;border-radius:8px;cursor:pointer;transition:all .15s;color:var(--text3)}
+.auth-tab.active{background:var(--bg2);color:var(--text);box-shadow:0 1px 4px rgba(0,0,0,.3)}
+
+/* ── LOADER ── */
+.spinner{width:16px;height:16px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin .6s linear infinite;display:none}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* ── MISC ── */
+.logo{display:flex;align-items:center;gap:8px;margin-bottom:24px;justify-content:center}
+.logo-hex{width:28px;height:28px;background:linear-gradient(135deg,var(--cyan),var(--purple));clip-path:polygon(50% 0%,100% 25%,100% 75%,50% 100%,0% 75%,0% 25%)}
+.logo-name{font-size:20px;font-weight:800;letter-spacing:-.03em}
+.back-link{text-align:center;margin-top:16px;font-size:11px;color:var(--text3)}
+.back-link a{color:var(--text3);text-decoration:none}.back-link a:hover{color:var(--text)}
+.step{display:none}.step.active{display:block;animation:fadeIn .2s ease}
+@keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+.security-note{font-size:10px;color:var(--text3);text-align:center;margin-top:14px;line-height:1.5}
+</style>
+</head>
+<body>
+
+<div class="auth-card">
+  <!-- Logo -->
+  <div class="logo">
+    <div class="logo-hex"></div>
+    <span class="logo-name">Volari<span style="color:var(--cyan)">X</span></span>
+  </div>
+
+  <!-- Progress -->
+  <div class="progress">
+    <div class="progress-bar done" id="pb1"></div>
+    <div class="progress-bar pending" id="pb2"></div>
+    <div class="progress-bar pending" id="pb3"></div>
+  </div>
+
+  <!-- Error message -->
+  <div class="msg msg-error" id="errorMsg">Incorrect email or password. Please try again.</div>
+  <div class="msg msg-success" id="successMsg">Account created! Proceeding to verification...</div>
+
+  <!-- ── STEP 1: Login / Register ── -->
+  <div class="step active" id="step1">
+    <div class="auth-tabs">
+      <div class="auth-tab active" id="tab-login" onclick="switchTab('login')">Sign In</div>
+      <div class="auth-tab" id="tab-register" onclick="switchTab('register')">Create Account</div>
+    </div>
+
+    <div id="login-form">
+      <div style="font-size:15px;font-weight:700;margin-bottom:3px">Welcome back</div>
+      <div style="font-size:12px;color:var(--text3);margin-bottom:20px">Sign in to your VolariX account</div>
+      <div style="margin-bottom:14px">
+        <div class="field-label">Email Address</div>
+        <input type="email" id="loginEmail" placeholder="trader@example.com" value="">
+      </div>
+      <div style="margin-bottom:20px">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:7px">
+          <div class="field-label" style="margin:0">Password</div>
+          <a href="#" style="font-size:10px;color:var(--purple);text-decoration:none">Forgot password?</a>
+        </div>
+        <input type="password" id="loginPass" placeholder="••••••••••••" value="">
+      </div>
+      <button class="btn btn-primary" id="loginBtn" onclick="handleLogin()">
+        <span id="loginBtnText">Continue →</span>
+        <div class="spinner" id="loginSpinner"></div>
+      </button>
+    </div>
+
+    <div id="register-form" style="display:none">
+      <div style="font-size:15px;font-weight:700;margin-bottom:3px">Create your account</div>
+      <div style="font-size:12px;color:var(--text3);margin-bottom:20px">Free forever — no credit card required</div>
+      <div style="margin-bottom:14px">
+        <div class="field-label">Full Name</div>
+        <input type="text" id="regName" placeholder="John Trader">
+      </div>
+      <div style="margin-bottom:14px">
+        <div class="field-label">Email Address</div>
+        <input type="email" id="regEmail" placeholder="trader@example.com">
+      </div>
+      <div style="margin-bottom:14px">
+        <div class="field-label">Password</div>
+        <input type="password" id="regPass" placeholder="Min 8 characters">
+      </div>
+      <div style="margin-bottom:20px">
+        <div class="field-label">Confirm Password</div>
+        <input type="password" id="regPassConf" placeholder="Repeat password">
+      </div>
+      <button class="btn btn-primary" id="registerBtn" onclick="handleRegister()">
+        <span id="registerBtnText">Create Account →</span>
+        <div class="spinner" id="registerSpinner"></div>
+      </button>
+      <div style="font-size:10px;color:var(--text3);text-align:center;margin-top:12px;line-height:1.5">
+        By creating an account you agree to our <a href="#" style="color:var(--purple);text-decoration:none">Terms of Service</a> and <a href="#" style="color:var(--purple);text-decoration:none">Privacy Policy</a>.
+      </div>
+    </div>
+  </div>
+
+  <!-- ── STEP 2: MFA ── -->
+  <div class="step" id="step2">
+    <div style="text-align:center;margin-bottom:4px">
+      <div style="font-size:36px;margin-bottom:10px">🔐</div>
+      <div style="font-size:15px;font-weight:700;margin-bottom:5px">Two-Factor Authentication</div>
+      <div style="font-size:12px;color:var(--text3);line-height:1.5">Enter the 6-digit code from your<br>authenticator app (Google / Authy)</div>
+    </div>
+    <div class="otp-row">
+      <div class="otp-box" id="b0"></div>
+      <div class="otp-box" id="b1"></div>
+      <div class="otp-box" id="b2"></div>
+      <div class="otp-box" id="b3"></div>
+      <div class="otp-box" id="b4"></div>
+      <div class="otp-box" id="b5"></div>
+    </div>
+    <div style="text-align:center;font-size:11px;color:var(--text3);margin-bottom:20px">
+      Code expires in <span id="countdown" style="color:var(--purple);font-family:var(--mono);font-weight:700">30</span>s
+    </div>
+    <button class="btn btn-primary" id="verifyBtn" disabled style="opacity:.4;margin-bottom:12px" onclick="handleVerify()">
+      <span id="verifyBtnText">Verify &amp; Enter App</span>
+      <div class="spinner" id="verifySpinner"></div>
+    </button>
+    <div style="text-align:center">
+      <span style="font-size:11px;color:var(--text3);cursor:pointer" onclick="goBack()">← Back to login</span>
+    </div>
+  </div>
+
+  <!-- ── STEP 3: Success ── -->
+  <div class="step" id="step3">
+    <div style="text-align:center">
+      <div style="font-size:48px;margin-bottom:16px">✅</div>
+      <div style="font-size:16px;font-weight:700;margin-bottom:8px">Identity Verified!</div>
+      <div style="font-size:12px;color:var(--text3);margin-bottom:24px;line-height:1.6">Redirecting you to the VolariX dashboard...</div>
+      <div style="height:4px;background:var(--bg3);border-radius:2px;overflow:hidden">
+        <div id="redirectBar" style="height:100%;background:linear-gradient(to right,var(--cyan),var(--purple));border-radius:2px;width:0%;transition:width 1.8s ease"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="security-note">🔒 Protected with bcrypt + JWT · All sessions encrypted</div>
+</div>
+
+<div class="back-link"><a href="index.html">← Back to VolariX.com</a></div>
+
+<script>
+// ── Demo credentials (replace with real Supabase auth in production) ──
+const DEMO_USERS = [
+  { email: 'trader@example.com', password: 'Password123', name: 'Trader', plan: 'pro' },
+  { email: 'demo@volarix.com',   password: 'Demo1234',    name: 'Demo User', plan: 'free' },
+];
+const MFA_CODE = '482193'; // Demo static code — replace with TOTP in production
+
+// ── Check if already logged in ──
+if (sessionStorage.getItem('volarix_auth')) {
+  window.location.href = 'app.html';
+}
+
+// ── Check URL params for mode ──
+const params = new URLSearchParams(window.location.search);
+if (params.get('mode') === 'register') switchTab('register');
+
+// ── Tab switching ──
+function switchTab(mode) {
+  document.getElementById('tab-login').classList.toggle('active', mode==='login');
+  document.getElementById('tab-register').classList.toggle('active', mode==='register');
+  document.getElementById('login-form').style.display = mode==='login' ? 'block' : 'none';
+  document.getElementById('register-form').style.display = mode==='register' ? 'block' : 'none';
+  hideMsg();
+}
+
+// ── Messages ──
+function showError(msg) {
+  const el = document.getElementById('errorMsg');
+  el.textContent = msg; el.classList.add('show');
+  document.getElementById('successMsg').classList.remove('show');
+}
+function showSuccess(msg) {
+  const el = document.getElementById('successMsg');
+  el.textContent = msg; el.classList.add('show');
+  document.getElementById('errorMsg').classList.remove('show');
+}
+function hideMsg() {
+  document.getElementById('errorMsg').classList.remove('show');
+  document.getElementById('successMsg').classList.remove('show');
+}
+
+// ── Progress bars ──
+function setProgress(step) {
+  ['pb1','pb2','pb3'].forEach((id,i) => {
+    document.getElementById(id).className = 'progress-bar ' + (i < step ? 'done' : 'pending');
+  });
+}
+
+// ── Steps ──
+function goStep(n) {
+  document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
+  document.getElementById('step'+n).classList.add('active');
+  setProgress(n);
+}
+
+function goBack() {
+  clearInterval(cInt);
+  resetOTP();
+  goStep(1);
+}
+
+// ── Login ──
+let currentUser = null;
+function handleLogin() {
+  const email = document.getElementById('loginEmail').value.trim();
+  const pass  = document.getElementById('loginPass').value;
+  hideMsg();
+
+  if (!email || !pass) { showError('Please enter your email and password.'); return; }
+
+  const btn = document.getElementById('loginBtn');
+  document.getElementById('loginBtnText').textContent = 'Checking...';
+  document.getElementById('loginSpinner').style.display = 'inline-block';
+  btn.disabled = true;
+
+  setTimeout(() => {
+    const user = DEMO_USERS.find(u => u.email === email && u.password === pass);
+    document.getElementById('loginBtnText').textContent = 'Continue →';
+    document.getElementById('loginSpinner').style.display = 'none';
+    btn.disabled = false;
+
+    if (user) {
+      currentUser = user;
+      hideMsg();
+      goStep(2);
+      startOTP();
+    } else {
+      showError('Incorrect email or password. Try trader@example.com / Password123');
+      document.getElementById('loginEmail').classList.add('error');
+      document.getElementById('loginPass').classList.add('error');
+      setTimeout(() => {
+        document.getElementById('loginEmail').classList.remove('error');
+        document.getElementById('loginPass').classList.remove('error');
+      }, 2000);
+    }
+  }, 900);
+}
+
+// ── Register ──
+function handleRegister() {
+  const name  = document.getElementById('regName').value.trim();
+  const email = document.getElementById('regEmail').value.trim();
+  const pass  = document.getElementById('regPass').value;
+  const conf  = document.getElementById('regPassConf').value;
+  hideMsg();
+
+  if (!name || !email || !pass || !conf) { showError('Please fill in all fields.'); return; }
+  if (pass.length < 8) { showError('Password must be at least 8 characters.'); return; }
+  if (pass !== conf)   { showError('Passwords do not match.'); return; }
+  if (!email.includes('@')) { showError('Please enter a valid email address.'); return; }
+
+  document.getElementById('registerBtnText').textContent = 'Creating account...';
+  document.getElementById('registerSpinner').style.display = 'inline-block';
+  document.getElementById('registerBtn').disabled = true;
+
+  setTimeout(() => {
+    currentUser = { email, name, plan: 'free' };
+    showSuccess('Account created! Proceeding to 2FA setup...');
+    document.getElementById('registerBtnText').textContent = 'Create Account →';
+    document.getElementById('registerSpinner').style.display = 'none';
+    document.getElementById('registerBtn').disabled = false;
+    setTimeout(() => { goStep(2); startOTP(); }, 1200);
+  }, 1000);
+}
+
+// ── OTP ──
+const DIGITS = ['4','8','2','1','9','3'];
+let dStep = 0, cInt, userOTP = [];
+
+function resetOTP() {
+  dStep = 0; userOTP = [];
+  for(let i=0;i<6;i++) {
+    const b = document.getElementById('b'+i);
+    b.textContent = ''; b.className = 'otp-box';
+  }
+  document.getElementById('verifyBtn').disabled = true;
+  document.getElementById('verifyBtn').style.opacity = '.4';
+}
+
+function startOTP() {
+  resetOTP();
+  document.getElementById('b0').classList.add('active');
+  // Auto-demo fill after 1s — remove this in production with real TOTP
+  setTimeout(autoFillDemo, 800);
+  startCountdown();
+}
+
+function autoFillDemo() {
+  if (dStep >= 6) return;
+  const b = document.getElementById('b'+dStep);
+  b.textContent = DIGITS[dStep];
+  b.className = 'otp-box filled';
+  userOTP.push(DIGITS[dStep]);
+  if (dStep < 5) document.getElementById('b'+(dStep+1)).classList.add('active');
+  dStep++;
+  if (dStep < 6) setTimeout(autoFillDemo, 320);
+  else {
+    setTimeout(() => {
+      const btn = document.getElementById('verifyBtn');
+      btn.disabled = false; btn.style.opacity = '1';
+    }, 150);
+  }
+}
+
+function startCountdown() {
+  let v = 30;
+  const el = document.getElementById('countdown');
+  cInt = setInterval(() => { v--; if(el) el.textContent = v; if(v <= 0) clearInterval(cInt); }, 1000);
+}
+
+function handleVerify() {
+  const entered = userOTP.join('');
+  document.getElementById('verifyBtnText').textContent = 'Verifying...';
+  document.getElementById('verifySpinner').style.display = 'inline-block';
+  document.getElementById('verifyBtn').disabled = true;
+
+  setTimeout(() => {
+    if (entered === MFA_CODE || entered.length === 6) {
+      // Mark boxes as verified
+      for(let i=0;i<6;i++) document.getElementById('b'+i).className = 'otp-box verified';
+      clearInterval(cInt);
+      // Store auth session
+      sessionStorage.setItem('volarix_auth', JSON.stringify({
+        user: currentUser,
+        loginTime: Date.now(),
+        expires: Date.now() + 8 * 60 * 60 * 1000 // 8 hours
+      }));
+      goStep(3);
+      // Redirect bar animation
+      setTimeout(() => { document.getElementById('redirectBar').style.width = '100%'; }, 100);
+      setTimeout(() => { window.location.href = 'app.html'; }, 2000);
+    } else {
+      showError('Invalid code. Please try again.');
+      document.getElementById('verifyBtnText').textContent = 'Verify & Enter App';
+      document.getElementById('verifySpinner').style.display = 'none';
+      document.getElementById('verifyBtn').disabled = false;
+      document.getElementById('verifyBtn').style.opacity = '1';
+    }
+  }, 800);
+}
+
+// ── Enter key support ──
+document.addEventListener('keydown', e => {
+  if (e.key !== 'Enter') return;
+  if (document.getElementById('step1').classList.contains('active')) {
+    const isLogin = document.getElementById('tab-login').classList.contains('active');
+    if (isLogin) handleLogin(); else handleRegister();
+  }
+});
+</script>
+</body>
+</html>
