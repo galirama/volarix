@@ -6,13 +6,13 @@ You are working on VolariX, a fintech web platform focused on risk-first options
 ## Read Only What Is Needed
 Before coding, read only the relevant documents:
 
-- Product & business rules → `/docs/PRODUCT.md`
-- System architecture → `/docs/ARCHITECTURE.md`
-- Database schema → `/docs/DB_SCHEMA.md`
-- UI & frontend → `/docs/UI_GUIDELINES.md`
-- Legal disclaimers → `/docs/LEGAL.md`
-- Current sprint status → `/docs/PROJECT_STATUS.md`
-- Pending work → `/docs/TASK_QUEUE.md`
+- Product & business rules → `/PRODUCT.md`
+- System architecture → `/ARCHITECTURE.md`
+- Database schema → `/DB_SCHEMA.md`
+- UI & frontend → `/UI_GUIDELINES.md`
+- Legal disclaimers → `/LEGAL.md`
+- Current sprint status → `/PROJECT_STATUS.md`
+- Pending work → `/TASK_QUEUE.md`
 
 ## Core Engineering Rules
 - Work in small increments.
