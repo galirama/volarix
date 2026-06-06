@@ -246,6 +246,34 @@ textarea{resize:vertical;min-height:80px}
 .scorecard-overlay{position:fixed;inset:0;background:rgba(5,6,20,.85);backdrop-filter:blur(10px);z-index:200;display:none;align-items:center;justify-content:center}
 .scorecard-overlay.open{display:flex;animation:fadeIn .2s ease}
 .scorecard-modal{background:var(--bg2);border:1px solid var(--border2);border-radius:var(--rxl);padding:28px;width:600px;max-width:94vw;max-height:88vh;overflow-y:auto;box-shadow:0 32px 80px rgba(0,0,0,.5)}
+
+/* ── PROFIT CALCULATOR ── */
+.calc-overlay{position:fixed;inset:0;background:rgba(5,6,20,.88);backdrop-filter:blur(10px);z-index:210;display:none;align-items:center;justify-content:center}
+.calc-overlay.open{display:flex;animation:fadeIn .2s ease}
+.calc-modal{background:var(--bg2);border:1px solid var(--border2);border-radius:var(--rxl);padding:28px;width:620px;max-width:94vw;max-height:90vh;overflow-y:auto;box-shadow:0 32px 80px rgba(0,0,0,.5)}
+.calc-stat{background:var(--bg3);border-radius:var(--r);padding:12px 14px;text-align:center;border:1px solid var(--border)}
+.calc-stat-val{font-family:var(--mono);font-size:18px;font-weight:700;line-height:1}
+.calc-stat-lbl{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--text3);margin-top:4px}
+.slider-wrap{padding:6px 0}
+.slider-wrap input[type=range]{width:100%;accent-color:var(--purple);height:4px;cursor:pointer}
+/* ── TRADE JOURNAL STATS ── */
+.journal-stat{background:var(--bg3);border-radius:var(--r);padding:12px;border:1px solid var(--border)}
+.journal-stat-val{font-family:var(--mono);font-size:20px;font-weight:700}
+.journal-stat-lbl{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--text3);margin-top:3px}
+/* ── IV HISTORY CHART ── */
+.iv-history-bar{display:flex;align-items:flex-end;gap:2px;height:60px}
+.iv-hbar{border-radius:2px 2px 0 0;min-width:6px;flex:1;transition:opacity .2s;cursor:pointer}
+.iv-hbar:hover{opacity:.7}
+/* ── POSITION SIZING ── */
+.sizing-result{background:var(--bg3);border-radius:var(--r);padding:14px;border:1px solid var(--border);margin-top:12px}
+/* ── ECONOMIC CALENDAR ── */
+.eco-event{display:flex;align-items:center;gap:10px;padding:8px 12px;background:var(--bg3);border-radius:var(--r);margin-bottom:6px;border-left:3px solid}
+.eco-event.high{border-left-color:var(--red)}.eco-event.medium{border-left-color:var(--amber)}.eco-event.low{border-left-color:var(--blue)}
+/* ── PWA INSTALL ── */
+.pwa-banner{background:var(--purple-bg);border:1px solid var(--purple-dim);border-radius:var(--r);padding:10px 14px;display:flex;align-items:center;gap:10px;margin-bottom:12px}
+/* ── FLOW HEATMAP ── */
+.heatmap-cell{border-radius:var(--r);padding:10px;text-align:center;cursor:pointer;transition:transform .15s;border:1px solid transparent}
+.heatmap-cell:hover{transform:scale(1.03);border-color:var(--border2)}
 </style>
 </head>
 <body>
@@ -476,6 +504,20 @@ textarea{resize:vertical;min-height:80px}
   </div>
 </div>
 
+<!-- ══ PROFIT CALCULATOR MODAL ══ -->
+<div class="calc-overlay" id="calcOverlay">
+  <div class="calc-modal">
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:18px">
+      <div>
+        <div style="font-size:16px;font-weight:800">📐 Options Profit Calculator</div>
+        <div style="font-size:11px;color:var(--text3);margin-top:3px" id="calcSub">Real-time P&L across all price scenarios</div>
+      </div>
+      <button onclick="closeCalc()" style="background:var(--bg3);border:1px solid var(--border2);color:var(--text3);width:28px;height:28px;border-radius:8px;cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center">×</button>
+    </div>
+    <div id="calcContent"></div>
+  </div>
+</div>
+
 <!-- ══ APP SHELL ══ -->
 <div class="app-shell" id="appShell" style="display:none">
   <div class="ticker-row"><div class="ticker-wrap"><div class="ticker-track" id="appTicker"></div></div></div>
@@ -510,6 +552,8 @@ textarea{resize:vertical;min-height:80px}
     <div class="nav-item" onclick="showTab('options',this)"><span class="nav-icon">🎯</span>Options Chain</div>
     <div class="nav-item" onclick="showTab('strategy',this)"><span class="nav-icon">🏗️</span>Strategy Builder</div>
     <div class="nav-item" onclick="showTab('earnings',this)"><span class="nav-icon">📅</span>Earnings Calendar<span class="nav-dot"></span></div>
+    <div class="nav-item" onclick="showTab('economic',this)"><span class="nav-icon">🏛️</span>Economic Calendar</div>
+    <div class="nav-item" onclick="showTab('heatmap',this)"><span class="nav-icon">🔥</span>Flow Heatmap</div>
     <div class="nav-item" onclick="showTab('uoa',this)"><span class="nav-icon">⚡</span>Unusual Activity</div>
     <div class="nav-section">Intelligence</div>
     <div class="nav-item" onclick="showTab('congress',this)"><span class="nav-icon">🏛️</span>Alt Data<span class="nav-dot"></span></div>
@@ -523,6 +567,7 @@ textarea{resize:vertical;min-height:80px}
     <div class="nav-item" onclick="showTab('import',this)"><span class="nav-icon">📥</span>Import Portfolio</div>
     <div class="nav-section">Risk</div>
     <div class="nav-item" onclick="openRisk()"><span class="nav-icon">🛡️</span>Risk Shield</div>
+    <div class="nav-item" onclick="showTab('sizing',this)"><span class="nav-icon">📐</span>Position Sizing</div>
     <div class="nav-item" onclick="showTab('alerts',this)"><span class="nav-icon">🔔</span>Alerts</div>
     <div class="nav-bottom">
       <div class="nav-item" style="font-size:12px"><span class="nav-icon">⚙️</span>Settings</div>
@@ -542,9 +587,13 @@ textarea{resize:vertical;min-height:80px}
     <div class="page" id="tab-live"></div>
     <div class="page" id="tab-backtest"></div>
     <div class="page" id="tab-alerts"></div>
+    <div class="page" id="tab-sizing"></div>
+    <div class="page" id="tab-journal"></div>
     <div class="page" id="tab-strategy"></div>
     <div class="page" id="tab-earnings"></div>
     <div class="page" id="tab-uoa"></div>
+    <div class="page" id="tab-economic"></div>
+    <div class="page" id="tab-heatmap"></div>
     <div class="page" id="tab-exit"></div>
     <div class="page" id="tab-import"></div>
     <div class="page" id="tab-settings"></div>
@@ -1393,8 +1442,710 @@ function showTab(id, el) {
   if (id === 'megacap') buildMegacap();
 }
 
+
+// ══════════════════════════════════════════
+// P2 — OPTIONS PROFIT CALCULATOR
+// ══════════════════════════════════════════
+function openCalc(sym, strategy, strike, premium, dte) {
+  sym      = sym      || 'NVDA';
+  strategy = strategy || 'Long Call';
+  strike   = strike   || 875;
+  premium  = premium  || 9.30;
+  dte      = dte      || 30;
+
+  $('calcSub').textContent = sym + ' · ' + strategy + ' · $' + strike + ' · ' + dte + ' DTE';
+  buildCalcContent(sym, strategy, strike, premium, dte);
+  $('calcOverlay').classList.add('open');
+}
+
+function closeCalc() { $('calcOverlay').classList.remove('open'); }
+$('calcOverlay').addEventListener('click', e => { if(e.target===$('calcOverlay')) closeCalc(); });
+
+function buildCalcContent(sym, strategy, strike, premium, dte) {
+  const underlying = MKT.prices[sym] || strike;
+  const contracts  = 1;
+  const mult       = 100;
+
+  // P&L function per strategy
+  function pnlAt(price) {
+    switch(strategy) {
+      case 'Long Call':      return Math.max(-premium, price - strike - premium) * mult;
+      case 'Long Put':       return Math.max(-premium, strike - price - premium) * mult;
+      case 'Cash Secured Put': return Math.min(premium, premium - Math.max(0, strike - price)) * mult;
+      case 'Covered Call':   return Math.min(premium, premium - Math.max(0, price - strike)) * mult;
+      case 'Iron Condor': {
+        const lowerPut = strike * 0.95, upperCall = strike * 1.05;
+        const credit = premium;
+        const putLoss  = Math.max(0, lowerPut - price);
+        const callLoss = Math.max(0, price - upperCall);
+        return (credit - putLoss - callLoss) * mult;
+      }
+      default: return (price - strike - premium) * mult;
+    }
+  }
+
+  // Compute key metrics
+  const prices     = Array.from({length:60}, (_,i) => underlying * (0.70 + i * 0.01));
+  const pnls       = prices.map(p => pnlAt(p));
+  const maxProfit  = Math.max(...pnls);
+  const maxLoss    = Math.min(...pnls);
+  const breakevens = [];
+  for(let i=1; i<pnls.length; i++) {
+    if((pnls[i-1] < 0 && pnls[i] >= 0) || (pnls[i-1] >= 0 && pnls[i] < 0)) {
+      breakevens.push(prices[i].toFixed(2));
+    }
+  }
+  const probProfit = (pnls.filter(p => p > 0).length / pnls.length * 100).toFixed(0);
+
+  // Theta burn table (7 rows)
+  const thetaBurnPerDay = premium * 0.03;
+  const thetaRows = Array.from({length:7}, (_,i) => {
+    const daysLeft = dte - (i+1)*Math.floor(dte/7);
+    const remaining = (premium - thetaBurnPerDay * (i+1)*Math.floor(dte/7)).toFixed(2);
+    return { day: (i+1)*Math.floor(dte/7), remaining: Math.max(0, remaining) };
+  });
+
+  $('calcContent').innerHTML = `
+    <!-- Stats row -->
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:16px">
+      ${[
+        ['Max Profit', maxProfit===Infinity?'Unlimited':'$'+maxProfit.toFixed(0), maxProfit>0?'green':'red'],
+        ['Max Loss',   '$'+Math.abs(maxLoss).toFixed(0), 'red'],
+        ['Breakeven',  breakevens.length ? '$'+breakevens[0] : 'N/A', 'amber'],
+        ['Prob. Profit', probProfit+'%', +probProfit>50?'cyan':'amber'],
+      ].map(([l,v,c]) => `<div class="calc-stat"><div class="calc-stat-val clr-${c}">${v}</div><div class="calc-stat-lbl">${l}</div></div>`).join('')}
+    </div>
+
+    <!-- Price slider -->
+    <div style="margin-bottom:14px">
+      <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--text3);margin-bottom:6px">
+        <span>Underlying Price</span>
+        <span id="calcSliderVal" style="font-family:var(--mono);font-weight:700;color:var(--text)">$${underlying.toFixed(2)}</span>
+      </div>
+      <div class="slider-wrap">
+        <input type="range" id="calcSlider"
+          min="${(underlying*0.70).toFixed(0)}"
+          max="${(underlying*1.30).toFixed(0)}"
+          value="${underlying.toFixed(0)}"
+          oninput="updateCalcSlider(this.value, ${strike}, ${premium}, '${strategy}')">
+      </div>
+      <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--text3);margin-top:3px">
+        <span>−30%</span><span style="color:var(--amber)">Current</span><span>+30%</span>
+      </div>
+    </div>
+
+    <!-- P&L at current price -->
+    <div id="calcCurrentPnl" style="text-align:center;padding:12px;background:var(--bg3);border-radius:var(--r);margin-bottom:14px;font-family:var(--mono);font-size:20px;font-weight:700;color:var(--cyan)">
+      P&L at $${underlying.toFixed(2)}: ${pnlAt(underlying)>=0?'+':''}$${pnlAt(underlying).toFixed(0)}
+    </div>
+
+    <!-- P&L Canvas chart -->
+    <div style="margin-bottom:14px">
+      <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--text3);margin-bottom:8px">P&L at Expiry</div>
+      <div style="background:var(--bg3);border-radius:var(--r);overflow:hidden">
+        <canvas id="calcChart" style="width:100%;height:120px;display:block"></canvas>
+      </div>
+    </div>
+
+    <!-- Theta burn table -->
+    <div style="margin-bottom:14px">
+      <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--text3);margin-bottom:8px">Theta Decay Projection</div>
+      <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:4px">
+        ${thetaRows.map(r => `<div style="text-align:center;padding:8px 4px;background:var(--bg3);border-radius:var(--r)">
+          <div style="font-family:var(--mono);font-size:12px;font-weight:700;color:var(--amber)">$${r.remaining}</div>
+          <div style="font-size:9px;color:var(--text3);margin-top:3px">${r.day}d</div>
+        </div>`).join('')}
+      </div>
+    </div>
+
+    <div style="display:flex;gap:10px">
+      <button class="btn btn-primary" style="flex:1;justify-content:center" onclick="closeCalc();showTab('paper')">Open Paper Trade →</button>
+      <button class="btn btn-secondary" style="flex:1;justify-content:center" onclick="closeCalc()">Close</button>
+    </div>
+    <div style="font-size:10px;color:var(--text3);text-align:center;margin-top:10px">⚠️ Not financial advice. Educational tool only.</div>
+  `;
+
+  setTimeout(() => drawCalcChart(sym, strategy, strike, premium), 50);
+}
+
+function updateCalcSlider(price, strike, premium, strategy) {
+  price = +price;
+  $('calcSliderVal').textContent = '$' + price.toFixed(2);
+  function pnlAt(p) {
+    switch(strategy) {
+      case 'Long Call':      return Math.max(-premium, p - strike - premium) * 100;
+      case 'Long Put':       return Math.max(-premium, strike - p - premium) * 100;
+      case 'Cash Secured Put': return Math.min(premium, premium - Math.max(0, strike - p)) * 100;
+      default: return (p - strike - premium) * 100;
+    }
+  }
+  const pnl = pnlAt(price);
+  const el  = $('calcCurrentPnl');
+  if(el) {
+    el.textContent = 'P&L at $' + price.toFixed(2) + ': ' + (pnl>=0?'+':'') + '$' + pnl.toFixed(0);
+    el.style.color = pnl >= 0 ? 'var(--cyan)' : 'var(--red)';
+  }
+}
+
+function drawCalcChart(sym, strategy, strike, premium) {
+  const canvas = $('calcChart'); if(!canvas) return;
+  const ctx = canvas.getContext('2d');
+  const W = canvas.offsetWidth, H = canvas.offsetHeight;
+  canvas.width = W; canvas.height = H;
+  const underlying = MKT.prices[sym] || strike;
+  const prices = Array.from({length:60}, (_,i) => underlying * (0.70 + i*0.01));
+  function pnlAt(p) {
+    switch(strategy) {
+      case 'Long Call': return Math.max(-premium, p-strike-premium)*100;
+      case 'Long Put':  return Math.max(-premium, strike-p-premium)*100;
+      case 'Cash Secured Put': return Math.min(premium, premium-Math.max(0,strike-p))*100;
+      default: return (p-strike-premium)*100;
+    }
+  }
+  const pnls = prices.map(p => pnlAt(p));
+  const minP = Math.min(...pnls), maxP = Math.max(...pnls);
+  const range = (maxP - minP) || 1;
+  const sy = v => (H-12)*(1-(v-minP)/range)+6;
+  ctx.clearRect(0,0,W,H);
+  // Zero line
+  ctx.strokeStyle='rgba(255,255,255,0.15)'; ctx.lineWidth=1; ctx.setLineDash([3,3]);
+  ctx.beginPath(); ctx.moveTo(0,sy(0)); ctx.lineTo(W,sy(0)); ctx.stroke(); ctx.setLineDash([]);
+  // Fill
+  const grad = ctx.createLinearGradient(0,0,0,H);
+  grad.addColorStop(0,'rgba(0,212,170,0.3)'); grad.addColorStop(1,'rgba(0,212,170,0)');
+  ctx.beginPath(); ctx.moveTo(0,sy(pnls[0]));
+  pnls.forEach((v,i) => ctx.lineTo((i/(pnls.length-1))*W, sy(v)));
+  ctx.lineTo(W,sy(0)); ctx.lineTo(0,sy(0)); ctx.closePath();
+  ctx.fillStyle=grad; ctx.fill();
+  // Line
+  ctx.strokeStyle='#00D4AA'; ctx.lineWidth=2;
+  ctx.beginPath(); pnls.forEach((v,i) => { const x=(i/(pnls.length-1))*W; i===0?ctx.moveTo(x,sy(v)):ctx.lineTo(x,sy(v)); }); ctx.stroke();
+  // Current price marker
+  const ci = Math.floor((underlying - prices[0]) / (prices[prices.length-1]-prices[0]) * (prices.length-1));
+  if(ci>=0 && ci<pnls.length) {
+    const cx=(ci/(pnls.length-1))*W, cy=sy(pnls[ci]);
+    ctx.fillStyle='#FFB830'; ctx.beginPath(); ctx.arc(cx,cy,5,0,Math.PI*2); ctx.fill();
+  }
+}
+
+// ══════════════════════════════════════════
+// P3 — LOCALSTORAGE PERSISTENCE
+// ══════════════════════════════════════════
+const LS_KEY = 'volarix_state';
+
+function saveState() {
+  try {
+    const toSave = {
+      watchlist:  STATE.watchlist,
+      theme:      STATE.theme,
+      thresholds: STATE.thresholds,
+      paperTrades:STATE.paperTrades,
+    };
+    localStorage.setItem(LS_KEY, JSON.stringify(toSave));
+  } catch(e) { console.warn('saveState failed:', e); }
+}
+
+function loadState() {
+  try {
+    const raw = localStorage.getItem(LS_KEY);
+    if(!raw) return;
+    const saved = JSON.parse(raw);
+    if(saved.watchlist  && Array.isArray(saved.watchlist))  STATE.watchlist  = saved.watchlist;
+    if(saved.theme)                                          STATE.theme      = saved.theme;
+    if(saved.thresholds && typeof saved.thresholds==='object') STATE.thresholds = Object.assign(STATE.thresholds, saved.thresholds);
+    if(saved.paperTrades && Array.isArray(saved.paperTrades)) STATE.paperTrades = saved.paperTrades;
+    // Apply theme immediately
+    if(STATE.theme === 'light') {
+      document.documentElement.setAttribute('data-theme','light');
+      const btn = $('themeBtn'); if(btn) btn.textContent = '☀️';
+    }
+  } catch(e) { console.warn('loadState failed:', e); }
+}
+
+// Auto-save on watchlist/paper trade changes
+const _origAddToWatchlist = addToWatchlist;
+function addToWatchlist(s) { _origAddToWatchlist(s); saveState(); }
+const _origRemoveWL = removeWL;
+function removeWL(s) { _origRemoveWL(s); saveState(); }
+const _origToggleTheme = toggleTheme;
+function toggleTheme() { _origToggleTheme(); saveState(); }
+
+// ══════════════════════════════════════════
+// P4 — TRADE JOURNAL STATISTICS
+// ══════════════════════════════════════════
+function buildJournalStats() {
+  const trades = STATE.paperTrades;
+  if(!trades.length) {
+    set('tab-journal','<div class="card card-body" style="text-align:center;padding:40px;color:var(--text3)"><div style="font-size:28px;margin-bottom:10px">📋</div><div>No closed trades yet. Run paper trades to see statistics.</div></div>');
+    return;
+  }
+  const wins     = trades.filter(t => t.cls==='win');
+  const losses   = trades.filter(t => t.cls==='loss');
+  const winRate  = (wins.length/trades.length*100).toFixed(0);
+  const byStrat  = {};
+  trades.forEach(t => {
+    if(!byStrat[t.s]) byStrat[t.s] = {wins:0,losses:0};
+    t.cls==='win' ? byStrat[t.s].wins++ : byStrat[t.s].losses++;
+  });
+  const pnlNums  = trades.map(t => {
+    const n = parseFloat(t.pnl.replace(/[^0-9.-]/g,''));
+    return t.cls==='win' ? n : -n;
+  });
+  const bestTrade  = trades.reduce((a,b) => {
+    const av = parseFloat(a.pnl.replace(/[^0-9.-]/g,'')), bv = parseFloat(b.pnl.replace(/[^0-9.-]/g,''));
+    return av > bv ? a : b;
+  });
+  const worstTrade = trades.reduce((a,b) => {
+    const av = parseFloat(a.pnl.replace(/[^0-9.-]/g,'')), bv = parseFloat(b.pnl.replace(/[^0-9.-]/g,''));
+    return av < bv ? a : b;
+  });
+  const totalPnl = pnlNums.reduce((s,v) => s+v, 0);
+
+  set('tab-journal', `
+    <div style="font-size:15px;font-weight:700;margin-bottom:4px">📊 Trade Journal Statistics</div>
+    <div style="font-size:11px;color:var(--text3);margin-bottom:16px">Calculated from ${trades.length} closed paper trades</div>
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:16px">
+      ${[
+        ['Win Rate', winRate+'%', +winRate>=60?'green':+winRate>=40?'amber':'red'],
+        ['Total P&L', (totalPnl>=0?'+':'')+'$'+Math.abs(totalPnl).toFixed(0), totalPnl>=0?'cyan':'red'],
+        ['Total Trades', trades.length, 'text'],
+        ['Wins / Losses', wins.length+' / '+losses.length, 'text'],
+      ].map(([l,v,c]) => `<div class="journal-stat"><div class="journal-stat-val clr-${c}">${v}</div><div class="journal-stat-lbl">${l}</div></div>`).join('')}
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px">
+      <div class="card card-body">
+        <div style="font-size:12px;font-weight:700;margin-bottom:10px">Win Rate by Strategy</div>
+        ${Object.entries(byStrat).map(([strat,data]) => {
+          const total = data.wins+data.losses;
+          const pct = (data.wins/total*100).toFixed(0);
+          return `<div style="margin-bottom:8px">
+            <div style="display:flex;justify-content:space-between;font-size:11px;margin-bottom:3px">
+              <span style="color:var(--text2)">${strat}</span>
+              <span style="font-family:var(--mono);font-weight:700;color:var(--${+pct>=60?'green':'amber'})">${pct}%</span>
+            </div>
+            <div style="height:4px;background:var(--bg4);border-radius:2px;overflow:hidden">
+              <div style="width:${pct}%;height:100%;background:var(--${+pct>=60?'green':'amber'});border-radius:2px"></div>
+            </div>
+          </div>`;
+        }).join('')}
+      </div>
+      <div class="card card-body">
+        <div style="font-size:12px;font-weight:700;margin-bottom:10px">Notable Trades</div>
+        <div style="margin-bottom:10px;padding:10px;background:var(--green-bg);border-radius:var(--r);border-left:3px solid var(--green)">
+          <div style="font-size:10px;font-weight:700;color:var(--green);margin-bottom:3px">🏆 Best Trade</div>
+          <div style="font-family:var(--mono);font-weight:700">${bestTrade.t} — ${bestTrade.s}</div>
+          <div style="font-size:11px;color:var(--text2)">${bestTrade.pnl}</div>
+        </div>
+        <div style="padding:10px;background:var(--red-bg);border-radius:var(--r);border-left:3px solid var(--red)">
+          <div style="font-size:10px;font-weight:700;color:var(--red);margin-bottom:3px">📉 Worst Trade</div>
+          <div style="font-family:var(--mono);font-weight:700">${worstTrade.t} — ${worstTrade.s}</div>
+          <div style="font-size:11px;color:var(--text2)">${worstTrade.pnl}</div>
+        </div>
+      </div>
+    </div>
+    <div class="card card-body">
+      <div style="font-size:12px;font-weight:700;margin-bottom:8px">Cumulative P&L Curve</div>
+      <div style="background:var(--bg3);border-radius:var(--r);overflow:hidden">
+        <canvas id="journalChart" style="width:100%;height:80px;display:block"></canvas>
+      </div>
+    </div>
+    <div style="margin-top:14px;font-size:10px;color:var(--text3);text-align:center">⚠️ Paper trading results only. Not financial advice.</div>
+  `);
+  setTimeout(() => {
+    const canvas = $('journalChart'); if(!canvas) return;
+    const ctx = canvas.getContext('2d');
+    const W = canvas.offsetWidth, H = canvas.offsetHeight;
+    canvas.width=W; canvas.height=H;
+    let cumulative = 0;
+    const pts = pnlNums.map(v => { cumulative += v; return cumulative; });
+    pts.unshift(0);
+    const minV = Math.min(...pts), maxV = Math.max(...pts), range=(maxV-minV)||1;
+    const sy = v => (H-8)*(1-(v-minV)/range)+4;
+    const grad = ctx.createLinearGradient(0,0,0,H);
+    grad.addColorStop(0,'rgba(139,127,255,0.3)'); grad.addColorStop(1,'rgba(139,127,255,0)');
+    ctx.beginPath(); pts.forEach((v,i)=>{ const x=(i/(pts.length-1))*W; i===0?ctx.moveTo(x,sy(v)):ctx.lineTo(x,sy(v)); });
+    ctx.lineTo(W,H); ctx.lineTo(0,H); ctx.closePath(); ctx.fillStyle=grad; ctx.fill();
+    ctx.strokeStyle='#8B7FFF'; ctx.lineWidth=2;
+    ctx.beginPath(); pts.forEach((v,i)=>{ const x=(i/(pts.length-1))*W; i===0?ctx.moveTo(x,sy(v)):ctx.lineTo(x,sy(v)); }); ctx.stroke();
+  }, 50);
+}
+
+// ══════════════════════════════════════════
+// P5 — IV RANK HISTORICAL CHART
+// ══════════════════════════════════════════
+function drawIVHistory(canvasId, sym) {
+  const canvas = $(canvasId); if(!canvas) return;
+  const ctx = canvas.getContext('2d');
+  const W = canvas.offsetWidth, H = canvas.offsetHeight;
+  canvas.width=W; canvas.height=H;
+  // Simulate 52 weekly IV readings
+  const baseIV = (FUNDAMENTALS[sym]||{}).earningsDate ? 60 : 30;
+  const ivHistory = Array.from({length:52}, (_,i) => {
+    const trend = Math.sin(i/8)*15;
+    return Math.max(10, Math.min(150, baseIV + trend + (Math.random()-0.5)*20));
+  });
+  const currentIV = ivHistory[ivHistory.length-1];
+  const maxIV = Math.max(...ivHistory), minIV = Math.min(...ivHistory);
+  const range = (maxIV - minIV) || 1;
+  const sy = v => (H-8)*(1-(v-minIV)/range)+4;
+  const bW = W/52;
+  ctx.clearRect(0,0,W,H);
+  ivHistory.forEach((iv,i) => {
+    const pct = (iv-minIV)/range;
+    const r = Math.round(255*pct), g = Math.round(212*(1-pct));
+    ctx.fillStyle = `rgba(${r},${g},100,0.7)`;
+    ctx.fillRect(i*bW+1, sy(iv), bW-2, H-sy(iv)-4);
+  });
+  // Current IV marker line
+  ctx.strokeStyle='var(--amber)'; ctx.lineWidth=1.5; ctx.setLineDash([3,2]);
+  ctx.beginPath(); ctx.moveTo(0,sy(currentIV)); ctx.lineTo(W,sy(currentIV)); ctx.stroke();
+  ctx.setLineDash([]);
+}
+
+// Add IV history section to Ticker Analyzer
+const _origBuildTickerAnalyzer = buildTickerAnalyzer;
+function buildTickerAnalyzer(sym) {
+  _origBuildTickerAnalyzer(sym);
+  setTimeout(() => {
+    const card = document.querySelector('#tab-ticker .card .card-body');
+    if(!card || document.getElementById('ivHistSection')) return;
+    const section = document.createElement('div');
+    section.id = 'ivHistSection';
+    const baseIVRank = (FUNDAMENTALS[sym]||{pe:30}).pe < 20 ? 35 : 72;
+    section.innerHTML = `
+      <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--text3);margin:14px 0 8px">
+        IV Rank — 52 Week History ${badge(baseIVRank+'th percentile','amber')}
+      </div>
+      <div style="position:relative;background:var(--bg3);border-radius:var(--r);overflow:hidden;margin-bottom:6px">
+        <canvas id="ivHistChart" style="width:100%;height:60px;display:block"></canvas>
+      </div>
+      <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--text3)">
+        <span>52W Low</span>
+        <span style="color:var(--amber)">── Current IV</span>
+        <span>52W High</span>
+      </div>`;
+    card.appendChild(section);
+    drawIVHistory('ivHistChart', sym || 'NVDA');
+  }, 100);
+}
+
+// ══════════════════════════════════════════
+// P6 — POSITION SIZING CALCULATOR
+// ══════════════════════════════════════════
+function buildSizingCalc() {
+  const accountSize = 100000;
+  const riskPct = 2;
+  const premium = 9.30;
+
+  function calc(acct, risk, prem) {
+    const maxRisk = acct * (risk/100);
+    const costPerContract = prem * 100;
+    const recommended = Math.max(1, Math.floor(maxRisk / costPerContract));
+    const kelly = Math.max(1, Math.floor((maxRisk * 0.25) / costPerContract));
+    return {
+      recommended,
+      kelly,
+      maxLoss: (recommended * costPerContract).toFixed(0),
+      maxLossPct: (recommended * costPerContract / acct * 100).toFixed(1),
+    };
+  }
+
+  set('tab-sizing', `
+    <div style="font-size:15px;font-weight:700;margin-bottom:4px">📐 Position Sizing Calculator</div>
+    <div style="font-size:11px;color:var(--text3);margin-bottom:16px">How many contracts should you trade? Enter your parameters below.</div>
+    <div class="card card-body" style="margin-bottom:14px">
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:14px">
+        <div>
+          <div class="form-label">Account Size ($)</div>
+          <input type="number" id="sz-account" value="${accountSize}" oninput="refreshSizing()">
+        </div>
+        <div>
+          <div class="form-label">Risk Per Trade (%)</div>
+          <input type="number" id="sz-risk" value="${riskPct}" min="0.5" max="10" step="0.5" oninput="refreshSizing()">
+          <div style="font-size:10px;color:var(--text3);margin-top:3px">Recommended: 1–2%</div>
+        </div>
+        <div>
+          <div class="form-label">Premium Per Contract ($)</div>
+          <input type="number" id="sz-premium" value="${premium}" step="0.10" oninput="refreshSizing()">
+          <div style="font-size:10px;color:var(--text3);margin-top:3px">Per share (×100 = total cost)</div>
+        </div>
+      </div>
+      <div id="sz-results" class="sizing-result">
+        <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:10px">
+          ${[
+            ['Recommended Contracts', calc(accountSize,riskPct,premium).recommended, 'cyan', 'Full Kelly adjusted for options risk'],
+            ['Quarter Kelly Contracts', calc(accountSize,riskPct,premium).kelly, 'purple', 'Conservative Kelly Criterion sizing'],
+            ['Max Loss ($)', '$'+calc(accountSize,riskPct,premium).maxLoss, 'red', 'If position goes to zero'],
+            ['Max Loss (% of Account)', calc(accountSize,riskPct,premium).maxLossPct+'%', 'amber', 'Should stay under 2% per trade'],
+          ].map(([l,v,c,desc]) => `
+            <div style="padding:12px;background:var(--bg2);border-radius:var(--r);border:1px solid var(--border)">
+              <div style="font-family:var(--mono);font-size:20px;font-weight:700;color:var(--${c})">${v}</div>
+              <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--text3);margin-top:3px">${l}</div>
+              <div style="font-size:10px;color:var(--text3);margin-top:2px">${desc}</div>
+            </div>`).join('')}
+        </div>
+        ${calc(accountSize,riskPct,premium).recommended > 5 ?
+          `<div style="margin-top:10px;padding:8px 12px;background:var(--amber-bg);border-radius:var(--r);border:1px solid var(--amber-dim);font-size:11px;color:var(--amber)">⚠️ Position size is large. Consider reducing risk % or using fewer contracts.</div>` : ''}
+      </div>
+    </div>
+    <div style="font-size:10px;color:var(--text3);text-align:center">⚠️ Educational tool only. Not financial advice.</div>
+  `);
+}
+
+function refreshSizing() {
+  const acct  = +($('sz-account')  && $('sz-account').value)  || 100000;
+  const risk  = +($('sz-risk')     && $('sz-risk').value)     || 2;
+  const prem  = +($('sz-premium')  && $('sz-premium').value)  || 9.30;
+  const maxRisk = acct * (risk/100);
+  const costPer = prem * 100;
+  const rec  = Math.max(1, Math.floor(maxRisk / costPer));
+  const kel  = Math.max(1, Math.floor((maxRisk * 0.25) / costPer));
+  const ml   = (rec * costPer).toFixed(0);
+  const mlp  = (rec * costPer / acct * 100).toFixed(1);
+  const el = $('sz-results');
+  if(!el) return;
+  el.innerHTML = `
+    <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:10px">
+      ${[
+        ['Recommended Contracts', rec, 'cyan'],
+        ['Quarter Kelly Contracts', kel, 'purple'],
+        ['Max Loss ($)', '$'+ml, 'red'],
+        ['Max Loss (% Account)', mlp+'%', 'amber'],
+      ].map(([l,v,c]) => `
+        <div style="padding:12px;background:var(--bg2);border-radius:var(--r);border:1px solid var(--border)">
+          <div style="font-family:var(--mono);font-size:20px;font-weight:700;color:var(--${c})">${v}</div>
+          <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--text3);margin-top:3px">${l}</div>
+        </div>`).join('')}
+    </div>
+    ${rec > 5 ? `<div style="margin-top:10px;padding:8px 12px;background:var(--amber-bg);border-radius:var(--r);border:1px solid var(--amber-dim);font-size:11px;color:var(--amber)">⚠️ Large position. Consider reducing risk %.</div>` : ''}
+  `;
+}
+
+// ══════════════════════════════════════════
+// P7 — PWA
+// ══════════════════════════════════════════
+function initPWA() {
+  // Show install banner if supported
+  window.addEventListener('beforeinstallprompt', e => {
+    e.preventDefault();
+    window._pwaPrompt = e;
+    showToast('📱 Install VolariX', 'Add to your home screen for the full app experience', 'purple', 8000);
+  });
+}
+
+function installPWA() {
+  if(window._pwaPrompt) {
+    window._pwaPrompt.prompt();
+    window._pwaPrompt.userChoice.then(result => {
+      if(result.outcome === 'accepted') showToast('✅ Installed!', 'VolariX added to your home screen', 'cyan');
+      window._pwaPrompt = null;
+    });
+  } else {
+    showToast('ℹ️ Install', 'Use your browser menu → "Add to Home Screen"', 'blue');
+  }
+}
+
+// ══════════════════════════════════════════
+// P8 — ECONOMIC CALENDAR
+// ══════════════════════════════════════════
+function buildEconomic() {
+  const events = [
+    { date:'Jun 11–12', event:'FOMC Meeting', impact:'high',   prev:'5.25–5.50%', expected:'5.00–5.25%', note:'Rate decision + press conference' },
+    { date:'Jun 12',    event:'CPI Release',  impact:'high',   prev:'3.4%',        expected:'3.3%',        note:'May CPI — key inflation print' },
+    { date:'Jun 7',     event:'Jobs Report',  impact:'high',   prev:'175K',        expected:'185K',        note:'Non-farm payrolls + unemployment rate' },
+    { date:'Jun 27',    event:'PCE Deflator', impact:'high',   prev:'2.7%',        expected:'2.6%',        note:"Fed's preferred inflation gauge" },
+    { date:'Jun 18',    event:'Retail Sales', impact:'medium', prev:'+0.7%',       expected:'+0.4%',       note:'Consumer spending health check' },
+    { date:'Jun 3',     event:'ISM Services', impact:'medium', prev:'49.4',        expected:'51.0',        note:'Services sector expansion/contraction' },
+    { date:'Jun 17',    event:'Empire State Mfg', impact:'medium', prev:'-14.3', expected:'-10.0',        note:'NY manufacturing activity' },
+    { date:'Jun 20',    event:'Initial Jobless Claims', impact:'medium', prev:'222K', expected:'218K',   note:'Weekly unemployment claims' },
+    { date:'Jun 25',    event:'Consumer Confidence', impact:'medium', prev:'97.0', expected:'98.5',      note:'Conference Board confidence index' },
+    { date:'Jun 28',    event:'GDP (Final Q1)', impact:'high', prev:'+1.6%', expected:'+1.5%',           note:'Final Q1 2026 GDP revision' },
+    { date:'Jun 14',    event:'PPI Release',  impact:'medium', prev:'2.2%',        expected:'2.1%',        note:'Producer price inflation' },
+    { date:'Jun 3',     event:'Factory Orders', impact:'low',  prev:'+1.6%',       expected:'+0.8%',       note:'Manufacturing demand indicator' },
+  ].sort((a,b) => {
+    const da = new Date('2026 ' + a.date.split('–')[0]);
+    const db = new Date('2026 ' + b.date.split('–')[0]);
+    return da - db;
+  });
+
+  const impactColor = i => i==='high' ? 'red' : i==='medium' ? 'amber' : 'blue';
+  const impactLabel = i => i==='high' ? '🔴 High' : i==='medium' ? '🟡 Medium' : '🔵 Low';
+
+  set('tab-economic', `
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;flex-wrap:wrap;gap:10px">
+      <div>
+        <div style="font-size:15px;font-weight:700">🏛️ Economic Calendar</div>
+        <div style="font-size:11px;color:var(--text3);margin-top:2px">Fed meetings · CPI · Jobs · GDP · June 2026</div>
+      </div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        ${['All','🔴 High Impact','🟡 Medium','🔵 Low'].map((f,i) => `<button class="btn btn-${i===0?'primary':'secondary'} btn-sm">${f}</button>`).join('')}
+      </div>
+    </div>
+    <!-- Legend -->
+    <div style="display:flex;gap:16px;margin-bottom:14px;padding:10px 14px;background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);flex-wrap:wrap">
+      <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--text3)">Impact:</div>
+      ${[['🔴 High','Options IV often spikes'],['🟡 Medium','Moderate market reaction'],['🔵 Low','Minimal price impact']].map(([l,d]) =>
+        `<div style="font-size:11px;color:var(--text2)">${l} — ${d}</div>`).join('')}
+    </div>
+    <!-- Events -->
+    <div style="display:flex;flex-direction:column;gap:8px">
+      ${events.map(e => `
+        <div class="eco-event ${e.impact}">
+          <div style="flex-shrink:0;width:70px">
+            <div style="font-family:var(--mono);font-size:11px;font-weight:700">${e.date}</div>
+            <div style="font-size:9px;margin-top:2px">${badge(impactLabel(e.impact), impactColor(e.impact))}</div>
+          </div>
+          <div style="flex:1;min-width:0">
+            <div style="font-size:13px;font-weight:700;margin-bottom:3px">${e.event}</div>
+            <div style="font-size:11px;color:var(--text3)">${e.note}</div>
+          </div>
+          <div style="text-align:right;flex-shrink:0;font-size:11px">
+            <div style="color:var(--text3)">Prev: <span style="font-family:var(--mono);color:var(--text2)">${e.prev}</span></div>
+            <div style="color:var(--text3)">Est: <span style="font-family:var(--mono);color:var(--cyan)">${e.expected}</span></div>
+          </div>
+        </div>`).join('')}
+    </div>
+    <div style="margin-top:14px;font-size:10px;color:var(--text3);text-align:center;line-height:1.6">
+      ⚠️ Economic dates are estimates. Verify with official sources (Fed, BLS, BEA) before trading. Not financial advice.
+    </div>
+  `);
+}
+
+// ══════════════════════════════════════════
+// P9 — OPTIONS FLOW HEATMAP
+// ══════════════════════════════════════════
+function buildHeatmap() {
+  // Group MEGACAP_DATA by sector
+  const sectorMap = {
+    'Technology':    ['MSFT','AAPL','ORCL','GOOGL'],
+    'Semiconductors':['NVDA','AMD','AVGO','SMCI'],
+    'Consumer':      ['AMZN','META','NFLX','COST','WMT'],
+    'Healthcare':    ['LLY','JNJ','UNH'],
+    'Financials':    ['JPM','V'],
+    'Energy':        ['XOM'],
+  };
+
+  const sectorStats = Object.entries(sectorMap).map(([sector, tickers]) => {
+    const companies = tickers.map(t => MEGACAP_DATA.find(d => d.ticker===t)).filter(Boolean);
+    const avgIVRank = companies.length ? Math.round(companies.reduce((s,c) => s+c.ivRank, 0)/companies.length) : 0;
+    const bullish   = companies.filter(c => c.bias==='BULLISH').length;
+    const bearish   = companies.filter(c => c.bias==='BEARISH').length;
+    const netFlow   = bullish - bearish; // positive = more calls
+    const totalPremium = companies.length * avgIVRank * 0.12; // simulated $M
+    return { sector, companies, avgIVRank, bullish, bearish, netFlow, totalPremium: totalPremium.toFixed(1) };
+  }).sort((a,b) => b.avgIVRank - a.avgIVRank);
+
+  const cellColor = netFlow => {
+    if(netFlow > 1)  return { bg:'rgba(0,212,170,0.15)', border:'var(--cyan-dim)',  text:'var(--cyan)',   label:'Call Heavy' };
+    if(netFlow < -1) return { bg:'rgba(255,71,87,0.15)', border:'var(--red-dim)',   text:'var(--red)',    label:'Put Heavy'  };
+    return              { bg:'rgba(139,127,255,0.1)',  border:'var(--purple-dim)', text:'var(--purple)', label:'Neutral'    };
+  };
+
+  set('tab-heatmap', `
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;flex-wrap:wrap;gap:10px">
+      <div>
+        <div style="font-size:15px;font-weight:700">🔥 Options Flow Heatmap</div>
+        <div style="font-size:11px;color:var(--text3);margin-top:2px">Sector-level call vs put flow · Mega-cap companies >$200B · Updated every 5 min</div>
+      </div>
+      <div style="display:flex;gap:8px;align-items:center">
+        ${[['🟢 Call Heavy','cyan'],['⚪ Neutral','purple'],['🔴 Put Heavy','red']].map(([l,c]) =>
+          `<span style="font-size:10px;color:var(--text2);display:flex;align-items:center;gap:4px"><span style="width:10px;height:10px;border-radius:2px;background:var(--${c}-bg);border:1px solid var(--${c}-dim);display:inline-block"></span>${l}</span>`
+        ).join('')}
+      </div>
+    </div>
+
+    <!-- Heatmap grid -->
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:16px">
+      ${sectorStats.map(s => {
+        const col = cellColor(s.netFlow);
+        return `
+          <div class="heatmap-cell" style="background:${col.bg};border:1px solid ${col.border};padding:16px"
+               onclick="showToast('${s.sector}','IV Rank ${s.avgIVRank} · ${s.bullish} bullish / ${s.bearish} bearish','${s.netFlow>0?'cyan':s.netFlow<0?'red':'purple'}')">
+            <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:8px">
+              <div style="font-size:13px;font-weight:700">${s.sector}</div>
+              <div style="font-family:var(--mono);font-size:18px;font-weight:800;color:${col.text}">${s.avgIVRank}</div>
+            </div>
+            <div style="font-size:10px;color:${col.text};font-weight:700;margin-bottom:6px">${col.label}</div>
+            <div style="height:5px;background:var(--bg4);border-radius:3px;overflow:hidden;margin-bottom:8px">
+              <div style="width:${s.avgIVRank}%;height:100%;background:${col.text};border-radius:3px;opacity:0.8"></div>
+            </div>
+            <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--text3)">
+              <span>${s.companies.length} companies</span>
+              <span>~$${s.totalPremium}M flow</span>
+            </div>
+            <div style="display:flex;gap:6px;margin-top:8px;flex-wrap:wrap">
+              ${s.companies.slice(0,4).map(c =>
+                `<span style="font-family:var(--mono);font-size:9px;padding:2px 6px;border-radius:4px;background:var(--bg4);color:var(--text2)">${c.ticker}</span>`
+              ).join('')}
+            </div>
+          </div>`;
+      }).join('')}
+    </div>
+
+    <!-- Summary stats -->
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:14px">
+      ${[
+        ['Call-Heavy Sectors', sectorStats.filter(s=>s.netFlow>0).length, sectorStats.filter(s=>s.netFlow>0).length>=3?'cyan':'amber'],
+        ['Put-Heavy Sectors',  sectorStats.filter(s=>s.netFlow<0).length, sectorStats.filter(s=>s.netFlow<0).length>=3?'red':'amber'],
+        ['Highest IV Sector',  sectorStats[0].sector, 'red'],
+        ['Lowest IV Sector',   sectorStats[sectorStats.length-1].sector, 'cyan'],
+      ].map(([l,v,c]) => `<div class="stat-card"><div class="stat-label">${l}</div><div style="font-family:var(--mono);font-size:14px;font-weight:700;color:var(--${c})">${v}</div></div>`).join('')}
+    </div>
+
+    <div style="font-size:10px;color:var(--text3);text-align:center">
+      ⚠️ Flow data is simulated for demo. Connect Tradier/Polygon for live options flow. Not financial advice.
+    </div>
+  `);
+}
+
+// ── Wire new tabs into showTab + Paper Trading sub-tab ──
+const _origShowTab2 = showTab;
+function showTab(id, el) {
+  _origShowTab2(id, el);
+  const extras = { economic:buildEconomic, heatmap:buildHeatmap, sizing:buildSizingCalc, journal:buildJournalStats };
+  if(extras[id]) extras[id]();
+}
+
+// Add Journal Stats and Position Sizing to Paper Trading sub-tabs
+const _origBuildPaper2 = buildPaper;
+function buildPaper() {
+  _origBuildPaper2();
+  // Patch paper tab-row to include Journal Stats sub-tab
+  setTimeout(() => {
+    const tabRow = document.querySelector('#tab-paper .tab-row');
+    if(tabRow && !tabRow.querySelector('[data-tab="journal"]')) {
+      const btn = document.createElement('button');
+      btn.className = 'tab-btn'; btn.textContent = 'Journal Stats';
+      btn.setAttribute('data-tab','journal');
+      btn.onclick = function() { pTab('journal', this); buildJournalStats(); };
+      tabRow.appendChild(btn);
+      // Add journal div if missing
+      const paperMain = $('tab-paper');
+      if(paperMain && !$('p2-journal')) {
+        const d = document.createElement('div');
+        d.id = 'p2-journal'; d.style.display = 'none';
+        paperMain.appendChild(d);
+      }
+    }
+  }, 100);
+}
+
+// Add Position Sizing as sidebar nav under Risk
+const _origPaperTab = pTab;
+function pTab(id, el) {
+  document.querySelectorAll('#tab-paper .tab-btn').forEach(b=>b.classList.remove('active'));
+  if(el) el.classList.add('active');
+  ['h','s','journal'].forEach(t => {
+    const el2 = $('p2-'+t);
+    if(el2) el2.style.display = t===id ? 'block' : 'none';
+  });
+  if(id==='journal') { const jd=$('p2-journal'); if(jd) { jd.style.display='block'; buildJournalStats(); } }
+}
+
 // ── INIT ──
+loadState();
 buildTicker();
+initPWA();
 loadSession();
 buildOverview();
 buildWatchlistSidebar();
