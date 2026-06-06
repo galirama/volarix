@@ -1,0 +1,7 @@
+{
+  "outputDirectory": "app",
+  "rewrites": [
+    { "source": "/app",   "destination": "/app.html" },
+    { "source": "/login", "destination": "/login.html" }
+  ]
+}
