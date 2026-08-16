@@ -24,22 +24,29 @@ Risk-first options trading intelligence platform.
 ## Repo Structure
 ```
 volarix/
-├── CLAUDE.md              ← YOU ARE HERE — read every session
-├── README.md              ← Deploy steps for humans
-├── app/
-│   ├── index.html         ← Landing page (~23KB)
-│   ├── login.html         ← Auth + MFA (~20KB)
-│   ├── app.html           ← Full dashboard (~192KB, LIMIT 200KB)
-│   └── netlify.toml       ← Netlify config
-└── docs/
-    ├── ARCHITECTURE.md    ← System architecture + data flows
-    ├── DB_SCHEMA.md       ← PostgreSQL + RLS schema
+├── CLAUDE.md              ← Root AI instructions — read first every session
+├── README.md              ← Deploy steps & human guide
+├── .specs/                ← Modular use-case specifications & state
+│   ├── AGENTS.md          ← Agent coding instructions & rules
+│   ├── index.md           ← Master catalog of all 8 use-case specs
+│   ├── specs.md           ← Master specification landing page
+│   ├── tasks.md           ← Authoritative build log & master task list
+│   └── use-cases/         ← Individual feature specifications
+│       ├── 01-auth-and-shell.md
+│       ├── 02-realtime-data-p1.md
+│       ├── 03-screener-and-megacap.md
+│       ├── 04-ticker-and-options.md
+│       ├── 05-strategy-and-risk.md
+│       ├── 06-paper-trading-journal.md
+│       ├── 07-calendars-and-altdata.md
+│       └── 08-email-digest-p10.md
+└── docs/                  ← Architecture, schema & design guidelines
+    ├── ARCHITECTURE.md    ← System architecture & Next.js migration
+    ├── DB_SCHEMA.md       ← Supabase PostgreSQL schema
     ├── LEGAL.md           ← Disclaimer requirements
-    ├── PRODUCT.md         ← Vision + phase roadmap
-    ├── PROJECT_STATUS.md  ← What's done / in progress / todo
-    ├── TASK_QUEUE.md      ← Prioritised backlog + acceptance criteria
-    ├── TOKEN_GUIDELINES.md ← Coding rules + efficiency patterns
-    └── UI_GUIDELINES.md   ← Design system + component patterns
+    ├── PRODUCT.md         ← Product vision & phases
+    ├── TOKEN_GUIDELINES.md ← Code efficiency & HTML literal rules
+    └── UI_GUIDELINES.md   ← Design system & color tokens
 ```
 
 ---

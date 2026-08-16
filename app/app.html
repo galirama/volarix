@@ -13,6 +13,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>VolariX — Dashboard</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="manifest" href="manifest.json">
 <link href="https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;0,500&family=Bricolage+Grotesque:opsz,wght@12..96,300;12..96,400;12..96,500;12..96,600;12..96,700;12..96,800&display=swap" rel="stylesheet">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -549,6 +550,7 @@ textarea{resize:vertical;min-height:80px}
     <div class="nav-item" onclick="showTab('ticker',this)"><span class="nav-icon">🔍</span>Ticker Analyzer</div>
     <div class="nav-item" onclick="showTab('screener',this)"><span class="nav-icon">📡</span>IV Screener</div>
     <div class="nav-item" onclick="showTab('megacap',this)"><span class="nav-icon">🏦</span>Mega-Cap IV Screener</div>
+    <div class="nav-item" onclick="showTab('checklist',this)"><span class="nav-icon">✅</span>Fundamental Screener</div>
     <div class="nav-item" onclick="showTab('options',this)"><span class="nav-icon">🎯</span>Options Chain</div>
     <div class="nav-item" onclick="showTab('strategy',this)"><span class="nav-icon">🏗️</span>Strategy Builder</div>
     <div class="nav-item" onclick="showTab('earnings',this)"><span class="nav-icon">📅</span>Earnings Calendar<span class="nav-dot"></span></div>
@@ -579,6 +581,7 @@ textarea{resize:vertical;min-height:80px}
     <div class="page" id="tab-ticker"></div>
     <div class="page" id="tab-screener"></div>
     <div class="page" id="tab-megacap"></div>
+    <div class="page" id="tab-checklist"></div>
     <div class="page" id="tab-options"></div>
     <div class="page" id="tab-congress"></div>
     <div class="page" id="tab-signals"></div>
@@ -2098,11 +2101,160 @@ function buildHeatmap() {
   `);
 }
 
+// ══════════════════════════════════════════
+// FUNDAMENTAL CHECKLIST SCREENER
+// ══════════════════════════════════════════
+let currentChecklistResults = [];
+
+function buildChecklistScreener() {
+  set('tab-checklist', `
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;flex-wrap:wrap;gap:8px">
+      <div><div style="font-size:20px;font-weight:800">✅ Fundamental Screener</div><div style="font-size:11px;color:var(--text2)">Multi-Stock 10-Point Health Checklist Matrix</div></div>
+      <button class="btn btn-secondary btn-sm" onclick="exportChecklistCSV()">📥 Export CSV</button>
+    </div>
+    <div class="card" style="margin-bottom:14px">
+      <div class="card-header"><div class="card-title">🔍 Select Tickers & Mode</div></div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:flex-end">
+        <div style="flex:1;min-width:220px">
+          <div class="stat-label" style="margin-bottom:4px">Manual Tickers (Comma / Space Separated)</div>
+          <input type="text" id="chkTickers" placeholder="AAPL, MSFT, NVDA" value="AAPL, MSFT, NVDA, TSLA, AMZN, GOOGL, META, AMD" style="width:100%;background:var(--bg3);border:1px solid var(--border2);border-radius:var(--r);padding:8px 10px;color:var(--text);font-family:var(--mono);font-size:12px">
+        </div>
+        <button class="btn btn-primary" onclick="runChecklistScreenFromInput()">Run Screener →</button>
+      </div>
+      <div style="display:flex;align-items:center;gap:6px;margin-top:10px;flex-wrap:wrap;padding-top:8px;border-top:1px solid var(--border)">
+        <span class="stat-label">Quick Universe:</span>
+        <button class="btn btn-secondary btn-sm" onclick="runChecklistTopN(10)">Top 10 Mega-Caps</button>
+        <button class="btn btn-secondary btn-sm" onclick="runChecklistTopN(20)">Top 20 Mega-Caps</button>
+        <button class="btn btn-secondary btn-sm" onclick="runChecklistTopN(50)">All Universe</button>
+      </div>
+      <div style="display:flex;align-items:center;gap:6px;margin-top:6px;flex-wrap:wrap">
+        <span class="stat-label">Presets:</span>
+        <button class="btn btn-secondary btn-sm" onclick="runChecklistPreset('all')">All Stocks</button>
+        <button class="btn btn-secondary btn-sm" onclick="runChecklistPreset('moat')">🛡️ Moats (≥75)</button>
+        <button class="btn btn-secondary btn-sm" onclick="runChecklistPreset('growth')">🚀 Growth (>15%)</button>
+        <button class="btn btn-secondary btn-sm" onclick="runChecklistPreset('earnings')">🚨 Earnings (≤7d)</button>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-header" style="justify-content:space-between"><div class="card-title">📋 Ranked Fundamentals Table</div><div style="font-size:11px;color:var(--text3)" id="chkResultsCount">8 stocks scored</div></div>
+      <div style="overflow-x:auto">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Rank</th>
+              <th>Ticker</th>
+              <th onclick="sortChecklist('score')" style="cursor:pointer">Score ↕</th>
+              <th>Rating</th>
+              <th style="min-width:160px">10 Check Matrix</th>
+              <th>Summary</th>
+              <th>Earnings Proximity</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody id="chkTableBody"></tbody>
+        </table>
+      </div>
+      <div style="font-size:10px;color:var(--text3);text-align:center;padding:8px 10px;border-top:1px solid var(--border);margin-top:8px">⚠️ VolariX provides educational tools only. All metrics are educational, not financial advice. Trade at your own risk.</div>
+    </div>
+  `);
+  runChecklistScreenFromInput();
+}
+
+function runChecklistScreenFromInput() {
+  const input = $('chkTickers') ? $('chkTickers').value : '';
+  const tickers = input.split(/[,\s]+/).map(s => s.trim().toUpperCase()).filter(Boolean);
+  runChecklistScreen(tickers);
+}
+
+function runChecklistTopN(n) {
+  const universe = MEGACAP_DATA.map(m => m.ticker);
+  const keys = Object.keys(FUNDAMENTALS);
+  const combined = Array.from(new Set([...universe, ...keys])).slice(0, n);
+  if ($('chkTickers')) $('chkTickers').value = combined.join(', ');
+  runChecklistScreen(combined);
+}
+
+function runChecklistScreen(tickers, presetFilter) {
+  const list = Array.from(new Set(tickers));
+  let results = list.map(sym => {
+    if (!FUNDAMENTALS[sym]) return { sym, unavailable: true, score: -1 };
+    return { sym, ...scoreStock(sym), unavailable: false };
+  });
+
+  if (presetFilter === 'moat') results = results.filter(r => !r.unavailable && r.score >= 75);
+  else if (presetFilter === 'growth') results = results.filter(r => !r.unavailable && r.checks && r.checks[4] && r.checks[4].res !== 'red');
+  else if (presetFilter === 'earnings') results = results.filter(r => !r.unavailable && r.earningsDate !== null && r.earningsDate <= 7);
+
+  results.sort((a, b) => a.unavailable ? 1 : b.unavailable ? -1 : b.score - a.score || a.sym.localeCompare(b.sym));
+  currentChecklistResults = results;
+  renderChecklistTable(results);
+}
+
+function runChecklistPreset(preset) {
+  const input = $('chkTickers') ? $('chkTickers').value : '';
+  const tickers = input.split(/[,\s]+/).map(s => s.trim().toUpperCase()).filter(Boolean);
+  runChecklistScreen(tickers.length ? tickers : Object.keys(FUNDAMENTALS), preset);
+}
+
+function sortChecklist(key) {
+  if (!currentChecklistResults.length) return;
+  currentChecklistResults.sort((a, b) => a.unavailable ? 1 : b.unavailable ? -1 : b.score - a.score);
+  renderChecklistTable(currentChecklistResults);
+}
+
+function renderChecklistTable(results) {
+  const tb = $('chkTableBody'); if (!tb) return;
+  if ($('chkResultsCount')) $('chkResultsCount').textContent = results.length + ' stocks scored';
+
+  const M = ['P/E', 'P/B', 'P/S', 'D/E', 'Rev', 'EPS', 'Margin', 'Current', 'ROE', 'Insider'];
+  let html = '';
+  results.forEach((r, idx) => {
+    if (r.unavailable) {
+      html += '<tr style="opacity:.6"><td style="font-family:var(--mono)">-</td><td style="font-family:var(--mono);font-weight:700">' + r.sym + '</td><td colspan="5" style="color:var(--text3);font-style:italic">Data unavailable in FUNDAMENTALS dataset</td><td>' + badge('Unavailable','red') + '</td></tr>';
+      return;
+    }
+    const cCol = r.composite === 'Strong Buy' ? 'cyan' : r.composite === 'Cautious' ? 'amber' : 'red';
+    const dots = r.checks.map((chk, i) => {
+      const dotCol = chk.res === 'green' ? 'cyan' : chk.res === 'yellow' ? 'amber' : 'red';
+      return '<span class="score-dot score-dot-' + dotCol + '" title="' + M[i] + ': ' + chk.val + ' (' + chk.res + ')" style="display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:4px;background:var(--' + dotCol + ')"></span>';
+    }).join('');
+
+    const edBadge = r.earningsDate !== null && r.earningsDate <= 14 ? badge('🚨 ' + r.earningsDate + 'd to Earnings', r.earningsDate <= 7 ? 'red' : 'amber') : '<span style="color:var(--text3);font-size:11px">Safe (>14d)</span>';
+
+    html += '<tr onclick="openScorecard(\'' + r.sym + '\',\'analyze\')" style="cursor:pointer">' +
+      '<td style="font-family:var(--mono);font-weight:700;color:var(--text3)">#' + (idx + 1) + '</td>' +
+      '<td style="font-family:var(--mono);font-weight:700;font-size:13px">' + r.sym + '</td>' +
+      '<td><span style="font-family:var(--mono);font-size:14px;font-weight:700;color:var(--' + cCol + ')">' + r.score + '</span><span style="font-size:10px;color:var(--text3)">/100</span></td>' +
+      '<td>' + badge(r.composite, cCol) + '</td>' +
+      '<td><div style="display:flex;align-items:center">' + dots + '</div></td>' +
+      '<td style="font-family:var(--mono);font-size:11px"><span style="color:var(--cyan)">' + r.greens + ' ✓</span> · <span style="color:var(--amber)">' + r.ambers + ' ~</span> · <span style="color:var(--red)">' + r.reds + ' ✗</span></td>' +
+      '<td>' + edBadge + '</td>' +
+      '<td><button class="btn btn-secondary btn-sm" onclick="event.stopPropagation();openScorecard(\'' + r.sym + '\',\'analyze\')">Scorecard →</button></td>' +
+    '</tr>';
+  });
+  tb.innerHTML = html || '<tr><td colspan="8" style="text-align:center;color:var(--text3);padding:20px">No stocks match criteria.</td></tr>';
+}
+
+function exportChecklistCSV() {
+  if (!currentChecklistResults || !currentChecklistResults.length) {
+    showToast('Notice', 'Run a screener pass before exporting CSV.', 'amber'); return;
+  }
+  let csv = 'Rank,Ticker,Score,Composite,Greens,Ambers,Reds,EarningsDays\n';
+  currentChecklistResults.forEach((r, i) => {
+    if (!r.unavailable) csv += (i + 1) + ',' + r.sym + ',' + r.score + ',' + r.composite + ',' + r.greens + ',' + r.ambers + ',' + r.reds + ',' + (r.earningsDate || 'N/A') + '\n';
+  });
+  const blob = new Blob([csv], { type: 'text/csv' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a'); a.href = url; a.download = 'volarix_checklist_screener.csv'; a.click();
+  URL.revokeObjectURL(url);
+  showToast('Exported', 'CSV report saved to downloads.', 'cyan');
+}
+
 // ── Wire new tabs into showTab + Paper Trading sub-tab ──
 const _origShowTab2 = showTab;
 function showTab(id, el) {
   _origShowTab2(id, el);
-  const extras = { economic:buildEconomic, heatmap:buildHeatmap, sizing:buildSizingCalc, journal:buildJournalStats };
+  const extras = { economic:buildEconomic, heatmap:buildHeatmap, sizing:buildSizingCalc, journal:buildJournalStats, checklist:buildChecklistScreener };
   if(extras[id]) extras[id]();
 }
 
