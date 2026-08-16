@@ -1,0 +1,23 @@
+{
+  "name": "VolariX — Risk-First Options Intelligence",
+  "short_name": "VolariX",
+  "description": "Educational options trading intelligence & fundamental risk analysis platform.",
+  "start_url": "/app.html",
+  "display": "standalone",
+  "background_color": "#0D0F1A",
+  "theme_color": "#0D0F1A",
+  "icons": [
+    {
+      "src": "https://volarix.netlify.app/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "https://volarix.netlify.app/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
