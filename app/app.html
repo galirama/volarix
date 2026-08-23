@@ -960,9 +960,7 @@ function buildPaper(){
 }
 function pTab(id,el){document.querySelectorAll('#tab-paper .tab-btn').forEach(b=>b.classList.remove('active'));if(el)el.classList.add('active');const h=$('p2-h'),s=$('p2-s');if(h)h.style.display=id==='h'?'block':'none';if(s)s.style.display=id==='s'?'block':'none';}
 
-function exportCSV(){const csv='Trade,Strategy,Entry,Exit,P&L,Status
-'+STATE.paperTrades.map(t=>`${t.t},${t.s},${t.en},${t.ex},${t.pnl},${t.status}`).join('
-');const blob=new Blob([csv],{type:'text/csv'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download='volarix_trades.csv';a.click();showToast('📄 Exported','Trade log downloaded','cyan');}
+function exportCSV(){const csv='Trade,Strategy,Entry,Exit,P&L,Status\\n'+STATE.paperTrades.map(t=>`${t.t},${t.s},${t.en},${t.ex},${t.pnl},${t.status}`).join('\\n');const blob=new Blob([csv],{type:'text/csv'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download='volarix_trades.csv';a.click();showToast('📄 Exported','Trade log downloaded','cyan');}
 
 function buildLive(){
   const lp=[['NVDA',5,842.10,875.40,'cyan','+$166.50','+3.95%'],['MSFT',10,408.50,412.80,'cyan','+$43.00','+1.05%'],['TSLA',20,218.30,214.80,'red','−$70.00','−1.60%']];
@@ -1063,8 +1061,9 @@ function loadSession(){
   const raw=sessionStorage.getItem('volarix_auth');if(!raw)return;
   const s=JSON.parse(raw),u=s.user;if(!u)return;
   const nu=$('navUser');if(nu)nu.innerHTML=`<div style="font-family:var(--mono)">${u.email}</div><div style="color:var(--purple)">${u.plan==='pro'?'Pro':'Free'} plan · 🔐 2FA active</div>`;
-  const av=$('avatarBtn');if(av&&u.name)av.textContent=u.name.charAt(0).toUpperCase();
-  const pb=$('planBadge');if(pb)pb.textContent=u.plan==='pro'?'PRO':'FREE';
+  const av=$('avatarBtn');if(av&&u.name)av.textContent=u.name[0].toUpperCase();
+  const pb=$('planBadge');if(pb)pb.textContent=u.plan.toUpperCase();
+  $('appShell').style.display='grid';
 }
 
 
@@ -1440,7 +1439,7 @@ function buildPaper() {
 
 // ── ADD megacap to builder map ──
 const _origShowTab = showTab;
-function showTab(id, el) {
+showTab = function(id, el) {
   _origShowTab(id, el);
   if (id === 'megacap') buildMegacap();
 }
@@ -2252,7 +2251,7 @@ function exportChecklistCSV() {
 
 // ── Wire new tabs into showTab + Paper Trading sub-tab ──
 const _origShowTab2 = showTab;
-function showTab(id, el) {
+showTab = function(id, el) {
   _origShowTab2(id, el);
   const extras = { economic:buildEconomic, heatmap:buildHeatmap, sizing:buildSizingCalc, journal:buildJournalStats, checklist:buildChecklistScreener };
   if(extras[id]) extras[id]();
@@ -2260,7 +2259,7 @@ function showTab(id, el) {
 
 // Add Journal Stats and Position Sizing to Paper Trading sub-tabs
 const _origBuildPaper2 = buildPaper;
-function buildPaper() {
+buildPaper = function() {
   _origBuildPaper2();
   // Patch paper tab-row to include Journal Stats sub-tab
   setTimeout(() => {
@@ -2294,7 +2293,6 @@ function pTab(id, el) {
   if(id==='journal') { const jd=$('p2-journal'); if(jd) { jd.style.display='block'; buildJournalStats(); } }
 }
 
-// ── INIT ──
 loadState();
 buildTicker();
 initPWA();

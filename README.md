@@ -29,10 +29,18 @@ app/          ← Deploy this folder to Netlify
   app.html    ← Full dashboard
   netlify.toml
 docs/         ← All product + technical docs
-CLAUDE.md     ← AI agent instructions (read first every session)
+  DEVELOPER_GUIDE.md ← Technical architecture & presentation guide
+tests/        ← BDD automated UI test suite (Cucumber + Playwright)
+CODEX.md      ← AI agent instructions & memory bank (read first every session)
 ```
 
-## For Claude — Start Every Session With
-> "Read CLAUDE.md. Tell me what's built, what's broken, and what's next."
+## Testing (BDD Automated UI Tests)
+VolariX uses Cucumber and Playwright for BDD automated testing to ensure existing functionality remains intact during continuous development.
+1. Make sure Node.js is installed.
+2. Run `npm install` to install dependencies and Playwright browsers.
+3. Run `npm test` to execute the full BDD suite locally.
+
+## For AI Agents — Start Every Session With
+> "Read CODEX.md. Tell me what's built, what's broken, and what's next."
 
 ⚠️ Not financial advice. Educational tools only.

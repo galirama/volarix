@@ -1,0 +1,16 @@
+{
+  "name": "volarix",
+  "version": "1.0.0",
+  "description": "VolariX testing suite",
+  "main": "index.js",
+  "scripts": {
+    "test": "cucumber-js",
+    "build": "exit 0"
+  },
+  "devDependencies": {
+    "@cucumber/cucumber": "^10.9.0",
+    "@playwright/test": "^1.62.1",
+    "http-server": "^14.1.1",
+    "playwright": "^1.45.0"
+  }
+}
