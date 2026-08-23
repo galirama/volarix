@@ -315,12 +315,12 @@ document.getElementById('previewPositions').innerHTML=POS.map(([t,type,pnl,c])=>
 
 // ── Pricing ──
 const TIERS=[
-  ['Free','$0','month','cyan',false,[
+  ['Demo Mode','$0','forever','cyan',false,[
     ['✓','Basic stock search & technical charts'],['✓','Paper trading (stocks + options)'],
     ['✓','Ticker banner & market data'],['✓','Backtesting engine'],['✓','Push & in-app alerts'],
   ]],
-  ['Premium','$29','month','purple',true,[
-    ['✓','Everything in Free +'],['✓','🛡️ Risk Shield pre-trade AI'],
+  ['Educational Pro','$0','forever','purple',true,[
+    ['✓','Everything in Demo +'],['✓','🛡️ Risk Shield pre-trade AI'],
     ['✓','🎯 Greek Visualizer full access'],['✓','🏛️ Congressional & Insider data'],
     ['✓','🤖 AI Post-Mortem analysis'],['✓','🌀 Sector Rotation & Capital Flow'],
     ['✓','📱 SMS real-time alerts'],['✓','⚡ Live brokerage integration'],
@@ -329,9 +329,9 @@ const TIERS=[
 document.getElementById('pricingGrid').innerHTML=TIERS.map(([name,price,period,c,featured,feats])=>`
 <div class="pricing-card${featured?' featured':''}">
   <div class="pricing-name" style="color:var(--${c})">${name}</div>
-  <div style="font-size:12px;color:var(--text3)">For ${featured?'serious':'new'} options traders</div>
+  <div style="font-size:12px;color:var(--text3)">For ${featured?'advanced analytical learning':'new options learners'}</div>
   <div class="pricing-price" style="color:var(--text)">${price}<span style="font-size:16px;color:var(--text3);font-weight:400">/ ${period}</span></div>
-  <a href="login.html?mode=register" class="btn btn-${featured?'primary':'secondary'}" style="width:100%;justify-content:center;margin-bottom:4px">${featured?'Start Premium →':'Get Started Free'}</a>
+  <a href="login.html?mode=register" class="btn btn-${featured?'primary':'secondary'}" style="width:100%;justify-content:center;margin-bottom:4px">${featured?'Start Free Pro →':'Get Started Free'}</a>
   <div class="pricing-divider"></div>
   ${feats.map(([ic,f])=>`<div class="pricing-feature"><span class="pricing-check" style="color:var(--${c})">${ic}</span><span>${f}</span></div>`).join('')}
 </div>`).join('');
