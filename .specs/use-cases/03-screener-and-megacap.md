@@ -164,18 +164,18 @@ Render one row per ticker, sorted **best → worst** by composite score:
 - [x] Standard IV Screener renders sortable table with working filter controls.
 - [x] Mega-Cap Screener displays 20 companies sorted by IV Rank descending.
 - [x] Colored IV rings accurately reflect IV Rank thresholds.
-- [ ] New "Fundamental Screener" nav item visible in sidebar under Markets.
-- [ ] Manual ticker input accepts `AAPL, MSFT NVDA` and correctly parses tickers.
-- [ ] Top-N mode pulls N tickers from `MEGACAP_DATA` sorted by market cap.
-- [ ] Screener table renders 10 colored check dots in consistent order.
-- [ ] Unknown tickers show "Data unavailable" row gracefully.
-- [ ] Clicking a row opens existing Scorecard modal (`openScorecard(sym, 'analyze')`).
-- [ ] Basic Auth login functional with 1-click "Try Live Demo" button.
-- [ ] Login page displays interactive preview mockups for feature teasers.
-- [ ] Clear educational disclaimers present on login page and screener tabs.
+- [x] New "Fundamental Screener" nav item visible in sidebar under Markets.
+- [x] Manual ticker input accepts `AAPL, MSFT NVDA` and correctly parses tickers.
+- [x] Top-N mode pulls N tickers from `MEGACAP_DATA` sorted by market cap.
+- [x] Screener table renders 10 colored check dots in consistent order.
+- [x] Unknown tickers show "Data unavailable" row gracefully.
+- [x] Clicking a row opens existing Scorecard modal (`openScorecard(sym, 'analyze')`).
+- [x] Basic Auth login functional with 1-click "Try Live Demo" button.
+- [x] Login page displays interactive preview mockups for feature teasers.
+- [x] Clear educational disclaimers present on login page and screener tabs.
 
 ---
 
 ## 6. Current Implementation Status
 - **IV Screener & Mega-Cap Screener:** ✅ Fully Built & Verified.
-- **Fundamental Screener (`#tab-checklist`):** 🔴 Specification Updated (with Auth, Demo Mockups & Educational Requirements) — Ready to Build.
+- **Fundamental Screener (`#tab-checklist`):** ✅ Fully Built & Verified (BDD test coverage active).
