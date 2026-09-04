@@ -26,14 +26,12 @@ Risk-first options trading intelligence platform.
 volarix/
 ├── CODEX.md               ← Root AI memory bank & instructions (read first)
 ├── README.md              ← Deploy steps & human guide
-├── .specs/                ← Modular use-case specifications & state
-│   └── AGENTS.md          ← Additional agent coding instructions
 ├── app/                   ← Deploy this folder to Netlify
 │   ├── index.html         ← Public landing page
 │   ├── login.html         ← Auth + MFA
 │   └── app.html           ← Full dashboard
 ├── tests/                 ← BDD automated UI test suite (Cucumber + Playwright)
-└── docs/                  ← Architecture, schema & design guidelines
+└── docs/                  ← Architecture, schema, task queue, and handoff
 ```
 
 ---
@@ -124,16 +122,22 @@ We use a Behavior-Driven Development (BDD) test suite to protect the integrity o
 | **P9 Flow Heatmap** | tab-heatmap — buildHeatmap() |
 | **P11 BDD Test Suite** | tests/ (Cucumber + Playwright) |
 
+### 🔄 In Progress
+- P1: Market-data integration. Yahoo Finance quotes and Alternative.me Fear & Greed
+  are fetched client-side with localStorage caching and static-data fallback.
+  Finnhub fundamentals and FRED economic data are not yet integrated.
+
 ### ❌ Not Started
-- P1: Real-time data APIs (Yahoo Finance, Finnhub, Alternative.me, FRED)
 - P10: Weekly Email Digest (Resend.com + Netlify function)
 
 ---
 
 ## Next Priority
-**P1 — Real-Time Data APIs**
-Replace MKT{} simulator with real fetch() calls.
-Full spec + acceptance criteria: see docs/TASK_QUEUE.md
+**P1 — Complete the market-data integration**
+Keep the existing Yahoo Finance and Alternative.me integration working, then add
+Finnhub/FRED only where their data has a defined UI consumer. Preserve the
+60-second client cache, graceful static fallback, and the educational-data
+disclaimer. Full scope and acceptance criteria: see docs/TASK_QUEUE.md.
 
 ---
 
@@ -144,6 +148,7 @@ Full spec + acceptance criteria: see docs/TASK_QUEUE.md
 4. Run audit script before presenting any file
 5. Update PROJECT_STATUS.md + TASK_QUEUE.md after every feature
 6. Never refactor working code
+7. Read docs/HANDOFF.md before planning work; update it before ending a task.
 
 ## Audit Script (run before every present_files)
 ```python

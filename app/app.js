@@ -1,4 +1,6 @@
-// Swap with Finnhub/Polygon API calls in production
+// Loaded after app.html's inline dashboard runtime. It uses the shared $ helper
+// and modal elements declared there, so do not move this script into <head>.
+// Fundamental data remains simulated until the production data-provider migration.
 // ══════════════════════════════════════════
 const FUNDAMENTALS = {
   AAPL: { pe:29.2, pb:48.1, ps:7.8, de:1.81, revGrowth:6.1,  epsGrowth:10.4, grossMargin:45.2, currentRatio:0.99, roe:160.1, insiderOwn:0.06, earningsDate:3 },

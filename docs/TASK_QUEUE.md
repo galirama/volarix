@@ -3,12 +3,16 @@
 
 ---
 
-## 🔴 P1 — Real-Time Data APIs
-**Status:** Not started  
+## 🟡 P1 — Market-Data Integration
+**Status:** In progress  
 **Files:** app/app.html (MKT object)  
-**APIs (all free):**
+**Implemented:**
 - Yahoo Finance: `https://query1.finance.yahoo.com/v8/finance/chart/{ticker}`
 - Alternative.me: `https://api.alternative.me/fng/` (Fear & Greed)
+- `fetchWithCache()` with a 60-second quote TTL, one-hour Fear & Greed TTL,
+  localStorage persistence, and static-data fallback.
+
+**Remaining APIs (add only with a defined UI consumer):**
 - Finnhub: `https://finnhub.io/api/v1/quote?symbol={ticker}&token={key}`
 - FRED: `https://api.stlouisfed.org/fred/series/observations?series_id=DGS10`
 
@@ -33,6 +37,8 @@ async function fetchWithCache(key, fetchFn, ttlSeconds = 60) {
 - [ ] Graceful fallback to simulated data if fetch fails
 - [ ] No console errors on load
 - [ ] Ticker banner updates with real prices
+- [ ] Finnhub/FRED data has a defined UI consumer and server-side key handling
+      before either provider is added
 
 ---
 

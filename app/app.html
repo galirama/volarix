@@ -2,7 +2,6 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<script src="app.js"></script>
 <script>
 (function(){
   var raw=sessionStorage.getItem('volarix_auth');
@@ -2090,5 +2089,7 @@ buildWatchlistSidebar();
 if(!sessionStorage.getItem('volarix_onboarded'))setTimeout(startOnboarding,800);
 setTimeout(()=>showToast('👋 Welcome back!','VolariX ready. Press ⌘K to search anything.','purple',5000),600);
 </script>
+<!-- Loaded after the inline dashboard runtime: app.js uses its shared DOM helpers. -->
+<script src="app.js"></script>
 </body>
 </html>

@@ -1,9 +1,9 @@
 # VolariX Project Status
-**Last updated:** June 2026
+**Last updated:** September 3, 2026
 
 ---
 
-## Current Sprint: P1 — Real-Time Data APIs
+## Current Sprint: P1 — Market-Data Integration (Partially Complete)
 
 ### ✅ Complete (All Phases So Far)
 
@@ -54,8 +54,13 @@
 - Stock Health Scorecard modal (pre-trade gate)
 - Options Profit Calculator modal
 
+### 🔄 In Progress
+- P1: Yahoo Finance quote polling and Alternative.me Fear & Greed are wired in
+  `app/app.html` via `syncMarketData()` and `fetchWithCache()`.
+- P1 remaining: decide which UI elements consume Finnhub fundamentals and FRED
+  economic data, then integrate them without exposing API keys in the client.
+
 ### ❌ Not Started
-- P1: Real-time data APIs (Yahoo Finance, Finnhub, Alternative.me, FRED)
 - P10: Weekly Email Digest (Resend.com + Netlify function)
 
 ---
@@ -63,8 +68,11 @@
 ## File Sizes
 | File | Size | Limit |
 |---|---|---|
-| app/app.html | ~192KB | 200KB ⚠️ |
+| app/app.html | 187,725 bytes | 200KB |
+| app/app.js | 19,423 bytes | No separate limit |
 | app/index.html | ~23KB | 50KB |
 | app/login.html | ~20KB | 50KB |
 
-**⚠️ app.html is close to limit. Next major feature should split JS into app.js**
+**Note:** shared scorecard and screener logic has been moved into `app.js`, which
+is deliberately loaded after the inline dashboard script because it uses the
+inline `$` DOM helper. Keep `app/app.html` below 200,000 bytes.

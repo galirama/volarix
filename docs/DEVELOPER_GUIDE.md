@@ -6,7 +6,7 @@ Welcome to the **VolariX** technical documentation. This guide provides a compre
 
 ## 1. App Design & Architecture
 VolariX is a **Risk-First Options Intelligence Platform**.
-Currently operating as a high-fidelity, client-side prototype, the application relies on a strictly static architecture to ensure maximum speed and zero server-side rendering costs during the initial validation phase.
+Currently operating as a high-fidelity, client-side prototype, the application relies on a strictly static architecture to ensure maximum speed and zero server-side rendering costs during the initial validation phase. Yahoo Finance quotes and Alternative.me Fear & Greed are fetched from the client with a cache and simulated-data fallback; the remaining product data is simulated.
 
 - **Single-Page Application (SPA) Mechanics**: All routing and tab switching occurs purely via client-side DOM manipulation without page reloads.
 - **State Management**: The application acts entirely statelessly on the backend. All state (watchlists, paper trades, theme preferences) is stored in `localStorage` and `sessionStorage`.
@@ -28,11 +28,11 @@ Currently operating as a high-fidelity, client-side prototype, the application r
 ## 3. The AI Framework (How LLMs Work in VolariX)
 VolariX is built using a highly structured, LLM-first development lifecycle. We use a dedicated memory bank system to ensure any AI agent (e.g., Claude, ChatGPT, Antigravity) can seamlessly maintain context.
 
-- **`CODEX.md`**: This is the root AI instruction file. Every AI agent is instructed to read this file first. It contains:
+- **`CODEX.md`**: This is the root AI instruction file. Every AI agent reads it first, followed by `docs/HANDOFF.md`, which contains the current continuation state. Together they contain:
   - Strict coding rules (e.g., prohibiting JavaScript template literals in raw HTML).
   - The exact state of what is built vs. what is broken.
   - State management architectures.
-- **`.specs/` Directory**: All features are meticulously planned in markdown files before code is written. Each feature gets its own numbered spec file (e.g., `03-screener-and-megacap.md`). AI agents read these specs to understand the exact acceptance criteria before executing.
+- **Task state**: `docs/TASK_QUEUE.md` defines acceptance criteria and `docs/PROJECT_STATUS.md` records completed and in-progress work. There is currently no `.specs/` directory.
 - **Handoffs**: Because state and rules are codified in `CODEX.md`, human developers can seamlessly switch between different AI models without losing the repository's context.
 
 ## 4. Key Features

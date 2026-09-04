@@ -1,7 +1,7 @@
 # VolariX Token & Coding Efficiency Guidelines
 
 ## Session Start Protocol
-1. Read root CLAUDE.md ONLY — no other file needed to start
+1. Read root `CODEX.md`, then `docs/HANDOFF.md`
 2. Confirm state in 3 bullets: what's built / what's broken / what's next
 3. Do NOT write code until human confirms the task
 
@@ -23,7 +23,8 @@
 ## File Size Budget
 | File       | Current  | Limit  | Action if over        |
 |------------|----------|--------|-----------------------|
-| app.html   | ~192KB   | 200KB  | Split JS into app.js  |
+| app.html   | 187,725 bytes | 200KB  | Keep below 200,000 bytes |
+| app.js     | 19,423 bytes | No separate limit | Load after inline runtime |
 | index.html | ~23KB    | 50KB   | Fine                  |
 | login.html | ~20KB    | 50KB   | Fine                  |
 
@@ -44,17 +45,11 @@ checks = {
 }
 ```
 
-## Backup Before Patching
-```bash
-cp app/app.html app/app-backup-$(date +%Y-%m-%d).html
-```
-
 ## Preferred Edit Method
-- Changes < 20 lines: use str_replace
-- Changes > 20 lines: Python read → modify → write
-- Never bash heredoc for files > 50KB (causes truncation)
+- Use a focused patch and keep unrelated edits intact.
+- Do not replace large files wholesale for small changes.
 
 ## Session End Protocol
 1. Update docs/PROJECT_STATUS.md — mark completed tasks
 2. Update docs/TASK_QUEUE.md — check off done items
-3. Present both updated files for GitHub upload
+3. Update `docs/HANDOFF.md` with the changed files, verification, and remaining risks
