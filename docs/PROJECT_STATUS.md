@@ -3,13 +3,13 @@
 
 ---
 
-## Current Sprint: P0 — Private Supabase Authentication (Awaiting Setup)
+## Current Sprint: P0 — Private Supabase Authentication (Code complete; dashboard settings remain)
 
 ### ✅ Complete (All Phases So Far)
 
 **Infrastructure**
 - 3-file static site on Netlify (index + login + app)
-- sessionStorage auth + TOTP MFA + auth guard
+- Private Supabase Auth (email/password) + dashboard getUser guard
 - netlify.toml routing + security headers
 
 **Global UI**
@@ -55,10 +55,9 @@
 - Options Profit Calculator modal
 
 ### 🔄 In Progress
-- P0: Private Supabase Auth migration. Repository template and specification
-  exist; the local project configuration is ready. Remaining work is provider
-  access settings, owner-account creation, then the code cutover. See
-  `docs/FEATURE_AUDIT.md` for the exact resume point.
+- P0: Private Supabase Auth. Login, dashboard guard, and logout use Supabase.
+  Remaining: disable public sign-ups in the dashboard, set Site/Redirect URLs,
+  and deploy host-local `app/supabase.config.js`. See `docs/FEATURE_AUDIT.md`.
 - P1: Yahoo Finance quote polling and Alternative.me Fear & Greed are wired in
   `app/app.html` via `syncMarketData()` and `fetchWithCache()`.
 - P1 remaining: decide which UI elements consume Finnhub fundamentals and FRED
@@ -72,7 +71,7 @@
 ## File Sizes
 | File | Size | Limit |
 |---|---|---|
-| app/app.html | 187,725 bytes | 200KB |
+| app/app.html | 188,052 bytes | 200KB |
 | app/app.js | 19,423 bytes | No separate limit |
 | app/index.html | ~23KB | 50KB |
 | app/login.html | ~20KB | 50KB |

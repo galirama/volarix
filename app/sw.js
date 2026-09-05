@@ -4,6 +4,8 @@ const ASSETS = [
   '/index.html',
   '/login.html',
   '/app.html',
+  '/app.js',
+  '/volarix-auth.js',
   '/manifest.json'
 ];
 

@@ -47,6 +47,6 @@ remain after this feature is complete.
 
 ## Status
 
-Configuration is awaiting the owner's Supabase project URL and publishable key.
-Do not begin the code cutover until those are available, because the static app
-would otherwise be deployed without a working login.
+Code cutover is in the repository. Remaining owner work: disable public
+sign-ups, set Site URL / Redirect URLs, and keep `app/supabase.config.js` on
+the deploy host only.

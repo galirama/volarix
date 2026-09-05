@@ -2,15 +2,8 @@ const { Given, When, Then } = require('@cucumber/cucumber');
 const { expect } = require('@playwright/test');
 
 Given('I navigate to the VolariX app dashboard', async function () {
-  // Directly load the app page by bypassing login (which requires localStorage auth normally,
-  // but since we simulate auth via simple localStorage check in app.html, let's inject it)
-  await this.page.goto('http://localhost:8080/login.html');
-  await this.page.evaluate(() => {
-    sessionStorage.setItem('volarix_auth', JSON.stringify({
-      user: { email: 'demo@volarix.com', name: 'Demo User', plan: 'free' },
-      loginTime: Date.now(),
-      expires: Date.now() + 8 * 60 * 60 * 1000
-    }));
+  await this.page.addInitScript(() => {
+    sessionStorage.setItem('volarix_test_auth', '1');
   });
   await this.page.goto('http://localhost:8080/app.html');
   await this.page.waitForSelector('.sidebar');

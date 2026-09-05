@@ -18,8 +18,7 @@ Risk-first options trading intelligence platform.
 Static HTML application on Netlify. Private Supabase Auth migration is the
 active prerequisite before any further real-data work.
 **Live:** https://volarix.netlify.app
-**Access:** Private owner account only after P0 is complete; never create or
-retain demo credentials.
+**Access:** Private owner account via Supabase Auth. Never create or retain demo credentials.
 
 ---
 
@@ -66,8 +65,9 @@ VolariX has no backend (yet). Everything relies on `sessionStorage` and `localSt
 // LocalStorage Persistence
 STATE        → { theme, watchlist, positions, paperTrades, thresholds }
 // Session Storage
-volarix_auth → { user: {email, plan}, expires, loginTime } // Mock JWT payload
 volarix_onboarded → Flag for the welcome tutorial
+// Auth
+Supabase Auth session via app/volarix-auth.js (getUser / signOut)
 // Runtime Data (swap for real APIs later)
 MKT          → { prices, changes, fg }
 FUNDAMENTALS → { AAPL:{pe,pb,...}, ... }
@@ -89,7 +89,7 @@ We use a Behavior-Driven Development (BDD) test suite to protect the integrity o
 ### ✅ Complete
 | Feature | Location |
 |---|---|
-| Auth guard + MFA + session | login.html → app.html |
+| Auth guard + verified Supabase session | login.html → app.html |
 | 21-tab dashboard | app.html sidebar |
 | Live market simulator (8s) | MKT object |
 | ⌘K Command Palette | cmdPalette overlay |
@@ -125,7 +125,10 @@ We use a Behavior-Driven Development (BDD) test suite to protect the integrity o
 | **P11 BDD Test Suite** | tests/ (Cucumber + Playwright) |
 
 ### 🔄 In Progress
-- P0: Private Supabase Auth migration. See `docs/SUPABASE_PRIVATE_AUTH.md`.
+- P0: Private Supabase Auth. App login, dashboard guard, and sign-out now use
+  Supabase. Remaining owner work: disable public sign-ups in the dashboard,
+  confirm Site URL / Redirect URLs, and keep `app/supabase.config.js` only on
+  the deploy host (it is gitignored).
 - P1: Market-data integration. Yahoo Finance quotes and Alternative.me Fear & Greed
   are fetched client-side with localStorage caching and static-data fallback.
   Finnhub fundamentals and FRED economic data are not yet integrated.
@@ -137,9 +140,9 @@ We use a Behavior-Driven Development (BDD) test suite to protect the integrity o
 
 ## Next Priority
 **P0 — Private Supabase Auth migration**
-Create the owner's Supabase project, then remove demo access and implement
-verified Supabase sessions. Full setup and acceptance criteria: see
-`docs/SUPABASE_PRIVATE_AUTH.md`. Do not proceed to P1 until P0 passes.
+Code cutover is in the repository. Confirm the remaining dashboard settings in
+`docs/FEATURE_AUDIT.md`, then treat P0 as complete. Do not proceed to additional
+P1 providers until those checks pass.
 
 **After P0: P1 — Complete the market-data integration**
 Keep the existing Yahoo Finance and Alternative.me integration working, then add
@@ -166,7 +169,7 @@ disclaimer. Full scope and acceptance criteria: see docs/TASK_QUEUE.md.
 with open('app/app.html', 'r') as f: html = f.read()
 checks = {
   'No raw template literals': html[:html.find('<script>')].count('${') == 0,
-  'Auth guard intact':        'volarix_auth' in html,
+  'Auth guard intact':        'volarixAuth' in html and 'requireUser' in html,
   'Legal disclaimer':         'not financial advice' in html,
   'Under 200KB':              len(html.encode()) < 200000,
 }

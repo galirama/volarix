@@ -7,12 +7,12 @@
 4. Live at `https://random-name.netlify.app`
 5. Rename: Site Settings → Domain → `volarix.netlify.app`
 
-## Private Access Migration
+## Private Access
 
-The checked-in site still contains legacy demo access and must not be used as a
-private deployment yet. Follow `docs/SUPABASE_PRIVATE_AUTH.md` to create the
-owner's Supabase project; the next implementation task removes all demo and
-public-registration paths.
+Sign-in is private Supabase Auth. There is no demo login or public registration.
+Follow `docs/SUPABASE_PRIVATE_AUTH.md` for project setup. Copy
+`app/supabase.config.example.js` to `app/supabase.config.js` on the deploy host
+only; never commit that file or a secret/service-role key.
 
 ## Update a File on GitHub
 1. Go to your repo on github.com
@@ -24,7 +24,7 @@ public-registration paths.
 ```
 app/          ← Deploy this folder to Netlify
   index.html  ← Public landing page
-  login.html  ← Auth + MFA
+  login.html  ← Private Supabase sign-in
   app.html    ← Full dashboard
   netlify.toml
 docs/         ← All product + technical docs

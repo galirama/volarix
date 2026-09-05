@@ -2,76 +2,63 @@
 
 ## Latest update — September 4, 2026
 
-- Fixed the `app.js` load-order error by moving its script tag below the inline
-  dashboard runtime in `app/app.html`.
-- Reconciled `CODEX.md`, `README.md`, `PROJECT_STATUS.md`, `TASK_QUEUE.md`,
-  `DEVELOPER_GUIDE.md`, and `TOKEN_GUIDELINES.md` with the current code.
-- Static checks passed: `app/app.html` is below its 200,000-byte budget and no
-  merge-conflict markers were found in source or documentation.
-- Runtime tests remain unverified locally because Node.js and macOS Command
-  Line Tools are unavailable on this workstation.
-- Added the P0 private-auth specification, local configuration template, and
-  ignore rule. P0 now blocks P1 real-data work.
-- Added `docs/FEATURE_AUDIT.md` as the chronological continuation record. P0
-  is blocked only by the owner's Supabase dashboard session and the remaining
-  provider-side access settings.
+- Continued P0 from the uncommitted `login.html` rewrite: dashboard guard,
+  sign-out, landing CTAs, and BDD tests now use private Supabase Auth.
+- Added `app/volarix-auth.js` as the shared browser client wrapper.
+- Fixed session resolution in `app/app.html` so `appShell` renders reliably
+  when Supabase returns over real network latency.
+- Added `/app.js` to `app/sw.js` cache manifest.
+- Demo credentials, 1-click demo login, and `?mode=register` paths are removed
+  from the live HTML. `app/supabase.config.js` remains gitignored.
+- Remaining P0 work is owner-side: disable public sign-ups, set Site/Redirect
+  URLs, and copy the local config onto the deploy host.
 
 ## Read this first
 
 This file is the current implementation snapshot for humans and agents. Read it
 after `CODEX.md` and `FEATURE_AUDIT.md`, then inspect the named code before
 changing anything. Update this file, `FEATURE_AUDIT.md`, `PROJECT_STATUS.md`,
-and `TASK_QUEUE.md when a task changes scope or completion state.
+and `TASK_QUEUE.md` when a task changes scope or completion state.
 
 ## Product and runtime
 
 - The product is a static, educational options-analysis prototype. It has no
   backend and must not present signals as financial advice.
 - Deploy the `app/` directory to Netlify. `vercel.json` also supports a static
-  Vercel deployment.
-- Authentication is still a legacy demo-only `sessionStorage` guard and must
-  be replaced by P0 Supabase Auth before the site is used privately.
+  Vercel deployment. Include a host-local `supabase.config.js` that is never
+  committed.
+- Authentication is Supabase email/password. The dashboard calls
+  `volarixAuth.requireUser()` before render. Logout calls `volarixAuth.signOut()`.
 - Persistent user state is client-side `localStorage`. Runtime market state is
   the `MKT` object in `app/app.html`.
 
 ## Source layout and load order
 
 - `app/app.html` contains the page structure, styles, primary runtime, market
-  fetching, and app initialization. It is currently 187,725 bytes and must
-  stay below 200,000 bytes.
+  fetching, and app initialization. Keep it below 200,000 bytes.
+- `app/volarix-auth.js` loads after the Supabase SDK and before the auth guard.
 - `app/app.js` contains fundamental-scorecard and mega-cap data. It is loaded
-  at the end of `app.html`, after the inline runtime declares `$`; moving it to
-  the document head causes a runtime error.
-- `app/index.html` is the landing page; `app/login.html` implements demo login.
+  at the end of `app.html`, after the inline runtime declares `$`.
+- `app/index.html` is the public landing page; `app/login.html` is private
+  sign-in only.
 - `app/sw.js` and `app/manifest.json` provide PWA support.
 
 ## Current work state
 
-P1 is partially complete. `syncMarketData()` fetches Yahoo Finance chart data
-for displayed/watchlist symbols and Alternative.me Fear & Greed. `fetchWithCache`
-uses `localStorage`; price TTL is 60 seconds and Fear & Greed TTL is one hour.
-Both return to the static `MKT` values on failure.
-
-Do not add Finnhub or FRED keys directly to browser code. First identify a UI
-consumer, then introduce a server-side proxy or a provider approach appropriate
-for a production migration. P10 (the scheduled Resend digest) has not started.
+P0 code is in the tree. P1 quote/Fear & Greed fetching remains in
+`syncMarketData()`. Do not add Finnhub or FRED keys to browser code.
 
 ## Private-access work queue
 
-P0 is specified in `docs/SUPABASE_PRIVATE_AUTH.md`. The owner must create a
-Supabase project and supply its project URL and publishable key. The local
-`app/supabase.config.js` file is intentionally ignored by Git. Do not accept a
-password, secret key, or service-role key from the owner or put one in code.
+Follow `docs/SUPABASE_PRIVATE_AUTH.md` and `docs/FEATURE_AUDIT.md`. Do not
+accept a password, secret key, or service-role key from the owner or put one
+in code.
 
 ## Verification
 
 Run `npm ci`, `npx playwright install chromium`, and `npm test` on a machine
-with Node.js 20+ installed. The Cucumber suite is intentionally small: login
-and fundamental-screener smoke coverage. Also check the browser console after
-login and run `wc -c app/app.html` before handing off a dashboard change.
-
-The current local workstation does not have Node.js or macOS Command Line Tools
-available, so this checkout has not been test-run or Git-inspected locally.
+with Node.js 20+. Cucumber covers private login, stubbed authorized sign-in,
+and the fundamental screener. Also run `wc -c app/app.html`.
 
 ## Guardrails
 

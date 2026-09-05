@@ -4,19 +4,21 @@
 ---
 
 ## 🟡 P0 — Private Supabase Authentication
-**Status:** Awaiting owner configuration  
+**Status:** Code cutover complete; awaiting owner dashboard confirmation  
 **Files:** `app/login.html`, `app/app.html`, `app/index.html`,
-`app/supabase.config.js` (local only), tests, and docs  
+`app/volarix-auth.js`, `app/supabase.config.js` (local only), tests, and docs  
 **Specification:** `docs/SUPABASE_PRIVATE_AUTH.md`
 **Audit:** `docs/FEATURE_AUDIT.md`
 
 **Acceptance criteria:**
 - [ ] Owner project has email Auth enabled and public/anonymous signups disabled
-- [ ] Owner account exists in Supabase Auth
-- [ ] Demo and registration paths are removed from the site
-- [ ] Dashboard requires a verified Supabase user session
-- [ ] Logout revokes the session
-- [ ] No password, secret key, or service-role key is in the repository
+- [x] Owner account exists in Supabase Auth (created by owner; not stored here)
+- [x] Demo and registration paths are removed from the site
+- [x] Dashboard requires a verified Supabase user session
+- [x] Logout revokes the session
+- [x] No password, secret key, or service-role key is in the repository
+- [ ] Host deploy includes gitignored `app/supabase.config.js`
+- [ ] Site URL / Redirect URLs match the live domain
 
 ---
 

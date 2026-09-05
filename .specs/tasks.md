@@ -14,11 +14,11 @@
 |---|---|---|
 | 3-file static site structure | ✅ | `index.html`, `login.html`, `app.html` |
 | Netlify deployment config | ✅ | `netlify.toml` with routing + security headers |
-| sessionStorage auth + 8hr expiry | ✅ | Key: `volarix_auth` |
-| Auth guard on app.html | ✅ | Inline script in `<head>`, redirects to login.html |
-| Simulated TOTP MFA (6-digit) | ✅ | Auto-fills in demo mode |
-| Register flow with validation | ✅ | Min 8 char password, confirmation match |
-| Demo credentials | ✅ | trader@example.com / Password123 (Pro), demo@volarix.com / Demo1234 (Free) |
+| sessionStorage auth + 8hr expiry | ❌ Replaced | Supabase session via `volarix-auth.js` |
+| Auth guard on app.html | ✅ | `volarixAuth.requireUser()` in `<head>` |
+| Simulated TOTP MFA (6-digit) | ❌ Removed | Private password sign-in only |
+| Register flow with validation | ❌ Removed | Public registration disabled in product UI |
+| Demo credentials | ❌ Removed | No demo accounts in the app |
 
 ---
 
@@ -138,8 +138,8 @@ The JS event listeners exist (`initPWA`, `installPWA`) but the two files that ma
 
 ## 8. Next Session Priorities (in order)
 
-1. **P7 completion** — write `manifest.json` + `sw.js`, link in `app.html`. Small, self-contained, no external dependencies.
-2. **P1 Real-time data APIs** — highest product impact. Needs a free Finnhub API key from the user before Claude can wire it in.
-3. **P10 Weekly Email Digest** — needs a free Resend.com account + API key before Claude can build the Netlify function.
+1. **Finish P0 owner settings** — disable public sign-ups, set Site/Redirect URLs, deploy gitignored config.
+2. **P1 remaining providers** — Finnhub/FRED only after a defined UI consumer and server-side key handling.
+3. **P10 Weekly Email Digest** — needs a Resend account + API key.
 
 Anything beyond these three should come from a fresh prioritization conversation, not be assumed.

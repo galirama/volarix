@@ -153,19 +153,18 @@ footer{border-top:1px solid var(--border);padding:32px 48px;display:flex;justify
     <span style="display:flex;align-items:center;gap:6px;font-size:11px;color:var(--text3)"><span class="live-dot"></span>Live data</span>
   </div>
   <div style="display:flex;gap:10px;align-items:center">
-    <a href="login.html" class="btn btn-secondary" style="font-size:12px;padding:7px 16px">Sign In</a>
-    <a href="login.html?mode=register" class="btn btn-primary" style="font-size:12px;padding:7px 16px">Get Started Free →</a>
+    <a href="login.html" class="btn btn-primary" style="font-size:12px;padding:7px 16px">Sign In</a>
   </div>
 </nav>
 
 <!-- Hero -->
 <div class="container">
   <div class="hero">
-    <div class="hero-tag"><span class="live-dot"></span> Live Beta — Free Access</div>
+    <div class="hero-tag"><span class="live-dot"></span> Private educational platform</div>
     <h1>Welcome to the Future of<br><span class="gradient-text">Risk-First Options Trading</span></h1>
     <p class="hero-sub">VolariX protects your capital by combining institutional-grade alternative data, precision technical indicators, and automated pre-trade risk management — before you ever hit execute.</p>
     <div class="hero-btns">
-      <a href="login.html?mode=register" class="btn btn-hero btn-hero-grad">Launch Platform Free →</a>
+      <a href="login.html" class="btn btn-hero btn-hero-grad">Sign In →</a>
       <a href="#preview" class="btn btn-hero btn-secondary">See the Dashboard</a>
     </div>
   </div>
@@ -263,7 +262,7 @@ footer{border-top:1px solid var(--border);padding:32px 48px;display:flex;justify
     <div class="cta-strip">
       <h2>Introducing VolariX<span style="color:var(--cyan)">.</span></h2>
       <p>Institutional risk intelligence. Zero compromise. Free to start.</p>
-      <a href="login.html?mode=register" class="btn btn-hero btn-hero-grad">Create Free Account →</a>
+      <a href="login.html" class="btn btn-hero btn-hero-grad">Sign In →</a>
     </div>
   </div>
 </section>
@@ -308,12 +307,12 @@ document.getElementById('previewPositions').innerHTML=POS.map(([t,type,pnl,c])=>
 
 // ── Pricing ──
 const TIERS=[
-  ['Demo Mode','$0','forever','cyan',false,[
+  ['Core tools','$0','private','cyan',false,[
     ['✓','Basic stock search & technical charts'],['✓','Paper trading (stocks + options)'],
     ['✓','Ticker banner & market data'],['✓','Backtesting engine'],['✓','Push & in-app alerts'],
   ]],
-  ['Educational Pro','$0','forever','purple',true,[
-    ['✓','Everything in Demo +'],['✓','🛡️ Risk Shield pre-trade AI'],
+  ['Full access','$0','private','purple',true,[
+    ['✓','Everything in Core +'],['✓','🛡️ Risk Shield pre-trade AI'],
     ['✓','🎯 Greek Visualizer full access'],['✓','🏛️ Congressional & Insider data'],
     ['✓','🤖 AI Post-Mortem analysis'],['✓','🌀 Sector Rotation & Capital Flow'],
     ['✓','📱 SMS real-time alerts'],['✓','⚡ Live brokerage integration'],
@@ -324,7 +323,7 @@ document.getElementById('pricingGrid').innerHTML=TIERS.map(([name,price,period,c
   <div class="pricing-name" style="color:var(--${c})">${name}</div>
   <div style="font-size:12px;color:var(--text3)">For ${featured?'advanced analytical learning':'new options learners'}</div>
   <div class="pricing-price" style="color:var(--text)">${price}<span style="font-size:16px;color:var(--text3);font-weight:400">/ ${period}</span></div>
-  <a href="login.html?mode=register" class="btn btn-${featured?'primary':'secondary'}" style="width:100%;justify-content:center;margin-bottom:4px">${featured?'Start Free Pro →':'Get Started Free'}</a>
+  <a href="login.html" class="btn btn-${featured?'primary':'secondary'}" style="width:100%;justify-content:center;margin-bottom:4px">Sign In</a>
   <div class="pricing-divider"></div>
   ${feats.map(([ic,f])=>`<div class="pricing-feature"><span class="pricing-check" style="color:var(--${c})">${ic}</span><span>${f}</span></div>`).join('')}
 </div>`).join('');

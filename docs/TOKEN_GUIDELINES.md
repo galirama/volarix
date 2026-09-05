@@ -23,10 +23,10 @@
 ## File Size Budget
 | File       | Current  | Limit  | Action if over        |
 |------------|----------|--------|-----------------------|
-| app.html   | 187,725 bytes | 200KB  | Keep below 200,000 bytes |
+| app.html   | 188,052 bytes | 200KB  | Keep below 200,000 bytes |
 | app.js     | 19,423 bytes | No separate limit | Load after inline runtime |
 | index.html | ~23KB    | 50KB   | Fine                  |
-| login.html | ~20KB    | 50KB   | Fine                  |
+| login.html | ~7KB     | 50KB   | Fine                  |
 
 Check before every commit: `wc -c app/app.html`
 
@@ -39,7 +39,7 @@ Check before every commit: `wc -c app/app.html`
 ```python
 checks = {
   'No raw template literals': html[:html.find('<script>')].count('${') == 0,
-  'Auth guard intact':        'volarix_auth' in html,
+  'Auth guard intact':        'volarixAuth' in html and 'requireUser' in html,
   'Legal disclaimer':         'not financial advice' in html,
   'Under 200KB':              len(html.encode()) < 200000,
 }
