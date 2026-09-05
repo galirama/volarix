@@ -455,7 +455,7 @@ textarea{resize:vertical;min-height:80px}
     <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px"><div class="logo-hex"></div><span style="font-size:18px;font-weight:800">Welcome to VolariX</span></div>
     <div style="font-size:12px;color:var(--text3);margin-bottom:20px">Quick setup — 3 steps</div>
     <div style="display:flex;gap:6px;margin-bottom:24px">
-      <div class="onboard-step" id="ob1" style="flex:1;height:3px;border-radius:2px;background:var(--purple)"></div>
+      <div id="ob1" style="flex:1;height:3px;border-radius:2px;background:var(--purple)"></div>
       <div id="ob2" style="flex:1;height:3px;border-radius:2px;background:var(--bg4)"></div>
       <div id="ob3" style="flex:1;height:3px;border-radius:2px;background:var(--bg4)"></div>
     </div>
@@ -770,7 +770,7 @@ document.addEventListener('keydown',e=>{
 // ── ONBOARDING ──
 let onboardWL=[];
 function startOnboarding(){$('onboardOverlay').classList.add('open');}
-function completeOnboard(){onboardWL.forEach(t=>addToWatchlist(t));$('onboardOverlay').classList.remove('open');sessionStorage.setItem('volarix_onboarded','1');showToast('🚀 Welcome!','Dashboard ready. Press ⌘K to search anything.','purple');}
+function completeOnboard(){onboardWL.forEach(t=>addToWatchlist(t));$('onboardOverlay').classList.remove('open');sessionStorage.setItem('volarix_onboarded','1');localStorage.setItem('volarix_onboarded','1');showToast('🚀 Welcome!','Dashboard ready. Press ⌘K to search anything.','purple');}
 function onboardNext(step){
   document.querySelectorAll('#onboardOverlay .onboard-step').forEach(s=>{s.style.display='none';s.classList.remove('active');});
   const el=$('os'+step);if(el){el.style.display='block';el.classList.add('active');}
@@ -1230,7 +1230,7 @@ function buildMegacap() {
 // ── WIRE SCORECARD INTO PRE-TRADE GATE ──
 // Intercept paper trade simulation
 const _origBuildPaper = buildPaper;
-function buildPaper() {
+buildPaper = function() {
   _origBuildPaper();
   // Override simulate button to show scorecard first
   setTimeout(() => {
@@ -1475,11 +1475,11 @@ function loadState() {
 
 // Auto-save on watchlist/paper trade changes
 const _origAddToWatchlist = addToWatchlist;
-function addToWatchlist(s) { _origAddToWatchlist(s); saveState(); }
+addToWatchlist = function(s) { _origAddToWatchlist(s); saveState(); };
 const _origRemoveWL = removeWL;
-function removeWL(s) { _origRemoveWL(s); saveState(); }
+removeWL = function(s) { _origRemoveWL(s); saveState(); };
 const _origToggleTheme = toggleTheme;
-function toggleTheme() { _origToggleTheme(); saveState(); }
+toggleTheme = function() { _origToggleTheme(); saveState(); };
 
 // ══════════════════════════════════════════
 // P4 — TRADE JOURNAL STATISTICS
@@ -1615,7 +1615,7 @@ function drawIVHistory(canvasId, sym) {
 
 // Add IV history section to Ticker Analyzer
 const _origBuildTickerAnalyzer = buildTickerAnalyzer;
-function buildTickerAnalyzer(sym) {
+buildTickerAnalyzer = function(sym) {
   _origBuildTickerAnalyzer(sym);
   setTimeout(() => {
     const card = document.querySelector('#tab-ticker .card .card-body');
@@ -2092,7 +2092,7 @@ buildPaper = function() {
 
 // Add Position Sizing as sidebar nav under Risk
 const _origPaperTab = pTab;
-function pTab(id, el) {
+pTab = function(id, el) {
   document.querySelectorAll('#tab-paper .tab-btn').forEach(b=>b.classList.remove('active'));
   if(el) el.classList.add('active');
   ['h','s','journal'].forEach(t => {
@@ -2108,7 +2108,7 @@ initPWA();
 loadSession();
 buildOverview();
 buildWatchlistSidebar();
-if(!sessionStorage.getItem('volarix_onboarded'))setTimeout(startOnboarding,800);
+if(!localStorage.getItem('volarix_onboarded')&&!sessionStorage.getItem('volarix_onboarded'))setTimeout(startOnboarding,800);
 setTimeout(()=>showToast('👋 Welcome back!','VolariX ready. Press ⌘K to search anything.','purple',5000),600);
 </script>
 <!-- Loaded after the inline dashboard runtime: app.js uses its shared DOM helpers. -->

@@ -41,7 +41,10 @@ function isConfigured() { return !!(window.volarixAuth && window.volarixAuth.get
 async function checkExistingSession() {
   if (!isConfigured()) { showError('Private authentication is not configured yet.'); return; }
   const user = await window.volarixAuth.requireUser();
-  if (user) window.location.replace('app.html');
+  if (user) {
+    showSuccess('Already signed in (' + (user.email || '') + '). Opening dashboard...');
+    window.location.replace('app.html');
+  }
 }
 document.getElementById('loginForm').addEventListener('submit', async event => {
   event.preventDefault();

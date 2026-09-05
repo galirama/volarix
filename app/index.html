@@ -4,6 +4,9 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>VolariX — Risk-First Options Intelligence</title>
+<script src="supabase.config.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="volarix-auth.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;0,500&family=Bricolage+Grotesque:opsz,wght@12..96,300;12..96,400;12..96,500;12..96,600;12..96,700;12..96,800&display=swap" rel="stylesheet">
 <style>
@@ -330,6 +333,25 @@ document.getElementById('pricingGrid').innerHTML=TIERS.map(([name,price,period,c
 
 // ── Smooth scroll ──
 document.querySelectorAll('a[href^="#"]').forEach(a=>{a.addEventListener('click',e=>{e.preventDefault();const t=document.querySelector(a.getAttribute('href'));if(t)t.scrollIntoView({behavior:'smooth'});});});
+
+// ── Auth session recognition ──
+(async function() {
+  if (window.volarixAuth) {
+    try {
+      const user = await window.volarixAuth.requireUser();
+      if (user) {
+        document.querySelectorAll('a[href="login.html"]').forEach(btn => {
+          btn.href = 'app.html';
+          btn.textContent = btn.classList.contains('btn-hero') ? 'Open Dashboard →' : 'Open Dashboard';
+        });
+        const tag = document.querySelector('.hero-tag');
+        if (tag) {
+          tag.innerHTML = '<span class="live-dot"></span> Signed in as <span style="color:var(--cyan);font-family:var(--mono);font-weight:600;margin-left:4px">' + (user.email || 'Private User') + '</span>';
+        }
+      }
+    } catch(e) {}
+  }
+})();
 </script>
 </body>
 </html>
