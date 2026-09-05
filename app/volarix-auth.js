@@ -1,6 +1,11 @@
 (function (root) {
+  var DEFAULT_CONFIG = {
+    url: 'https://ifixqeuxvfsxzkxlytqm.supabase.co',
+    publishableKey: 'sb_publishable_BjcFWrlYoIv2DKqXk1A8iA_uaJB487L'
+  };
+
   function getClient() {
-    var cfg = root.VOLARIX_SUPABASE_CONFIG;
+    var cfg = root.VOLARIX_SUPABASE_CONFIG || DEFAULT_CONFIG;
     if (!cfg || !cfg.url || !cfg.publishableKey || !root.supabase || !root.supabase.createClient) return null;
     if (!root.__volarixAuthClient) {
       root.__volarixAuthClient = root.supabase.createClient(cfg.url, cfg.publishableKey);
