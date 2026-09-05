@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "cucumber-js",
-    "build": "exit 0"
+    "build": "node scripts/generate-config.js"
   },
   "devDependencies": {
     "@cucumber/cucumber": "^10.9.0",
