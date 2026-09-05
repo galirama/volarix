@@ -7,13 +7,12 @@
 4. Live at `https://random-name.netlify.app`
 5. Rename: Site Settings → Domain → `volarix.netlify.app`
 
-## Demo Login
-| Email | Password | Plan |
-|---|---|---|
-| trader@example.com | Password123 | Pro |
-| demo@volarix.com | Demo1234 | Free |
+## Private Access Migration
 
-MFA auto-fills in demo mode.
+The checked-in site still contains legacy demo access and must not be used as a
+private deployment yet. Follow `docs/SUPABASE_PRIVATE_AUTH.md` to create the
+owner's Supabase project; the next implementation task removes all demo and
+public-registration paths.
 
 ## Update a File on GitHub
 1. Go to your repo on github.com

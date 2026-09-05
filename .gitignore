@@ -1,0 +1,7 @@
+# Local Supabase project settings. Never commit project-specific configuration.
+/app/supabase.config.js
+
+# Local tooling artifacts
+/node_modules/
+/playwright-report/
+/test-results/

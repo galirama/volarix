@@ -1,9 +1,9 @@
 # VolariX Project Status
-**Last updated:** September 3, 2026
+**Last updated:** September 4, 2026
 
 ---
 
-## Current Sprint: P1 — Market-Data Integration (Partially Complete)
+## Current Sprint: P0 — Private Supabase Authentication (Awaiting Setup)
 
 ### ✅ Complete (All Phases So Far)
 
@@ -55,6 +55,10 @@
 - Options Profit Calculator modal
 
 ### 🔄 In Progress
+- P0: Private Supabase Auth migration. Repository template and specification
+  exist; the local project configuration is ready. Remaining work is provider
+  access settings, owner-account creation, then the code cutover. See
+  `docs/FEATURE_AUDIT.md` for the exact resume point.
 - P1: Yahoo Finance quote polling and Alternative.me Fear & Greed are wired in
   `app/app.html` via `syncMarketData()` and `fetchWithCache()`.
 - P1 remaining: decide which UI elements consume Finnhub fundamentals and FRED

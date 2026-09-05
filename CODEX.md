@@ -15,9 +15,11 @@ Then wait for human confirmation before writing any code.
 
 ## What VolariX Is
 Risk-first options trading intelligence platform.
-3 static HTML files on Netlify. No backend yet. All data simulated.
+Static HTML application on Netlify. Private Supabase Auth migration is the
+active prerequisite before any further real-data work.
 **Live:** https://volarix.netlify.app
-**Login:** trader@example.com / Password123 (Pro) | demo@volarix.com / Demo1234 (Free)
+**Access:** Private owner account only after P0 is complete; never create or
+retain demo credentials.
 
 ---
 
@@ -123,6 +125,7 @@ We use a Behavior-Driven Development (BDD) test suite to protect the integrity o
 | **P11 BDD Test Suite** | tests/ (Cucumber + Playwright) |
 
 ### 🔄 In Progress
+- P0: Private Supabase Auth migration. See `docs/SUPABASE_PRIVATE_AUTH.md`.
 - P1: Market-data integration. Yahoo Finance quotes and Alternative.me Fear & Greed
   are fetched client-side with localStorage caching and static-data fallback.
   Finnhub fundamentals and FRED economic data are not yet integrated.
@@ -133,7 +136,12 @@ We use a Behavior-Driven Development (BDD) test suite to protect the integrity o
 ---
 
 ## Next Priority
-**P1 — Complete the market-data integration**
+**P0 — Private Supabase Auth migration**
+Create the owner's Supabase project, then remove demo access and implement
+verified Supabase sessions. Full setup and acceptance criteria: see
+`docs/SUPABASE_PRIVATE_AUTH.md`. Do not proceed to P1 until P0 passes.
+
+**After P0: P1 — Complete the market-data integration**
 Keep the existing Yahoo Finance and Alternative.me integration working, then add
 Finnhub/FRED only where their data has a defined UI consumer. Preserve the
 60-second client cache, graceful static fallback, and the educational-data
@@ -148,7 +156,10 @@ disclaimer. Full scope and acceptance criteria: see docs/TASK_QUEUE.md.
 4. Run audit script before presenting any file
 5. Update PROJECT_STATUS.md + TASK_QUEUE.md after every feature
 6. Never refactor working code
-7. Read docs/HANDOFF.md before planning work; update it before ending a task.
+7. Read docs/HANDOFF.md and docs/FEATURE_AUDIT.md before planning work; update
+   both before ending a task.
+8. For private access, follow docs/SUPABASE_PRIVATE_AUTH.md. Never request or
+   store passwords, secret keys, or service-role keys.
 
 ## Audit Script (run before every present_files)
 ```python

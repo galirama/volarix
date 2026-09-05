@@ -1,6 +1,6 @@
 # VolariX Continuation Handoff
 
-## Latest update — September 3, 2026
+## Latest update — September 4, 2026
 
 - Fixed the `app.js` load-order error by moving its script tag below the inline
   dashboard runtime in `app/app.html`.
@@ -10,13 +10,18 @@
   merge-conflict markers were found in source or documentation.
 - Runtime tests remain unverified locally because Node.js and macOS Command
   Line Tools are unavailable on this workstation.
+- Added the P0 private-auth specification, local configuration template, and
+  ignore rule. P0 now blocks P1 real-data work.
+- Added `docs/FEATURE_AUDIT.md` as the chronological continuation record. P0
+  is blocked only by the owner's Supabase dashboard session and the remaining
+  provider-side access settings.
 
 ## Read this first
 
 This file is the current implementation snapshot for humans and agents. Read it
-after `CODEX.md`, then inspect the named code before changing anything. Update
-this file, `PROJECT_STATUS.md`, and `TASK_QUEUE.md when a task changes scope or
-completion state.
+after `CODEX.md` and `FEATURE_AUDIT.md`, then inspect the named code before
+changing anything. Update this file, `FEATURE_AUDIT.md`, `PROJECT_STATUS.md`,
+and `TASK_QUEUE.md when a task changes scope or completion state.
 
 ## Product and runtime
 
@@ -24,8 +29,8 @@ completion state.
   backend and must not present signals as financial advice.
 - Deploy the `app/` directory to Netlify. `vercel.json` also supports a static
   Vercel deployment.
-- Authentication is a demo-only `sessionStorage` guard; do not treat it as
-  production authentication.
+- Authentication is still a legacy demo-only `sessionStorage` guard and must
+  be replaced by P0 Supabase Auth before the site is used privately.
 - Persistent user state is client-side `localStorage`. Runtime market state is
   the `MKT` object in `app/app.html`.
 
@@ -50,6 +55,13 @@ Both return to the static `MKT` values on failure.
 Do not add Finnhub or FRED keys directly to browser code. First identify a UI
 consumer, then introduce a server-side proxy or a provider approach appropriate
 for a production migration. P10 (the scheduled Resend digest) has not started.
+
+## Private-access work queue
+
+P0 is specified in `docs/SUPABASE_PRIVATE_AUTH.md`. The owner must create a
+Supabase project and supply its project URL and publishable key. The local
+`app/supabase.config.js` file is intentionally ignored by Git. Do not accept a
+password, secret key, or service-role key from the owner or put one in code.
 
 ## Verification
 
