@@ -66,3 +66,22 @@ all demo and public-registration flows.
 P1 Yahoo Finance quotes and Alternative.me Fear & Greed remain in place with
 cached static-data fallback. Finnhub, FRED, and any options-data provider must
 use server-side handling for secrets and must first have a defined UI consumer.
+
+## Phase 2 Features - Complete
+
+**Status:** Implementation and BDD Test Coverage Complete (September 7, 2026)
+
+### Features Built & Verified:
+- **P2 Profit Calculator**: Interactive modal with price slider and P&L chart.
+- **P3 LocalStorage Persistence**: Theme, watchlist, thresholds, and paper trades persist across reloads.
+- **P4 Trade Journal Stats**: Win rate analytics and equity curve drawing.
+- **P5 IV Rank Historical Chart**: 52-week historical line chart in Ticker Analyzer.
+- **P6 Position Sizing Calc**: Tab with recommended and Kelly criterion sizing.
+- **P7 PWA**: Manifest and Service Worker configuration for mobile install.
+- **P8 Economic Calendar**: High-impact event tracking and filtering.
+- **P9 Flow Heatmap**: Sector-level call/put flow visualization.
+
+### Verification:
+- All features have corresponding Gherkin specifications in `tests/features/`.
+- Step definitions implemented in `tests/steps/dashboard.steps.js`.
+- BDD tests verify UI rendering, interactivity, and persistence.

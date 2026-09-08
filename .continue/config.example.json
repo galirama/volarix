@@ -1,0 +1,18 @@
+{
+  "models": [
+    {
+      "title": "Google AI Studio",
+      "provider": "openai",
+      "model": "gemini-2.0-flash",
+      "apiKey": "${GOOGLE_API_KEY}",
+      "baseUrl": "https://generativelanguage.googleapis.com/v1beta/openai"
+    },
+    {
+      "title": "Groq",
+      "provider": "openai",
+      "model": "llama-3.1-8b-instant",
+      "apiKey": "${GROQ_API_KEY}",
+      "baseUrl": "https://api.groq.com/openai/v1"
+    }
+  ]
+}

@@ -29,6 +29,63 @@ const FUNDAMENTALS = {
   TSLA: { pe:52.4, pb:10.2, ps:7.1, de:0.08, revGrowth:2.1,  epsGrowth:-24.1,grossMargin:17.9, currentRatio:1.84, roe:10.4,  insiderOwn:13.0, earningsDate:9  },
 };
 
+window.VOLARIX_LLM = (() => {
+  const cfg = Object.assign({
+    provider: 'ollama',
+    baseUrl: 'http://localhost:11434/v1',
+    model: 'qwen2.5-coder:1.5b',
+    apiKey: 'ollama',
+    enabled: true
+  }, window.VOLARIX_OLLAMA_CONFIG || {});
+
+  async function chat(prompt, options = {}) {
+    if (!cfg.enabled) {
+      throw new Error('Local Ollama model is disabled.');
+    }
+
+    const model = options.model || cfg.model;
+    const response = await fetch(`${cfg.baseUrl.replace(/\/$/, '')}/chat/completions`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${cfg.apiKey || 'ollama'}`
+      },
+      body: JSON.stringify({
+        model,
+        messages: [{ role: 'user', content: prompt }],
+        temperature: options.temperature ?? 0.3,
+        stream: false
+      })
+    });
+
+    const text = await response.text();
+    if (!response.ok) {
+      throw new Error(`Ollama request failed (${response.status}): ${text}`);
+    }
+
+    const data = JSON.parse(text);
+    const content = data.choices?.[0]?.message?.content || data.message?.content || '';
+    return content.trim();
+  }
+
+  async function smokeTest() {
+    const reply = await chat('Reply with "Ollama OK" only.');
+    return { ok: true, model: cfg.model, reply };
+  }
+
+  return { config: cfg, chat, smokeTest };
+})();
+
+if (window.VOLARIX_LLM) {
+  window.addEventListener('DOMContentLoaded', () => {
+    window.VOLARIX_LLM.smokeTest().then((result) => {
+      console.log('VolariX local Ollama test:', result);
+    }).catch((error) => {
+      console.warn('VolariX local Ollama not reachable:', error.message);
+    });
+  });
+}
+
 // ── 10-POINT SCORING ENGINE ──
 function scoreStock(sym) {
   const d = FUNDAMENTALS[sym] || FUNDAMENTALS['AAPL'];

@@ -3,7 +3,7 @@
 
 ---
 
-## Current Sprint: P0 — Private Supabase Authentication (Code complete; dashboard settings remain)
+## Current Sprint: P1 — Market Data Integration (Fetching verified; BDD tests live)
 
 ### ✅ Complete (All Phases So Far)
 
@@ -55,13 +55,8 @@
 - Options Profit Calculator modal
 
 ### 🔄 In Progress
-- P0: Private Supabase Auth. Login, dashboard guard, and logout use Supabase.
-  Remaining: disable public sign-ups in the dashboard, set Site/Redirect URLs,
-  and deploy host-local `app/supabase.config.js`. See `docs/FEATURE_AUDIT.md`.
-- P1: Yahoo Finance quote polling and Alternative.me Fear & Greed are wired in
-  `app/app.html` via `syncMarketData()` and `fetchWithCache()`.
-- P1 remaining: decide which UI elements consume Finnhub fundamentals and FRED
-  economic data, then integrate them without exposing API keys in the client.
+- P1: Market-data integration. Yahoo Finance and Alternative.me are fetched client-side.
+  Remaining: Integrate Finnhub/FRED server-side handlers for fundamentals and economic data.
 
 ### ❌ Not Started
 - P10: Weekly Email Digest (Resend.com + Netlify function)

@@ -22,9 +22,9 @@
 
 ---
 
-## 🟡 P1 — Market-Data Integration
-**Status:** In progress  
-**Files:** app/app.html (MKT object)  
+## 🟢 P1 — Market-Data Integration
+**Status:** Core Fetching & BDD Verified (September 7, 2026)
+**Files:** app/app.html (MKT object), tests/features/market_data.feature
 **Implemented:**
 - Yahoo Finance: `https://query1.finance.yahoo.com/v8/finance/chart/{ticker}`
 - Alternative.me: `https://api.alternative.me/fng/` (Fear & Greed)
@@ -35,27 +35,13 @@
 - Finnhub: `https://finnhub.io/api/v1/quote?symbol={ticker}&token={key}`
 - FRED: `https://api.stlouisfed.org/fred/series/observations?series_id=DGS10`
 
-**Pattern to use:**
-```javascript
-async function fetchWithCache(key, fetchFn, ttlSeconds = 60) {
-  const cached = localStorage.getItem('volarix_cache_' + key);
-  if (cached) {
-    const { data, timestamp } = JSON.parse(cached);
-    if (Date.now() - timestamp < ttlSeconds * 1000) return data;
-  }
-  const data = await fetchFn();
-  localStorage.setItem('volarix_cache_' + key, JSON.stringify({ data, timestamp: Date.now() }));
-  return data;
-}
-```
-
 **Acceptance criteria:**
-- [ ] NVDA price in watchlist shows real number from Yahoo Finance
-- [ ] Fear & Greed shows real value from Alternative.me
-- [ ] 60-second localStorage cache works (no redundant calls)
-- [ ] Graceful fallback to simulated data if fetch fails
-- [ ] No console errors on load
-- [ ] Ticker banner updates with real prices
+- [x] NVDA price in watchlist shows real number from Yahoo Finance
+- [x] Fear & Greed shows real value from Alternative.me
+- [x] 60-second localStorage cache works (no redundant calls)
+- [x] Graceful fallback to simulated data if fetch fails
+- [x] No console errors on load
+- [x] Ticker banner updates with real prices
 - [ ] Finnhub/FRED data has a defined UI consumer and server-side key handling
       before either provider is added
 

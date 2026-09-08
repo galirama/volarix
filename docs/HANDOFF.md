@@ -45,8 +45,9 @@ and `TASK_QUEUE.md` when a task changes scope or completion state.
 
 ## Current work state
 
-P0 code is in the tree. P1 quote/Fear & Greed fetching remains in
-`syncMarketData()`. Do not add Finnhub or FRED keys to browser code.
+P0 (Private Auth) and P1 (Market Data core) code is in the tree. P1 quote/Fear & Greed 
+fetching is verified via BDD tests. Do not add Finnhub or FRED keys to browser code.
+Phase 2 features (P2-P9) are fully implemented and have BDD test coverage.
 
 ## Private-access work queue
 

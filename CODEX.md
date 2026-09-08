@@ -125,13 +125,8 @@ We use a Behavior-Driven Development (BDD) test suite to protect the integrity o
 | **P11 BDD Test Suite** | tests/ (Cucumber + Playwright) |
 
 ### 🔄 In Progress
-- P0: Private Supabase Auth. App login, dashboard guard, and sign-out now use
-  Supabase. Remaining owner work: disable public sign-ups in the dashboard,
-  confirm Site URL / Redirect URLs, and keep `app/supabase.config.js` only on
-  the deploy host (it is gitignored).
-- P1: Market-data integration. Yahoo Finance quotes and Alternative.me Fear & Greed
-  are fetched client-side with localStorage caching and static-data fallback.
-  Finnhub fundamentals and FRED economic data are not yet integrated.
+- P1: Market-data integration. Yahoo Finance and Alternative.me are fetched client-side.
+  Remaining: Integrate Finnhub/FRED server-side handlers for fundamentals and economic data.
 
 ### ❌ Not Started
 - P10: Weekly Email Digest (Resend.com + Netlify function)
@@ -139,16 +134,8 @@ We use a Behavior-Driven Development (BDD) test suite to protect the integrity o
 ---
 
 ## Next Priority
-**P0 — Private Supabase Auth migration**
-Code cutover is in the repository. Confirm the remaining dashboard settings in
-`docs/FEATURE_AUDIT.md`, then treat P0 as complete. Do not proceed to additional
-P1 providers until those checks pass.
-
-**After P0: P1 — Complete the market-data integration**
-Keep the existing Yahoo Finance and Alternative.me integration working, then add
-Finnhub/FRED only where their data has a defined UI consumer. Preserve the
-60-second client cache, graceful static fallback, and the educational-data
-disclaimer. Full scope and acceptance criteria: see docs/TASK_QUEUE.md.
+**P1 — Complete the market-data integration**
+Integrate Finnhub/FRED server-side handlers for fundamentals and economic data.
 
 ---
 

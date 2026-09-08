@@ -554,6 +554,7 @@ textarea{resize:vertical;min-height:80px}
     <div style="height:1px;background:var(--border);margin:4px 0"></div>
     <div class="nav-section">Markets</div>
     <div class="nav-item active" onclick="showTab('overview',this)"><span class="nav-icon">📊</span>Overview<span class="nav-dot"></span></div>
+    <div class="nav-item" onclick="showTab('ai',this)"><span class="nav-icon">🤖</span>AI Assistant</div>
     <div class="nav-item" onclick="showTab('ticker',this)"><span class="nav-icon">🔍</span>Ticker Analyzer</div>
     <div class="nav-item" onclick="showTab('screener',this)"><span class="nav-icon">📡</span>IV Screener</div>
     <div class="nav-item" onclick="showTab('megacap',this)"><span class="nav-icon">🏦</span>Mega-Cap IV Screener</div>
@@ -585,6 +586,7 @@ textarea{resize:vertical;min-height:80px}
   </div>
   <div class="app-main">
     <div class="page active" id="tab-overview"></div>
+    <div class="page" id="tab-ai"></div>
     <div class="page" id="tab-ticker"></div>
     <div class="page" id="tab-screener"></div>
     <div class="page" id="tab-megacap"></div>
@@ -821,9 +823,63 @@ function showTab(id,el){
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
   document.querySelectorAll('#appShell .nav-item').forEach(n=>n.classList.remove('active'));
   const pg=$('tab-'+id);if(pg)pg.classList.add('active');if(el&&el.classList)el.classList.add('active');
-  const B={overview:buildOverview,ticker:()=>buildTickerAnalyzer('NVDA'),screener:buildScreener,options:buildOptions,strategy:buildStrategy,earnings:buildEarnings,uoa:buildUOA,congress:buildCongress,signals:buildSignals,sectors:buildSectors,paper:buildPaper,live:buildLive,backtest:buildBacktest,exit:buildExit,import:buildImport,alerts:buildAlerts,settings:buildSettings};
+  const B={overview:buildOverview,ai:buildAIAssistant,ticker:()=>buildTickerAnalyzer('NVDA'),screener:buildScreener,options:buildOptions,strategy:buildStrategy,earnings:buildEarnings,uoa:buildUOA,congress:buildCongress,signals:buildSignals,sectors:buildSectors,paper:buildPaper,live:buildLive,backtest:buildBacktest,exit:buildExit,import:buildImport,alerts:buildAlerts,settings:buildSettings};
   if(B[id])B[id]();
 }
+
+async function askLocalAssistant(){
+  const input = document.getElementById('aiPrompt');
+  const output = document.getElementById('aiOutput');
+  const btn = document.getElementById('aiAskBtn');
+  if(!input || !output || !btn) return;
+
+  const prompt = input.value.trim();
+  if(!prompt){
+    output.textContent = 'Type a question first.';
+    output.style.color = 'var(--amber)';
+    return;
+  }
+
+  btn.disabled = true;
+  btn.textContent = 'Thinking...';
+  output.style.color = 'var(--text2)';
+  output.textContent = 'Querying local Ollama model...';
+
+  try {
+    if(!window.VOLARIX_LLM || typeof window.VOLARIX_LLM.chat !== 'function') {
+      throw new Error('Local AI helper not available.');
+    }
+    const reply = await window.VOLARIX_LLM.chat(prompt, { temperature: 0.2 });
+    output.textContent = reply || 'No response returned.';
+    output.style.color = 'var(--text)';
+  } catch (error) {
+    output.textContent = 'AI request failed: ' + (error && error.message ? error.message : 'unknown error');
+    output.style.color = 'var(--red)';
+  } finally {
+    btn.disabled = false;
+    btn.textContent = 'Ask AI';
+  }
+}
+
+function buildAIAssistant(){
+  set('tab-ai', `
+    <div class="card" style="max-width:900px;margin:0 auto">
+      <div class="card-header">
+        <div class="card-title">🤖 Local AI Assistant</div>
+        <div class="badge badge-cyan">qwen2.5-coder:1.5b</div>
+      </div>
+      <div class="card-body">
+        <div style="margin-bottom:10px;font-size:12px;color:var(--text3)">Connected to the local Ollama endpoint on this machine.</div>
+        <textarea id="aiPrompt" rows="6" placeholder="Ask the model to summarize a trade, explain a signal, or help with your strategy..." style="resize:vertical;background:var(--bg3);color:var(--text);border:1px solid var(--border2);border-radius:var(--r);padding:12px;width:100%;font-family:var(--font);font-size:13px;line-height:1.5"></textarea>
+        <div style="display:flex;justify-content:flex-end;margin-top:12px">
+          <button id="aiAskBtn" class="btn btn-primary" onclick="askLocalAssistant()">Ask AI</button>
+        </div>
+        <div style="margin-top:16px;padding:14px 16px;border-radius:var(--r);background:var(--bg3);border:1px solid var(--border);color:var(--text2);font-size:12.5px;line-height:1.6;white-space:pre-wrap" id="aiOutput">Ready for a prompt.</div>
+      </div>
+    </div>
+  `);
+}
+
 async function logout(){
   if(window.volarixAuth) await window.volarixAuth.signOut();
   window.location.href='index.html';
@@ -861,8 +917,46 @@ function buildOverview(){
       <div style="overflow-x:auto"><table class="data-table"><thead><tr><th>Ticker</th><th>Type</th><th>Strike</th><th>Expiry</th><th>Qty</th><th>Delta</th><th>Theta</th><th>IV</th><th>P&L</th><th>Ret</th><th></th></tr></thead>
       <tbody>${STATE.positions.map(p=>`<tr><td style="font-family:var(--mono);font-weight:700">${p.ticker}</td><td>${badge(p.type,p.type==='Call'?'cyan':'red')}</td><td style="font-family:var(--mono)">$${p.strike}</td><td style="color:var(--text2);font-size:11px">${p.exp}</td><td style="font-family:var(--mono)">${p.qty}</td><td style="font-family:var(--mono);color:${p.delta>0?'var(--cyan)':'var(--red)'}">${p.delta.toFixed(2)}</td><td style="font-family:var(--mono);color:var(--amber)">${p.theta.toFixed(2)}</td><td>${badge(p.iv,'neutral')}</td><td style="font-family:var(--mono);font-weight:700;color:var(--${p.color})">${p.pnl>0?'+':''}$${Math.abs(p.pnl)}</td><td>${badge((p.pct>0?'+':'')+p.pct+'%',p.color)}</td><td><button class="btn btn-secondary btn-sm" onclick="openRisk('${p.ticker}')">Risk</button></td></tr>`).join('')}</tbody></table></div>
     </div>
+    <div class="card" style="margin-bottom:12px">
+      <div class="card-header">
+        <div class="card-title">🤖 Local AI Trade Assistant</div>
+        <div class="badge badge-cyan">Ollama</div>
+      </div>
+      <div class="card-body">
+        <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:10px">
+          <textarea id="overviewAiPrompt" rows="3" placeholder="Example: Summarize my NVDA setup and suggest a risk-aware next move..." style="flex:1;min-width:260px;resize:vertical;background:var(--bg3);color:var(--text);border:1px solid var(--border2);border-radius:var(--r);padding:10px 12px;font-family:var(--font);font-size:13px"></textarea>
+          <button class="btn btn-primary" onclick="askOverviewAI()">Ask AI</button>
+        </div>
+        <div id="overviewAiOutput" style="background:var(--bg3);border:1px solid var(--border);border-radius:var(--r);padding:12px 14px;color:var(--text2);font-size:12.5px;line-height:1.6;white-space:pre-wrap">Ready to analyze your current portfolio and watchlist.</div>
+      </div>
+    </div>
     <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px">${[['Put/Call Ratio','0.76','Bullish bias','cyan'],['SPY vs 50-MA','Above ✓','Uptrend intact','cyan'],['10Y Treasury','4.31%','Stable','text2']].map(([l,v,s,c])=>`<div class="card card-body">${lbl(l)}<div style="font-family:var(--mono);font-size:18px;font-weight:600;color:var(--${c})">${v}</div><div class="stat-sub">${s}</div></div>`).join('')}</div>
   `);
+}
+
+async function askOverviewAI(){
+  const input = document.getElementById('overviewAiPrompt');
+  const output = document.getElementById('overviewAiOutput');
+  if(!input || !output) return;
+
+  const prompt = input.value.trim();
+  if(!prompt){
+    output.textContent = 'Type a question first.';
+    output.style.color = 'var(--amber)';
+    return;
+  }
+
+  output.style.color = 'var(--text2)';
+  output.textContent = 'Querying the local model...';
+
+  try {
+    const reply = await window.VOLARIX_LLM.chat(`Use the context of this options dashboard and answer briefly: ${prompt}` , { temperature: 0.3 });
+    output.textContent = reply;
+    output.style.color = 'var(--text)';
+  } catch (error) {
+    output.textContent = 'AI request failed: ' + (error && error.message ? error.message : 'unknown error');
+    output.style.color = 'var(--red)';
+  }
 }
 
 function buildTickerAnalyzer(sym){
