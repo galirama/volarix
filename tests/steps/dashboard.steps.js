@@ -14,8 +14,20 @@ Then('the Fear & Greed banner should display a numeric value between 0 and 100',
 });
 
 Then('the live stock quotes should reflect current market prices', async function () {
-  const price = await this.page.locator('.watchlist-price').first().textContent();
-  expect(price).toMatch(/\$[0-9.]+/);
+  // Wait for syncMarketData to run at least once
+  await this.page.waitForTimeout(2000);
+  const prices = await this.page.locator('.watchlist-price').allTextContents();
+  
+  for (const priceText of prices) {
+    const price = parseFloat(priceText.replace('$', ''));
+    expect(price).toBeGreaterThan(0);
+    
+    // Specifically check that AAPL is not stuck at the old 2024 hardcoded value of 189.45
+    // and instead reflects more modern (2026) pricing context provided by the user.
+    if (priceText.includes('AAPL')) {
+       expect(price).toBeGreaterThan(250); 
+    }
+  }
 });
 
 // PROFIT CALCULATOR
