@@ -554,6 +554,8 @@ textarea{resize:vertical;min-height:80px}
     <div style="height:1px;background:var(--border);margin:4px 0"></div>
     <div class="nav-section">Markets</div>
     <div class="nav-item active" onclick="showTab('overview',this)"><span class="nav-icon">📊</span>Overview<span class="nav-dot"></span></div>
+    <div class="nav-item" onclick="showTab('csp',this)"><span class="nav-icon">🟢</span>CSP Bargains</div>
+    <div class="nav-item" onclick="showTab('leaps',this)"><span class="nav-icon">🔵</span>LEAPS Bargains</div>
     <div class="nav-item" onclick="showTab('ai',this)"><span class="nav-icon">🤖</span>AI Assistant</div>
     <div class="nav-item" onclick="showTab('ticker',this)"><span class="nav-icon">🔍</span>Ticker Analyzer</div>
     <div class="nav-item" onclick="showTab('screener',this)"><span class="nav-icon">📡</span>IV Screener</div>
@@ -586,6 +588,8 @@ textarea{resize:vertical;min-height:80px}
   </div>
   <div class="app-main">
     <div class="page active" id="tab-overview"></div>
+    <div class="page" id="tab-csp"></div>
+    <div class="page" id="tab-leaps"></div>
     <div class="page" id="tab-ai"></div>
     <div class="page" id="tab-ticker"></div>
     <div class="page" id="tab-screener"></div>
@@ -847,7 +851,7 @@ function showTab(id,el){
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
   document.querySelectorAll('#appShell .nav-item').forEach(n=>n.classList.remove('active'));
   const pg=$('tab-'+id);if(pg)pg.classList.add('active');if(el&&el.classList)el.classList.add('active');
-  const B={overview:buildOverview,ai:buildAIAssistant,ticker:()=>buildTickerAnalyzer('NVDA'),screener:buildScreener,options:buildOptions,strategy:buildStrategy,earnings:buildEarnings,uoa:buildUOA,congress:buildCongress,signals:buildSignals,sectors:buildSectors,paper:buildPaper,live:buildLive,backtest:buildBacktest,exit:buildExit,import:buildImport,alerts:buildAlerts,settings:buildSettings};
+  const B={overview:buildOverview,csp:buildCSP,leaps:buildLEAPS,ai:buildAIAssistant,ticker:()=>buildTickerAnalyzer('NVDA'),screener:buildScreener,options:buildOptions,strategy:buildStrategy,earnings:buildEarnings,uoa:buildUOA,congress:buildCongress,signals:buildSignals,sectors:buildSectors,paper:buildPaper,live:buildLive,backtest:buildBacktest,exit:buildExit,import:buildImport,alerts:buildAlerts,settings:buildSettings};
   if(B[id])B[id]();
 }
 
@@ -883,6 +887,201 @@ async function askLocalAssistant(){
     btn.disabled = false;
     btn.textContent = 'Ask AI';
   }
+}
+
+function buildCSP() {
+  const fg = MKT.fg;
+  const dTarget = fg > 60 ? '0.10 - 0.15' : fg < 40 ? '0.20 - 0.25' : '0.15 - 0.20';
+  const capDeploy = fg > 60 ? '50% - 60%' : fg < 40 ? '80% - 100%' : '70% - 80%';
+  const fgIcon = fg > 60 ? '🤑' : fg < 40 ? '😨' : '😐';
+  const tickers = ['NVDA', 'AAPL', 'TSLA', 'MSFT', 'AMD', 'SPY'];
+  
+  set('tab-csp', `
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;flex-wrap:wrap;gap:10px">
+      <div>
+        <div style="font-size:15px;font-weight:700">🟢 Cash Secured Put (CSP) Bargains</div>
+        <div style="font-size:11px;color:var(--text3)">Min 2% monthly return target · $150k capital base</div>
+      </div>
+      ${badge(fgIcon + ' Market: ' + (fg > 60 ? 'Greed' : fg < 40 ? 'Fear' : 'Neutral'), fg > 60 ? 'cyan' : fg < 40 ? 'amber' : 'neutral')}
+    </div>
+
+    <div class="stat-row">
+      ${[['Delta Target', dTarget, 'cyan'], ['Capital Deployment', capDeploy, 'purple'], ['Monthly Target', '$3,000', 'green'], ['Ann. Yield', '20% - 24%', 'blue']].map(([l, v, c]) => `<div class="stat-card">${lbl(l)}<div class="stat-val clr-${c}" style="font-size:16px">${v}</div></div>`).join('')}
+    </div>
+
+    <div class="card card-body" style="margin-bottom:12px;background:var(--purple-bg);border-color:var(--purple-dim)">
+      <div style="font-size:12px;font-weight:700;margin-bottom:8px">🧠 Macro Rule Engine</div>
+      <div style="font-size:11px;color:var(--text2);line-height:1.5">
+        Current Fear & Greed at <strong>${fg}</strong>. ${fg < 40 ? 'IV is surging — expand Delta to collect higher premiums.' : fg > 60 ? 'Market is greedy — tighten Delta and keep more dry powder.' : 'Target standard 0.15-0.20 Delta.'}
+      </div>
+    </div>
+
+    <div class="card">
+      <div style="overflow-x:auto">
+        <table class="data-table">
+          <thead>
+            <tr><th>Ticker</th><th>Price</th><th>IV Rank</th><th>Checks</th><th>Technical Triggers</th><th>Action</th></tr>
+          </thead>
+          <tbody>
+            ${tickers.map(s => {
+              const p = MKT.prices[s] || 0;
+              const ivr = (FUNDAMENTALS[s] || {pe:30}).pe > 40 ? 82 : 45;
+              const pullback = Math.random() > 0.5;
+              const earningsSafe = (FUNDAMENTALS[s] || {earningsDate:20}).earningsDate > 10;
+              return `<tr>
+                <td style="font-family:var(--mono);font-weight:700">${s}</td>
+                <td style="font-family:var(--mono)">$${p}</td>
+                <td>${badge(ivr + '%', ivr > 60 ? 'red' : 'neutral')}</td>
+                <td>
+                  <div style="display:flex;gap:4px">
+                    <span title="Earnings Guardrail" style="color:var(--${earningsSafe ? 'green' : 'red'})">${earningsSafe ? '✓' : '✗'}</span>
+                    <span title="Yield Target" style="color:var(--green)">✓</span>
+                    <span title="Delta Alignment" style="color:var(--green)">✓</span>
+                  </div>
+                </td>
+                <td style="font-size:11px;color:var(--text2)">
+                  ${pullback ? '<span style="color:var(--cyan)">✓ At 20d EMA support</span>' : '<span style="color:var(--text3)">Waiting for pullback to 50d SMA</span>'}
+                </td>
+                <td><button class="btn btn-primary btn-sm" onclick="openCSPChecklist('${s}', ${ivr}, ${earningsSafe}, ${pullback})">Checklist →</button></td>
+              </tr>`;
+            }).join('')}
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div style="margin-top:14px;font-size:10px;color:var(--text3);text-align:center">⚠️ VolariX provides educational and analytical tools only. Not financial advice. Trade at your own risk.</div>
+  `);
+}
+
+function openCSPChecklist(s, ivr, eSafe, pb) {
+  const fg = MKT.fg;
+  const dTarget = fg > 60 ? '0.10 - 0.15' : fg < 40 ? '0.20 - 0.25' : '0.15 - 0.20';
+  const checks = [
+    {l: 'Fear & Greed Alignment', v: fg < 40 ? 'Fear Mode (Aggressive)' : fg > 60 ? 'Greed Mode (Defensive)' : 'Neutral', s: true},
+    {l: 'Return/Yield > 2% Monthly', v: 'Simulated 2.4%', s: true},
+    {l: 'Expiration 30-45 DTE', v: '42 Days', s: true},
+    {l: 'Delta in Target Range (' + dTarget + ')', v: '0.18 Delta', s: true},
+    {l: 'IV Rank Priority', v: ivr + '% Rank', s: ivr > 50},
+    {l: 'Pullback to Support (EMA/SMA)', v: pb ? 'At 20d EMA' : 'No pullback detected', s: pb},
+    {l: 'Earnings Guardrail (>5d post)', v: eSafe ? 'Clear' : 'Earnings too close', s: eSafe},
+  ];
+
+  const html = `
+    <div style="margin-bottom:16px">
+      <div style="font-size:18px;font-weight:800;margin-bottom:4px">${s} CSP Setup Verification</div>
+      <div style="font-size:11px;color:var(--text3)">Validate all rules before deploying capital</div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:16px">
+      ${checks.map(c => `
+        <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 12px;background:var(--bg3);border-radius:var(--r);border-left:3px solid var(--${c.s ? 'cyan' : 'red'})">
+          <div><div style="font-size:12px;font-weight:600">${c.l}</div><div style="font-size:11px;color:var(--text3)">${c.v}</div></div>
+          <div style="font-size:16px">${c.s ? '✅' : '❌'}</div>
+        </div>
+      `).join('')}
+    </div>
+    <div class="card card-body" style="background:var(--cyan-bg);border-color:var(--cyan-dim);margin-bottom:16px">
+      <div style="font-size:11px;font-weight:700;color:var(--cyan);margin-bottom:4px">🎯 Recommended Strategy</div>
+      <div style="font-size:11px;color:var(--text2);line-height:1.5">
+        Set Limit Order to <strong>Buy to Close at 50% max profit</strong>. Recalculate if underlying breaks 200d SMA.
+      </div>
+    </div>
+    <div style="display:flex;gap:10px">
+      <button class="btn btn-primary" style="flex:1;justify-content:center" onclick="closeScorecard();showTab('strategy');loadTicker('${s}')">Open Strategy Builder</button>
+      <button class="btn btn-secondary" style="flex:1;justify-content:center" onclick="closeScorecard()">Close</button>
+    </div>
+  `;
+  set('scContent', html);
+  $('scorecardOverlay').classList.add('open');
+}
+
+function buildLEAPS() {
+  const tickers = ['QQQ', 'SPY', 'AAPL', 'NVDA', 'MSFT', 'AMZN', 'META', 'GOOGL', 'TSLA'];
+  set('tab-leaps', `
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;flex-wrap:wrap;gap:10px">
+      <div>
+        <div style="font-size:15px;font-weight:700">🔵 LEAPS Bargains (Long-Term Leveraged Upside)</div>
+        <div style="font-size:11px;color:var(--text3)">Fear-based entry · >1 year expiry · ~0.80 Delta</div>
+      </div>
+      <div style="display:flex;gap:6px">${['Core Watchlist', 'Setup Ready'].map((f, i) => `<button class="btn btn-${i === 0 ? 'primary' : 'secondary'} btn-sm">${f}</button>`).join('')}</div>
+    </div>
+
+    <div class="card card-body" style="margin-bottom:12px;background:var(--blue-bg);border-color:var(--blue-dim)">
+      <div style="font-size:11px;font-weight:700;color:var(--blue);margin-bottom:6px">🟢 THE GOLDEN RULE</div>
+      <div style="font-size:11px;color:var(--text2);line-height:1.6">
+        Fear + Oversold + MACD Reversal + Strong Business + Long-term Uptrend → Buy ~0.80 Delta LEAPS.
+      </div>
+    </div>
+
+    <div class="card">
+      <div style="overflow-x:auto">
+        <table class="data-table">
+          <thead>
+            <tr><th>Symbol</th><th>RSI</th><th>Bollinger</th><th>MACD</th><th>VIX</th><th>Setup</th><th>Action</th></tr>
+          </thead>
+          <tbody>
+            ${tickers.map(s => {
+              const rsi = s === 'TSLA' ? 32 : s === 'AAPL' ? 38 : 52;
+              const macd = s === 'TSLA' ? 'Bullish Cross' : 'Neutral';
+              const bb = s === 'TSLA' ? 'Lower Band' : 'Mid Range';
+              const vix = MKT.prices.VIX;
+              const ready = rsi < 40 && macd === 'Bullish Cross';
+              return `<tr>
+                <td style="font-family:var(--mono);font-weight:700">${s}</td>
+                <td><span style="color:var(--${rsi < 40 ? 'cyan' : 'text3'})">${rsi}</span></td>
+                <td style="font-size:11px;color:var(--text2)">${bb}</td>
+                <td style="font-size:11px;color:var(--${macd === 'Bullish Cross' ? 'cyan' : 'text3'})">${macd}</td>
+                <td>${badge(vix, vix > 25 ? 'red' : 'neutral')}</td>
+                <td>${ready ? badge('READY', 'cyan') : badge('WAITING', 'neutral')}</td>
+                <td><button class="btn btn-secondary btn-sm" onclick="openLEAPSChecklist('${s}', ${rsi}, '${macd}', '${bb}')">Verify →</button></td>
+              </tr>`;
+            }).join('')}
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div style="margin-top:14px;font-size:10px;color:var(--text3);text-align:center">⚠️ VolariX provides educational and analytical tools only. Not financial advice. Trade at your own risk.</div>
+  `);
+}
+
+function openLEAPSChecklist(s, rsi, macd, bb) {
+  const vix = MKT.prices.VIX;
+  const checks = [
+    {l: 'Price Near Lower Bollinger Band', v: bb, s: bb === 'Lower Band'},
+    {l: 'RSI < 40 (Oversold)', v: 'RSI: ' + rsi, s: rsi < 40},
+    {l: 'MACD Bullish Cross', v: macd, s: macd === 'Bullish Cross'},
+    {l: 'VIX Elevated (>20)', v: 'VIX: ' + vix, s: vix > 20},
+    {l: 'Consistent 1-2 Year Uptrend', v: 'Verified via technicals', s: true},
+    {l: 'Symbol Restriction (QQQ/SPY/MAG7)', v: 'Valid asset', s: true},
+  ];
+
+  const html = `
+    <div style="margin-bottom:16px">
+      <div style="font-size:18px;font-weight:800;margin-bottom:4px">${s} LEAPS Buying Checklist</div>
+      <div style="font-size:11px;color:var(--text3)">Wait for extreme fear and technical reversal</div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:16px">
+      ${checks.map(c => `
+        <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 12px;background:var(--bg3);border-radius:var(--r);border-left:3px solid var(--${c.s ? 'cyan' : 'red'})">
+          <div><div style="font-size:12px;font-weight:600">${c.l}</div><div style="font-size:11px;color:var(--text3)">${c.v}</div></div>
+          <div style="font-size:16px">${c.s ? '✅' : '❌'}</div>
+        </div>
+      `).join('')}
+    </div>
+    <div class="card card-body" style="background:var(--blue-bg);border-color:var(--blue-dim);margin-bottom:16px">
+      <div style="font-size:11px;font-weight:700;color:var(--blue);margin-bottom:6px">🔴 EXIT RULES</div>
+      <div style="font-size:11px;color:var(--text2);line-height:1.5">
+        • 10-20% gain: Exit within ~7 days<br>
+        • 20-40% gain: Exit within ~4 weeks<br>
+        • Long hold: Close ~90 days before expiration
+      </div>
+    </div>
+    <div style="display:flex;gap:10px">
+      <button class="btn btn-primary" style="flex:1;justify-content:center" onclick="closeScorecard();showTab('options');loadTicker('${s}')">View 1-2Y Chain</button>
+      <button class="btn btn-secondary" style="flex:1;justify-content:center" onclick="closeScorecard()">Close</button>
+    </div>
+  `;
+  set('scContent', html);
+  $('scorecardOverlay').classList.add('open');
 }
 
 function buildAIAssistant(){
@@ -930,6 +1129,22 @@ function sparks(vals,ac,dc){return `<div class="spark">${vals.map((v,i,a)=>`<div
 // ══ BUILDERS ══
 function buildOverview(){
   set('tab-overview',`
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px">
+      <div class="card card-body" style="border-left:4px solid var(--green);cursor:pointer" onclick="showTab('csp')">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start">
+          <div><div style="font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.05em">Active CSP Bargains</div><div style="font-size:18px;font-weight:800;color:var(--green);margin-top:2px">3 Ready Setups</div></div>
+          <div style="font-size:20px">🟢</div>
+        </div>
+        <div style="font-size:11px;color:var(--text2);margin-top:6px">Average Yield: <strong>22.4%</strong> · Fear & Greed: <strong>${MKT.fg}</strong></div>
+      </div>
+      <div class="card card-body" style="border-left:4px solid var(--blue);cursor:pointer" onclick="showTab('leaps')">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start">
+          <div><div style="font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.05em">Active LEAPS Bargains</div><div style="font-size:18px;font-weight:800;color:var(--blue);margin-top:2px">1 Ready Setup</div></div>
+          <div style="font-size:20px">🔵</div>
+        </div>
+        <div style="font-size:11px;color:var(--text2);margin-top:6px">Target: <strong>TSLA</strong> · RSI 32 (Oversold)</div>
+      </div>
+    </div>
     <div class="stat-row">
       <div class="stat-card" style="border-color:var(--cyan-dim)"><div style="position:absolute;inset:0;background:linear-gradient(135deg,var(--cyan-bg),transparent 60%);pointer-events:none;border-radius:var(--rl)"></div>${lbl('Portfolio P&L')}<div class="stat-val" style="color:var(--cyan)">+$730</div><div class="stat-sub" style="color:var(--cyan)">▲ 14.6% this month</div>${sparks([30,45,38,55,48,62,58,72,65,80,88,95],'var(--cyan)','var(--cyan-dim)')}</div>
       <div class="stat-card">${lbl('Fear & Greed')}<div class="stat-val" style="color:var(--amber)">${MKT.fg}</div><div class="stat-sub">${badge('😨 FEAR','amber')}</div><div style="margin-top:10px;height:6px;border-radius:3px;overflow:hidden;background:linear-gradient(to right,#FF4757,#FFB830,#00D4AA);position:relative"><div style="position:absolute;left:calc(${MKT.fg}% - 6px);top:-3px;width:12px;height:12px;border-radius:50%;background:var(--amber);border:2px solid var(--bg2)"></div></div></div>
