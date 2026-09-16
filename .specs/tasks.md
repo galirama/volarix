@@ -4,7 +4,7 @@
 ---
 
 ## Status Legend
-✅ Done and verified &nbsp;&nbsp; 🔄 Partially built &nbsp;&nbsp; ❌ Not started
+✅ Done and verified &nbsp;&nbsp; 🔄 Partially built &nbsp;&nbsp; ❌ Not started &nbsp;&nbsp; 💤 Moved to Future
 
 ---
 
