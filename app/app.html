@@ -866,12 +866,14 @@ async function askLocalAssistant(){
   }
 }
 
-function buildCSP() {
+async function buildCSP() {
   const fg = MKT.fg;
   const dTarget = fg > 60 ? '0.10 - 0.15' : fg < 40 ? '0.20 - 0.25' : '0.15 - 0.20';
   const capDeploy = fg > 60 ? '50% - 60%' : fg < 40 ? '80% - 100%' : '70% - 80%';
   const fgIcon = fg > 60 ? '🤑' : fg < 40 ? '😨' : '😐';
   const tickers = ['NVDA', 'AAPL', 'TSLA', 'MSFT', 'AMD', 'SPY'];
+
+  const signals = await Promise.all(tickers.map(async (s) => ({ ticker: s, signal: await getCSPSignal(s) })));
   
   set('tab-csp', `
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;flex-wrap:wrap;gap:10px">
@@ -897,31 +899,20 @@ function buildCSP() {
       <div style="overflow-x:auto">
         <table class="data-table">
           <thead>
-            <tr><th>Ticker</th><th>Price</th><th>IV Rank</th><th>Checks</th><th>Technical Triggers</th><th>Action</th></tr>
+            <tr><th>Ticker</th><th>Price</th><th>IV Rank</th><th>Status</th><th>Action</th></tr>
           </thead>
           <tbody>
-            ${tickers.map(s => {
-              const p = MKT.prices[s] || 0;
-              const ivr = (FUNDAMENTALS[s] || {pe:30}).pe > 40 ? 82 : 45;
-              const pullback = Math.random() > 0.5;
-              const earningsSafe = (FUNDAMENTALS[s] || {earningsDate:20}).earningsDate > 10;
-              return `<tr>
-                <td style="font-family:var(--mono);font-weight:700">${s}</td>
-                <td style="font-family:var(--mono)">$${p}</td>
-                <td>${badge(ivr + '%', ivr > 60 ? 'red' : 'neutral')}</td>
+            ${signals.map(({ ticker, signal }) => `<tr>
+                <td style="font-family:var(--mono);font-weight:700">${ticker}</td>
+                <td style="font-family:var(--mono)">$${MKT.prices[ticker] || 0}</td>
+                <td>${badge(signal.checks[1].value, signal.checks[1].status ? 'neutral' : 'red')}</td>
                 <td>
                   <div style="display:flex;gap:4px">
-                    <span title="Earnings Guardrail" style="color:var(--${earningsSafe ? 'green' : 'red'})">${earningsSafe ? '✓' : '✗'}</span>
-                    <span title="Yield Target" style="color:var(--green)">✓</span>
-                    <span title="Delta Alignment" style="color:var(--green)">✓</span>
+                    ${signal.checks.map(c => `<span title="${c.label}" style="color:var(--${c.status ? 'green' : 'red'})">${c.status ? '✓' : '✗'}</span>`).join('')}
                   </div>
                 </td>
-                <td style="font-size:11px;color:var(--text2)">
-                  ${pullback ? '<span style="color:var(--cyan)">✓ At 20d EMA support</span>' : '<span style="color:var(--text3)">Waiting for pullback to 50d SMA</span>'}
-                </td>
-                <td><button class="btn btn-primary btn-sm" onclick="openCSPChecklist('${s}', ${ivr}, ${earningsSafe}, ${pullback})">Checklist →</button></td>
-              </tr>`;
-            }).join('')}
+                <td><button class="btn btn-primary btn-sm" onclick="openCSPChecklist('${ticker}')">Checklist →</button></td>
+              </tr>`).join('')}
           </tbody>
         </table>
       </div>
@@ -930,36 +921,26 @@ function buildCSP() {
   `);
 }
 
-function openCSPChecklist(s, ivr, eSafe, pb) {
-  const fg = MKT.fg;
-  const dTarget = fg > 60 ? '0.10 - 0.15' : fg < 40 ? '0.20 - 0.25' : '0.15 - 0.20';
-  const checks = [
-    {l: 'Fear & Greed Alignment', v: fg < 40 ? 'Fear Mode (Aggressive)' : fg > 60 ? 'Greed Mode (Defensive)' : 'Neutral', s: true},
-    {l: 'Return/Yield > 2% Monthly', v: 'Simulated 2.4%', s: true},
-    {l: 'Expiration 30-45 DTE', v: '42 Days', s: true},
-    {l: 'Delta in Target Range (' + dTarget + ')', v: '0.18 Delta', s: true},
-    {l: 'IV Rank Priority', v: ivr + '% Rank', s: ivr > 50},
-    {l: 'Pullback to Support (EMA/SMA)', v: pb ? 'At 20d EMA' : 'No pullback detected', s: pb},
-    {l: 'Earnings Guardrail (>5d post)', v: eSafe ? 'Clear' : 'Earnings too close', s: eSafe},
-  ];
 
+function openCSPChecklist(s) {
+  const signal = getCSPSignal(s);
   const html = `
     <div style="margin-bottom:16px">
       <div style="font-size:18px;font-weight:800;margin-bottom:4px">${s} CSP Setup Verification</div>
       <div style="font-size:11px;color:var(--text3)">Validate all rules before deploying capital</div>
     </div>
     <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:16px">
-      ${checks.map(c => `
-        <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 12px;background:var(--bg3);border-radius:var(--r);border-left:3px solid var(--${c.s ? 'cyan' : 'red'})">
-          <div><div style="font-size:12px;font-weight:600">${c.l}</div><div style="font-size:11px;color:var(--text3)">${c.v}</div></div>
-          <div style="font-size:16px">${c.s ? '✅' : '❌'}</div>
+      ${signal.checks.map(c => `
+        <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 12px;background:var(--bg3);border-radius:var(--r);border-left:3px solid var(--${c.status ? 'cyan' : 'red'})">
+          <div><div style="font-size:12px;font-weight:600">${c.label}</div><div style="font-size:11px;color:var(--text3)">${c.value}</div></div>
+          <div style="font-size:16px">${c.status ? '✅' : '❌'}</div>
         </div>
       `).join('')}
     </div>
     <div class="card card-body" style="background:var(--cyan-bg);border-color:var(--cyan-dim);margin-bottom:16px">
       <div style="font-size:11px;font-weight:700;color:var(--cyan);margin-bottom:4px">🎯 Recommended Strategy</div>
       <div style="font-size:11px;color:var(--text2);line-height:1.5">
-        Set Limit Order to <strong>Buy to Close at 50% max profit</strong>. Recalculate if underlying breaks 200d SMA.
+        Set Limit Order to <strong>Buy to Close at 50% max profit</strong>.
       </div>
     </div>
     <div style="display:flex;gap:10px">
@@ -971,8 +952,10 @@ function openCSPChecklist(s, ivr, eSafe, pb) {
   $('scorecardOverlay').classList.add('open');
 }
 
-function buildLEAPS() {
+async function buildLEAPS() {
   const tickers = ['QQQ', 'SPY', 'AAPL', 'NVDA', 'MSFT', 'AMZN', 'META', 'GOOGL', 'TSLA'];
+  const signals = await Promise.all(tickers.map(async (s) => ({ ticker: s, signal: await getLEAPSSignal(s) })));
+
   set('tab-leaps', `
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;flex-wrap:wrap;gap:10px">
       <div>
@@ -993,23 +976,20 @@ function buildLEAPS() {
       <div style="overflow-x:auto">
         <table class="data-table">
           <thead>
-            <tr><th>Symbol</th><th>RSI</th><th>Bollinger</th><th>MACD</th><th>VIX</th><th>Setup</th><th>Action</th></tr>
+            <tr><th>Symbol</th><th>Setup</th><th>Status</th><th>Action</th></tr>
           </thead>
           <tbody>
-            ${tickers.map(s => {
-              const rsi = s === 'TSLA' ? 32 : s === 'AAPL' ? 38 : 52;
-              const macd = s === 'TSLA' ? 'Bullish Cross' : 'Neutral';
-              const bb = s === 'TSLA' ? 'Lower Band' : 'Mid Range';
-              const vix = MKT.prices.VIX;
-              const ready = rsi < 40 && macd === 'Bullish Cross';
+            ${signals.map(({ ticker, signal }) => {
+              const isReady = signal.checks.every(c => c.status);
               return `<tr>
-                <td style="font-family:var(--mono);font-weight:700">${s}</td>
-                <td><span style="color:var(--${rsi < 40 ? 'cyan' : 'text3'})">${rsi}</span></td>
-                <td style="font-size:11px;color:var(--text2)">${bb}</td>
-                <td style="font-size:11px;color:var(--${macd === 'Bullish Cross' ? 'cyan' : 'text3'})">${macd}</td>
-                <td>${badge(vix, vix > 25 ? 'red' : 'neutral')}</td>
-                <td>${ready ? badge('READY', 'cyan') : badge('WAITING', 'neutral')}</td>
-                <td><button class="btn btn-secondary btn-sm" onclick="openLEAPSChecklist('${s}', ${rsi}, '${macd}', '${bb}')">Verify →</button></td>
+                <td style="font-family:var(--mono);font-weight:700">${ticker}</td>
+                <td>
+                  <div style="display:flex;gap:4px">
+                    ${signal.checks.map(c => `<span title="${c.label}" style="color:var(--${c.status ? 'green' : 'red'})">${c.status ? '✓' : '✗'}</span>`).join('')}
+                  </div>
+                </td>
+                <td>${isReady ? badge('READY', 'cyan') : badge('WAITING', 'neutral')}</td>
+                <td><button class="btn btn-secondary btn-sm" onclick="openLEAPSChecklist('${ticker}')">Verify →</button></td>
               </tr>`;
             }).join('')}
           </tbody>
@@ -1020,27 +1000,18 @@ function buildLEAPS() {
   `);
 }
 
-function openLEAPSChecklist(s, rsi, macd, bb) {
-  const vix = MKT.prices.VIX;
-  const checks = [
-    {l: 'Price Near Lower Bollinger Band', v: bb, s: bb === 'Lower Band'},
-    {l: 'RSI < 40 (Oversold)', v: 'RSI: ' + rsi, s: rsi < 40},
-    {l: 'MACD Bullish Cross', v: macd, s: macd === 'Bullish Cross'},
-    {l: 'VIX Elevated (>20)', v: 'VIX: ' + vix, s: vix > 20},
-    {l: 'Consistent 1-2 Year Uptrend', v: 'Verified via technicals', s: true},
-    {l: 'Symbol Restriction (QQQ/SPY/MAG7)', v: 'Valid asset', s: true},
-  ];
-
+async function openLEAPSChecklist(s) {
+  const signal = await getLEAPSSignal(s);
   const html = `
     <div style="margin-bottom:16px">
       <div style="font-size:18px;font-weight:800;margin-bottom:4px">${s} LEAPS Buying Checklist</div>
       <div style="font-size:11px;color:var(--text3)">Wait for extreme fear and technical reversal</div>
     </div>
     <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:16px">
-      ${checks.map(c => `
-        <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 12px;background:var(--bg3);border-radius:var(--r);border-left:3px solid var(--${c.s ? 'cyan' : 'red'})">
-          <div><div style="font-size:12px;font-weight:600">${c.l}</div><div style="font-size:11px;color:var(--text3)">${c.v}</div></div>
-          <div style="font-size:16px">${c.s ? '✅' : '❌'}</div>
+      ${signal.checks.map(c => `
+        <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 12px;background:var(--bg3);border-radius:var(--r);border-left:3px solid var(--${c.status ? 'cyan' : 'red'})">
+          <div><div style="font-size:12px;font-weight:600">${c.label}</div><div style="font-size:11px;color:var(--text3)">${c.value}</div></div>
+          <div style="font-size:16px">${c.status ? '✅' : '❌'}</div>
         </div>
       `).join('')}
     </div>
@@ -2404,6 +2375,8 @@ if(!localStorage.getItem('volarix_onboarded')&&!sessionStorage.getItem('volarix_
 setTimeout(()=>showToast('👋 Welcome back!','VolariX ready. Press ⌘K to search anything.','purple',5000),600);
 </script>
 <!-- Loaded after the inline dashboard runtime: app.js uses its shared DOM helpers. -->
+<script src="dataService.js"></script>
+
 <script src="app.js"></script>
 </body>
 </html>

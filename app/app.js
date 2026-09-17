@@ -314,3 +314,50 @@ const MEGACAP_DATA = [
   { ticker:'XOM',  name:'ExxonMobil Corp',      cap:'490B',  capN:490,  price:114.20, chg:-0.84, iv:26.4, ivRank:34, pcRatio:0.88, earningsIn:45, bias:'BEARISH',  strategy:'Bear Call Spread',        color:'amber' },
   { ticker:'JNJ',  name:'Johnson & Johnson',    cap:'380B',  capN:380,  price:154.40, chg:-0.34, iv:18.4, ivRank:22, pcRatio:0.68, earningsIn:45, bias:'NEUTRAL',  strategy:'Covered Call',            color:'cyan'  },
 ];
+
+
+// ══════════════════════════════════════════
+// BARGAIN EVALUATION LOGIC
+// ══════════════════════════════════════════
+
+async function getCSPSignal(ticker) {
+  const data = await dataService.getTickerDetails(ticker);
+  if (!data) return { ready: false, checks: [] };
+
+  const earningsSafe = data.earningsIn > 5;
+  const ivRankSafe = data.ivRank > 30; // Min IV Rank requirement
+  const pullback = Math.random() > 0.5; // Placeholder for EMA/SMA logic
+
+  const checks = [
+    { label: 'Earnings Guardrail (>5d)', status: earningsSafe, value: earningsSafe ? 'Clear' : 'Earnings too close' },
+    { label: 'IV Rank Priority (>30%)', status: ivRankSafe, value: `${data.ivRank}%` },
+    { label: 'Technical Pullback', status: pullback, value: pullback ? 'At Support' : 'Wait' }
+  ];
+
+  return {
+    ready: earningsSafe && ivRankSafe && pullback,
+    checks: checks
+  };
+}
+
+async function getLEAPSSignal(ticker) {
+  const data = await dataService.getTickerDetails(ticker);
+  if (!data) return { ready: false, checks: [] };
+
+  // Logic: Fear + Oversold + MACD + Strong Business + Uptrend
+  // Using available data properties
+  const isOversold = data.ivRank > 50; // Proxy for 'fear' / elevated vol
+  const isStrong = data.capN > 500; // Proxy for "Strong Business" (>$500B cap)
+  const macdReversal = Math.random() > 0.5; // Placeholder
+
+  const checks = [
+    { label: 'Fear/Elevated IV (>50%)', status: isOversold, value: `${data.ivRank}%` },
+    { label: 'Strong Business (>$500B Cap)', status: isStrong, value: data.cap },
+    { label: 'MACD Reversal', status: macdReversal, value: macdReversal ? 'Confirmed' : 'Wait' }
+  ];
+
+  return {
+    ready: isOversold && isStrong && macdReversal,
+    checks: checks
+  };
+}
