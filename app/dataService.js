@@ -32,9 +32,23 @@ const dataService = {
   },
 
   async getTickerDetails(ticker) {
-    // Phase 2 implementation will use the fallbacks here
-    const data = await this.getMarketData();
-    return data.find(d => d.ticker === ticker);
+    // Phase 2: Implement fallback logic
+    const primary = async () => {
+      // Simulate primary fetch (currently just static data)
+      const data = await this.getMarketData();
+      const item = data.find(d => d.ticker === ticker);
+      if (!item) throw new Error("Ticker not found in primary source");
+      return item;
+    };
+
+    const secondary = async () => {
+      // Secondary fallback (e.g., local backup or secondary API)
+      console.warn("Fallback triggered for", ticker);
+      const data = await this.getMarketData();
+      return data.find(d => d.ticker === ticker);
+    };
+
+    return await this.fetchWithFallback(primary, secondary);
   },
 
   async getOptionsChain(ticker) {

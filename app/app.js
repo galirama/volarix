@@ -361,3 +361,21 @@ async function getLEAPSSignal(ticker) {
     checks: checks
   };
 }
+
+function updateDataStatus(status) {
+  const dot = document.getElementById('dataDot');
+  const text = document.getElementById('dataText');
+  if (!dot || !text) return;
+
+  if (status === 'live') {
+    dot.style.background = 'var(--cyan)';
+    text.textContent = 'Live data';
+  } else if (status === 'degraded') {
+    dot.style.background = 'var(--amber)';
+    text.textContent = 'Degraded';
+  } else {
+    dot.style.background = 'var(--red)';
+    text.textContent = 'Offline';
+  }
+}
+
