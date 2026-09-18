@@ -15,20 +15,25 @@ const dataService = {
   // Fallback helper: tries primary, then secondary
   async fetchWithFallback(primaryFn, secondaryFn) {
     try {
-      return await this.fetchWithRetry(primaryFn);
+      const data = await this.fetchWithRetry(primaryFn);
+      if (typeof updateDataStatus === 'function') updateDataStatus('live');
+      return data;
     } catch (err) {
       console.warn("Primary fetch failed, trying secondary...", err);
       try {
-        return await this.fetchWithRetry(secondaryFn);
+        const data = await this.fetchWithRetry(secondaryFn);
+        if (typeof updateDataStatus === 'function') updateDataStatus('degraded');
+        return data;
       } catch (err2) {
         console.error("All fetch attempts failed", err2);
+        if (typeof updateDataStatus === 'function') updateDataStatus('offline');
         throw err2;
       }
     }
   },
 
   async getMarketData() {
-    return typeof MEGACAP_DATA !== 'undefined' ? MEGACAP_DATA : [];
+    return (typeof window.MEGACAP_DATA !== 'undefined') ? window.MEGACAP_DATA : [];
   },
 
   async getTickerDetails(ticker) {

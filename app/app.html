@@ -824,12 +824,12 @@ function drawEqCurve(id){
 }
 
 // ── NAV ──
-function showTab(id,el){
+async function showTab(id,el){
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
   document.querySelectorAll('#appShell .nav-item').forEach(n=>n.classList.remove('active'));
   const pg=$('tab-'+id);if(pg)pg.classList.add('active');if(el&&el.classList)el.classList.add('active');
   const B={overview:buildOverview,csp:buildCSP,leaps:buildLEAPS,ticker:()=>buildTickerAnalyzer('NVDA'),earnings:buildEarnings,uoa:buildUOA,paper:buildPaper,live:buildLive,backtest:buildBacktest,sizing:buildSizingCalc,settings:buildSettings};
-  if(B[id])B[id]();
+  if(B[id]) await B[id]();
 }
 
 async function askLocalAssistant(){

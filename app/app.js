@@ -314,6 +314,11 @@ const MEGACAP_DATA = [
   { ticker:'XOM',  name:'ExxonMobil Corp',      cap:'490B',  capN:490,  price:114.20, chg:-0.84, iv:26.4, ivRank:34, pcRatio:0.88, earningsIn:45, bias:'BEARISH',  strategy:'Bear Call Spread',        color:'amber' },
   { ticker:'JNJ',  name:'Johnson & Johnson',    cap:'380B',  capN:380,  price:154.40, chg:-0.34, iv:18.4, ivRank:22, pcRatio:0.68, earningsIn:45, bias:'NEUTRAL',  strategy:'Covered Call',            color:'cyan'  },
 ];
+// Ensure global access for dataService
+window.MEGACAP_DATA = MEGACAP_DATA;
+window.MKT = MKT;
+window.FUNDAMENTALS = FUNDAMENTALS;
+
 
 
 // ══════════════════════════════════════════
