@@ -370,17 +370,21 @@ async function getLEAPSSignal(ticker) {
 function updateDataStatus(status) {
   const dot = document.getElementById('dataDot');
   const text = document.getElementById('dataText');
-  if (!dot || !text) return;
+  const container = document.getElementById('dataStatus');
+  if (!dot || !text || !container) return;
 
   if (status === 'live') {
     dot.style.background = 'var(--cyan)';
     text.textContent = 'Live data';
+    container.title = 'Connected to primary live data source';
   } else if (status === 'degraded') {
     dot.style.background = 'var(--amber)';
     text.textContent = 'Degraded';
+    container.title = 'Primary source unreachable. Using fallback data.';
   } else {
     dot.style.background = 'var(--red)';
     text.textContent = 'Offline';
+    container.title = 'Critical: All data sources offline.';
   }
 }
 

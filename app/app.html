@@ -553,22 +553,14 @@ textarea{resize:vertical;min-height:80px}
     </div>
     <div style="height:1px;background:var(--border);margin:4px 0"></div>
     <div class="nav-section">Core</div>
+    <div class="nav-item active" onclick="showTab('overview',this)"><span class="nav-icon">📊</span>Overview<span class="nav-dot"></span></div>
     <div class="nav-item" onclick="showTab('csp',this)"><span class="nav-icon">🟢</span>CSP Bargains</div>
     <div class="nav-item" onclick="showTab('leaps',this)"><span class="nav-icon">🔵</span>LEAPS Bargains</div>
-    <div class="nav-item active" onclick="showTab('overview',this)"><span class="nav-icon">📊</span>Overview<span class="nav-dot"></span></div>
-    <div class="nav-item" onclick="showTab('ticker',this)"><span class="nav-icon">🔍</span>Ticker Analyzer</div>
     <div class="nav-item" onclick="showTab('checklist',this)"><span class="nav-icon">✅</span>Fundamental Screener</div>
-    <div class="nav-item" onclick="showTab('earnings',this)"><span class="nav-icon">📅</span>Earnings Calendar<span class="nav-dot"></span></div>
-    <div class="nav-item" onclick="showTab('economic',this)"><span class="nav-icon">🏛️</span>Economic Calendar</div>
-    <div class="nav-item" onclick="showTab('uoa',this)"><span class="nav-icon">⚡</span>Unusual Activity</div>
-    <div class="nav-section">Trading</div>
-    <div class="nav-item" onclick="showTab('paper',this)"><span class="nav-icon">📝</span>Paper Trading</div>
-    <div class="nav-item" onclick="showTab('live',this)"><span class="nav-icon">⚡</span>Live Trading</div>
-    <div class="nav-item" onclick="showTab('backtest',this)"><span class="nav-icon">🔁</span>Backtesting</div>
-    <div class="nav-item" onclick="showTab('sizing',this)"><span class="nav-icon">📐</span>Position Sizing</div>
+    <div class="nav-item" onclick="showTab('events',this)"><span class="nav-icon">📅</span>Key events calendar</div>
     <div class="nav-section">Upcoming / Future</div>
     <div style="padding:0 10px;font-size:11px;color:var(--text3);line-height:1.8">
-      • AI Assistant<br>• IV Scanner<br>• MEGA CAP IV<br>• Options Chain<br>• Strategy Builder<br>• Flow Heatmap<br>• Alt Data<br>• Track Record<br>• Sector Rotation<br>• Exit Automation<br>• Import Portfolio<br>• Risk Shield<br>• Alerts
+      • AI Assistant<br>• IV Scanner<br>• MEGA CAP IV<br>• Options Chain<br>• Strategy Builder<br>• Flow Heatmap<br>• Alt Data<br>• Track Record<br>• Sector Rotation<br>• Exit Automation<br>• Import Portfolio<br>• Risk Shield<br>• Alerts<br>• Ticker Analyzer<br>• Unusual Activity<br>• Paper Trading<br>• Live Trading<br>• Backtesting<br>• Position Sizing
     </div>
     <div class="nav-bottom">
       <div class="nav-item" style="font-size:12px"><span class="nav-icon">⚙️</span>Settings</div>
@@ -590,6 +582,8 @@ textarea{resize:vertical;min-height:80px}
     <div class="page" id="tab-sizing"></div>
     <div class="page" id="tab-settings"></div>
     <!-- REMOVED FOR SIZE: tab-ai, tab-screener, tab-megacap, tab-options, tab-congress, tab-signals, tab-sectors, tab-heatmap, tab-exit, tab-import, tab-alerts, tab-journal, tab-strategy -->
+    <div class="page" id="tab-events"></div>
+
   </div>
 </div>
 
@@ -825,11 +819,23 @@ function drawEqCurve(id){
 
 // ── NAV ──
 async function showTab(id,el){
-  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
-  document.querySelectorAll('#appShell .nav-item').forEach(n=>n.classList.remove('active'));
-  const pg=$('tab-'+id);if(pg)pg.classList.add('active');if(el&&el.classList)el.classList.add('active');
-  const B={overview:buildOverview,csp:buildCSP,leaps:buildLEAPS,ticker:()=>buildTickerAnalyzer('NVDA'),earnings:buildEarnings,uoa:buildUOA,paper:buildPaper,live:buildLive,backtest:buildBacktest,sizing:buildSizingCalc,settings:buildSettings};
-  if(B[id]) await B[id]();
+  try {
+    document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+    document.querySelectorAll('#appShell .nav-item').forEach(n=>n.classList.remove('active'));
+    const pg=$('tab-'+id);
+    if(pg) pg.classList.add('active');
+    if(el&&el.classList) el.classList.add('active');
+    
+    const B={overview:buildOverview,csp:buildCSP,leaps:buildLEAPS,events:buildEvents,settings:buildSettings};
+    
+    if(B[id]) {
+      await B[id]();
+    } else {
+      console.warn('Tab builder not found for:', id);
+    }
+  } catch (err) {
+    console.error('Error showing tab:', id, err);
+  }
 }
 
 async function askLocalAssistant(){
@@ -873,7 +879,9 @@ async function buildCSP() {
   const fgIcon = fg > 60 ? '🤑' : fg < 40 ? '😨' : '😐';
   const tickers = ['NVDA', 'AAPL', 'TSLA', 'MSFT', 'AMD', 'SPY'];
 
-  const signals = await Promise.all(tickers.map(async (s) => ({ ticker: s, signal: await getCSPSignal(s) })));
+  // Fetch all signals concurrently, filtering out failed lookups
+  const signalResults = await Promise.all(tickers.map(async (s) => ({ ticker: s, signal: await getCSPSignal(s) })));
+  const signals = signalResults.filter(r => r.signal && r.signal.checks.length > 0);
   
   set('tab-csp', `
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;flex-wrap:wrap;gap:10px">
@@ -954,7 +962,9 @@ function openCSPChecklist(s) {
 
 async function buildLEAPS() {
   const tickers = ['QQQ', 'SPY', 'AAPL', 'NVDA', 'MSFT', 'AMZN', 'META', 'GOOGL', 'TSLA'];
-  const signals = await Promise.all(tickers.map(async (s) => ({ ticker: s, signal: await getLEAPSSignal(s) })));
+  // Fetch all signals concurrently, filtering out failed lookups
+  const signalResults = await Promise.all(tickers.map(async (s) => ({ ticker: s, signal: await getLEAPSSignal(s) })));
+  const signals = signalResults.filter(r => r.signal && r.signal.checks.length > 0);
 
   set('tab-leaps', `
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;flex-wrap:wrap;gap:10px">
@@ -1208,6 +1218,36 @@ function addLeg(){window.stratLegs.push({type:'Call',side:'Buy',strike:200,qty:1
 function rmLeg(i){window.stratLegs.splice(i,1);renderStratLegs();}
 function loadPreset(name){const P={'Iron Condor':[{type:'Put',side:'Buy',strike:185,qty:1,exp:'Jun 21',premium:1.20},{type:'Put',side:'Sell',strike:190,qty:1,exp:'Jun 21',premium:3.10},{type:'Call',side:'Sell',strike:200,qty:1,exp:'Jun 21',premium:3.10},{type:'Call',side:'Buy',strike:205,qty:1,exp:'Jun 21',premium:1.20}],'Long Call':[{type:'Call',side:'Buy',strike:195,qty:1,exp:'Jun 21',premium:9.30}],'Straddle':[{type:'Call',side:'Buy',strike:195,qty:1,exp:'Jun 21',premium:9.30},{type:'Put',side:'Buy',strike:195,qty:1,exp:'Jun 21',premium:8.70}],'CS Put':[{type:'Put',side:'Sell',strike:185,qty:1,exp:'Jun 21',premium:4.20}],'Bull Call Spread':[{type:'Call',side:'Buy',strike:190,qty:1,exp:'Jun 21',premium:9.30},{type:'Call',side:'Sell',strike:200,qty:1,exp:'Jun 21',premium:4.20}]};if(P[name]){window.stratLegs=P[name];renderStratLegs();setTimeout(()=>drawPLChart('plChart'),50);}}
 function simStrat(){drawPLChart('plChart');showToast('📊 Simulated','P&L diagram updated','cyan');}
+// ── KEY EVENTS CALENDAR ──
+function buildEvents() {
+  const today=new Date(),month=today.getMonth(),year=today.getFullYear();
+  const days=new Date(year,month+1,0).getDate(),firstDay=new Date(year,month,1).getDay();
+  const MN=['January','February','March','April','May','June','July','August','September','October','November','December'];
+  
+  // Merged Data
+  const E={3:['AAPL'],7:['MSFT'],10:['NVDA'],14:['TSLA','AMZN'],18:['META'],21:['AMD','SMCI'],28:['COST']};
+  const econ=[{date:'Jun 3',event:'ISM Services',impact:'medium'},{date:'Jun 17',event:'Empire State Mfg',impact:'medium'},{date:'Jun 28',event:'GDP (Final Q1)',impact:'high'}];
+
+  let dh='';for(let i=0;i<firstDay;i++)dh+=`<div></div>`;
+  for(let d=1;d<=days;d++){
+    const isT=d===today.getDate(),hasE=E[d];
+    dh+=`<div class="cal-day${isT?' today':''}"><div class="cal-day-num">${d}</div>${hasE?hasE.map(t=>`<div class="cal-event" style="background:var(--amber-bg);color:var(--amber)">${t}</div>`).join(''):''}</div>`;
+  }
+
+  set('tab-events', `
+    <div style="font-size:15px;font-weight:700;margin-bottom:14px">📅 Key Events Calendar — ${MN[month]} ${year}</div>
+    <div style="display:grid;grid-template-columns:1fr 300px;gap:14px">
+      <div class="card card-body"><div class="cal-grid">${['Sun','Mon','Tue','Wed','Thu','Fri','Sat'].map(d=>`<div class="cal-header">${d}</div>`).join('')}${dh}</div></div>
+      <div class="card card-body">
+         <div style="font-size:12px;font-weight:700;margin-bottom:12px">Economic Events</div>
+         <div style="display:flex;flex-direction:column;gap:8px">
+            ${econ.map(e => `<div style="padding:8px;background:var(--bg3);border-radius:var(--r);font-size:11px"><strong style="color:var(--cyan)">${e.date}</strong><br>${e.event} ${badge(e.impact, e.impact==='high'?'red':'amber')}</div>`).join('')}
+         </div>
+      </div>
+    </div>
+  `);
+}
+
 
 // ── EARNINGS CALENDAR ──
 function buildEarnings(){

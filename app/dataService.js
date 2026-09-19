@@ -1,7 +1,7 @@
 // app/dataService.js
-
 const dataService = {
-  // Retry helper: attempts a fetch operation N times
+  testMode: false, // Set to true in browser console to simulate API failure
+
   async fetchWithRetry(fn, retries = 2, delay = 1000) {
     try {
       return await fn();
@@ -12,7 +12,6 @@ const dataService = {
     }
   },
 
-  // Fallback helper: tries primary, then secondary
   async fetchWithFallback(primaryFn, secondaryFn) {
     try {
       const data = await this.fetchWithRetry(primaryFn);
@@ -36,23 +35,55 @@ const dataService = {
     return (typeof window.MEGACAP_DATA !== 'undefined') ? window.MEGACAP_DATA : [];
   },
 
+  async fetchYahooTicker(ticker) {
+    if (this.testMode) throw new Error("Simulated primary API failure");
+
+    const url = `https://query1.finance.yahoo.com/v8/finance/chart/${ticker}?interval=1d&range=1d`;
+    const response = await fetch(url);
+    if (!response.ok) throw new Error("Yahoo Finance API failed");
+    const json = await response.json();
+    
+    const result = json.chart.result[0];
+    const quote = result.meta.regularMarketPrice;
+    
+    const staticData = await this.getMarketData();
+    const existing = staticData.find(d => d.ticker === ticker);
+    
+    return {
+      ticker: ticker,
+      price: quote.toFixed(2),
+      ...(existing || {})
+    };
+  },
+
+  // Phase 4: Finnhub API implementation
+  async fetchFinnhubTicker(ticker) {
+    if (this.testMode) throw new Error("Simulated primary API failure");
+    
+    // Replace 'YOUR_API_KEY' with your actual key
+    const apiKey = 'YOUR_API_KEY'; 
+    const url = `https://finnhub.io/api/v1/quote?symbol=${ticker}&token=${apiKey}`;
+    
+    const response = await fetch(url);
+    if (!response.ok) throw new Error("Finnhub API failed");
+    const json = await response.json();
+    
+    if (!json.c) throw new Error("Invalid ticker data from Finnhub");
+
+    return {
+      ticker: ticker,
+      price: json.c.toFixed(2),
+      ...(await this.getMarketData()).find(d => d.ticker === ticker) || {}
+    };
+  },
+
+
   async getTickerDetails(ticker) {
-    // Phase 2: Implement fallback logic
-    const primary = async () => {
-      // Simulate primary fetch (currently just static data)
-      const data = await this.getMarketData();
-      const item = data.find(d => d.ticker === ticker);
-      if (!item) throw new Error("Ticker not found in primary source");
-      return item;
-    };
-
+    const primary = async () => await this.fetchFinnhubTicker(ticker);
     const secondary = async () => {
-      // Secondary fallback (e.g., local backup or secondary API)
-      console.warn("Fallback triggered for", ticker);
       const data = await this.getMarketData();
-      return data.find(d => d.ticker === ticker);
+      return data.find(d => d.ticker === ticker) || null;
     };
-
     return await this.fetchWithFallback(primary, secondary);
   },
 
