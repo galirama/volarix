@@ -613,7 +613,7 @@ const STATE = {
 
 // ── MARKET DATA ENGINE (Real-Time) ──
 const MKT = {
-  prices:{SPY:524.87,QQQ:441.22,AAPL:189.45,NVDA:875.30,TSLA:177.88,MSFT:415.60,AMD:148.20,META:504.33,GME:20.12,SMH:248.40,VIX:18.42},
+  prices:{SPY:545.20,QQQ:458.10,AAPL:215.30,NVDA:120.50,TSLA:175.20,MSFT:440.10,AMD:158.40,META:504.33,GME:25.12,SMH:248.40,VIX:12.40},
   changes:{SPY:0.34,QQQ:0.61,AAPL:0.18,NVDA:2.11,TSLA:-1.45,MSFT:0.54,AMD:-0.82,META:1.02,GME:-2.10,SMH:3.20,VIX:1.23},
   fg:38,
 };
@@ -930,8 +930,8 @@ async function buildCSP() {
 }
 
 
-function openCSPChecklist(s) {
-  const signal = getCSPSignal(s);
+async function openCSPChecklist(s) {
+  const signal = await getCSPSignal(s);
   const html = `
     <div style="margin-bottom:16px">
       <div style="font-size:18px;font-weight:800;margin-bottom:4px">${s} CSP Setup Verification</div>

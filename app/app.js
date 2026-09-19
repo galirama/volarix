@@ -293,16 +293,16 @@ $('scorecardOverlay').addEventListener('click', e => { if(e.target === $('scorec
 // Top 20 companies market cap > $200B sorted by IV rank
 // ══════════════════════════════════════════
 const MEGACAP_DATA = [
-  { ticker:'NVDA', name:'NVIDIA Corp',          cap:'3.1T',  capN:3100, price:875.30, chg:+2.11, iv:94.2, ivRank:89, pcRatio:0.68, earningsIn:3,  bias:'BULLISH',  strategy:'Iron Condor or CSP',      color:'red'   },
+  { ticker:'NVDA', name:'NVIDIA Corp',          cap:'3.1T',  capN:3100, price:120.50, chg:+2.11, iv:94.2, ivRank:89, pcRatio:0.68, earningsIn:3,  bias:'BULLISH',  strategy:'Iron Condor or CSP',      color:'red'   },
   { ticker:'SMCI', name:'Super Micro Computer', cap:'72B',   capN:72,   price:812.40, chg:+1.84, iv:142.3,ivRank:94, pcRatio:0.72, earningsIn:21, bias:'NEUTRAL',  strategy:'Iron Condor (wide)',      color:'red'   },
   { ticker:'META', name:'Meta Platforms',       cap:'1.3T',  capN:1300, price:504.33, chg:+1.02, iv:44.8, ivRank:62, pcRatio:0.84, earningsIn:30, bias:'BULLISH',  strategy:'Bull Put Spread',         color:'cyan'  },
   { ticker:'TSLA', name:'Tesla Inc',            cap:'570B',  capN:570,  price:177.88, chg:-1.45, iv:76.8, ivRank:68, pcRatio:0.91, earningsIn:9,  bias:'BEARISH',  strategy:'Bear Call Spread',        color:'amber' },
   { ticker:'AMZN', name:'Amazon.com Inc',       cap:'2.1T',  capN:2100, price:198.12, chg:+0.87, iv:38.4, ivRank:54, pcRatio:0.76, earningsIn:14, bias:'BULLISH',  strategy:'Cash Secured Put',        color:'cyan'  },
-  { ticker:'AAPL', name:'Apple Inc',            cap:'2.9T',  capN:2900, price:189.45, chg:+0.18, iv:31.8, ivRank:44, pcRatio:0.82, earningsIn:15, bias:'NEUTRAL',  strategy:'Covered Call',            color:'cyan'  },
+  { ticker:'AAPL', name:'Apple Inc',            cap:'2.9T',  capN:2900, price:215.30, chg:+0.18, iv:31.8, ivRank:44, pcRatio:0.82, earningsIn:15, bias:'NEUTRAL',  strategy:'Covered Call',            color:'cyan'  },
   { ticker:'AVGO', name:'Broadcom Inc',         cap:'620B',  capN:620,  price:182.40, chg:+1.24, iv:52.4, ivRank:71, pcRatio:0.64, earningsIn:30, bias:'BULLISH',  strategy:'Bull Put Spread',         color:'cyan'  },
   { ticker:'LLY',  name:'Eli Lilly & Co',       cap:'720B',  capN:720,  price:820.10, chg:+0.64, iv:41.2, ivRank:58, pcRatio:0.72, earningsIn:45, bias:'BULLISH',  strategy:'Covered Call / CSP',      color:'cyan'  },
-  { ticker:'MSFT', name:'Microsoft Corp',       cap:'3.1T',  capN:3100, price:415.60, chg:+0.54, iv:28.4, ivRank:36, pcRatio:0.74, earningsIn:45, bias:'BULLISH',  strategy:'Cash Secured Put',        color:'cyan'  },
-  { ticker:'AMD',  name:'Adv Micro Devices',    cap:'240B',  capN:240,  price:148.20, chg:-0.82, iv:62.1, ivRank:55, pcRatio:0.79, earningsIn:60, bias:'NEUTRAL',  strategy:'Iron Condor',             color:'amber' },
+  { ticker:'MSFT', name:'Microsoft Corp',       cap:'3.1T',  capN:3100, price:440.10, chg:+0.54, iv:28.4, ivRank:36, pcRatio:0.74, earningsIn:45, bias:'BULLISH',  strategy:'Cash Secured Put',        color:'cyan'  },
+  { ticker:'AMD',  name:'Adv Micro Devices',    cap:'240B',  capN:240,  price:158.40, chg:-0.82, iv:62.1, ivRank:55, pcRatio:0.79, earningsIn:60, bias:'NEUTRAL',  strategy:'Iron Condor',             color:'amber' },
   { ticker:'GOOGL',name:'Alphabet Inc',         cap:'2.1T',  capN:2100, price:182.30, chg:+0.44, iv:30.1, ivRank:42, pcRatio:0.68, earningsIn:30, bias:'BULLISH',  strategy:'Bull Put Spread',         color:'cyan'  },
   { ticker:'NFLX', name:'Netflix Inc',          cap:'280B',  capN:280,  price:640.20, chg:+0.94, iv:46.8, ivRank:64, pcRatio:0.82, earningsIn:30, bias:'BULLISH',  strategy:'Bull Put Spread',         color:'cyan'  },
   { ticker:'COST', name:'Costco Wholesale',     cap:'380B',  capN:380,  price:850.40, chg:+0.34, iv:22.4, ivRank:28, pcRatio:0.62, earningsIn:28, bias:'BULLISH',  strategy:'Covered Call',            color:'cyan'  },
