@@ -82,7 +82,12 @@ const dataService = {
     const primary = async () => await this.fetchFinnhubTicker(ticker);
     const secondary = async () => {
       const data = await this.getMarketData();
-      return data.find(d => d.ticker === ticker) || null;
+      const found = data.find(d => d.ticker === ticker);
+      // Fallback: If not found, return a default object to keep the UI functional
+      return found || { 
+        ticker: ticker, name: ticker, cap: 'N/A', capN: 0, price: '0.00', 
+        chg: 0, iv: 0, ivRank: 0, earningsIn: 99, bias: 'NEUTRAL' 
+      };
     };
     return await this.fetchWithFallback(primary, secondary);
   },
@@ -91,10 +96,9 @@ const dataService = {
   async fetchLiveMarketData(symbols) {
     if (this.testMode) throw new Error("Simulated primary API failure");
 
-    const apiKey = 'YOUR_API_KEY'; 
     // Finnhub quote API is per symbol, so we map to an array of promises
     const promises = symbols.map(async (s) => {
-        const url = `https://finnhub.io/api/v1/quote?symbol=${s}&token=${apiKey}`;
+        const url = `/.netlify/functions/quote?symbol=${s}`;
         const response = await fetch(url);
         if (!response.ok) return null;
         const json = await response.json();
