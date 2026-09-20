@@ -383,8 +383,12 @@ async function addCSPTicker() {
   if (!STATE.cspTickers) STATE.cspTickers = ['NVDA'];
   if (!STATE.cspTickers.includes(ticker)) {
     STATE.cspTickers.push(ticker);
+    
+    // Auto-fetch data immediately
+    await dataService.getTickerDetails(ticker); 
+    
     saveState();
-    await buildCSP(); // Refresh the tab
+    buildCSP(); 
   } else {
     showToast('ℹ️', 'Ticker already in list', 'blue');
   }
@@ -399,8 +403,12 @@ async function addLEAPSTicker() {
   if (!STATE.leapsTickers) STATE.leapsTickers = ['QQQ', 'SPY', 'AAPL', 'NVDA', 'MSFT', 'AMZN', 'META', 'GOOGL', 'TSLA'];
   if (!STATE.leapsTickers.includes(ticker)) {
     STATE.leapsTickers.push(ticker);
+    
+    // Auto-fetch data immediately
+    await dataService.getTickerDetails(ticker);
+
     saveState();
-    await buildLEAPS(); // Refresh the tab
+    buildLEAPS(); 
   } else {
     showToast('ℹ️', 'Ticker already in list', 'blue');
   }

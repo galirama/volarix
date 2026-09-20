@@ -910,11 +910,11 @@ async function buildCSP() {
           <tbody>
             ${signals.map(({ ticker, signal }) => `<tr>
                 <td style="font-family:var(--mono);font-weight:700">${ticker}</td>
-                <td style="font-family:var(--mono)">$${MKT.prices[ticker] || 0}</td>
-                <td>${badge(signal.checks[1].value, signal.checks[1].status ? 'neutral' : 'red')}</td>
+                <td style="font-family:var(--mono)">$${MKT.prices[ticker] ? MKT.prices[ticker] : '...'}</td>
+                <td>${signal && signal.checks && signal.checks[1] ? badge(signal.checks[1].value, signal.checks[1].status ? 'neutral' : 'red') : 'N/A'}</td>
                 <td>
                   <div style="display:flex;gap:4px">
-                    ${signal.checks.map(c => `<span title="${c.label}" style="color:var(--${c.status ? 'green' : 'red'})">${c.status ? '✓' : '✗'}</span>`).join('')}
+                    ${signal && signal.checks ? signal.checks.map(c => `<span title="${c.label}" style="color:var(--${c.status ? 'green' : 'red'})">${c.status ? '✓' : '✗'}</span>`).join('') : 'Pending'}
                   </div>
                 </td>
                 <td><button class="btn btn-primary btn-sm" onclick="openCSPChecklist('${ticker}')">Checklist →</button></td>
@@ -996,16 +996,16 @@ async function buildLEAPS() {
             <tr><th>Symbol</th><th>Setup</th><th>Status</th><th>Action</th></tr>
           </thead>
           <tbody>
-            ${signals.map(({ ticker, signal }) => {
-              const isReady = signal.checks.every(c => c.status);
+              ${signals.map(({ ticker, signal }) => {
+              const isReady = signal && signal.checks ? signal.checks.every(c => c.status) : false;
               return `<tr>
                 <td style="font-family:var(--mono);font-weight:700">${ticker}</td>
                 <td>
                   <div style="display:flex;gap:4px">
-                    ${signal.checks.map(c => `<span title="${c.label}" style="color:var(--${c.status ? 'green' : 'red'})">${c.status ? '✓' : '✗'}</span>`).join('')}
+                    ${signal && signal.checks ? signal.checks.map(c => `<span title="${c.label}" style="color:var(--${c.status ? 'green' : 'red'})">${c.status ? '✓' : '✗'}</span>`).join('') : 'Pending'}
                   </div>
                 </td>
-                <td>${isReady ? badge('READY', 'cyan') : badge('WAITING', 'neutral')}</td>
+                <td>${signal && signal.checks ? (isReady ? badge('READY', 'cyan') : badge('WAITING', 'neutral')) : 'N/A'}</td>
                 <td><button class="btn btn-secondary btn-sm" onclick="openLEAPSChecklist('${ticker}')">Verify →</button></td>
               </tr>`;
             }).join('')}

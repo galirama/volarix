@@ -98,7 +98,7 @@ const dataService = {
 
     // Finnhub quote API is per symbol, so we map to an array of promises
     const promises = symbols.map(async (s) => {
-        const url = `/.netlify/functions/quote?symbol=${s}`;
+        const url = `/api/quote?symbol=${s}`;
         const response = await fetch(url);
         if (!response.ok) return null;
         const json = await response.json();
