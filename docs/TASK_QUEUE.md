@@ -23,27 +23,21 @@
 ---
 
 ## 🟢 P1 — Market-Data Integration
-**Status:** Core Fetching & BDD Verified (September 7, 2026)
-**Files:** app/app.html (MKT object), tests/features/market_data.feature
+**Status:** Implemented & Verified (September 19, 2026)
+**Files:** `app/app.html` (MKT object), `app/dataService.js`, `api/quote.js`, `tests/features/market_data.feature`
 **Implemented:**
-- Yahoo Finance: `https://query1.finance.yahoo.com/v8/finance/chart/{ticker}`
-- Alternative.me: `https://api.alternative.me/fng/` (Fear & Greed)
-- `fetchWithCache()` with a 60-second quote TTL, one-hour Fear & Greed TTL,
-  localStorage persistence, and static-data fallback.
-
-**Remaining APIs (add only with a defined UI consumer):**
-- Finnhub: `https://finnhub.io/api/v1/quote?symbol={ticker}&token={key}`
-- FRED: `https://api.stlouisfed.org/fred/series/observations?series_id=DGS10`
+- Yahoo Finance / Finnhub: Integration via secure Vercel API proxy (`/api/quote`)
+- Data Resilience Layer: `fetchWithRetry` (exponential backoff) and `fetchWithFallback` (static data fallback)
+- Connection Status Indicator: Real-time Live/Degraded/Offline feedback badge
+- Centralized Configuration: Moved all keys to `app/config.js`
 
 **Acceptance criteria:**
-- [x] NVDA price in watchlist shows real number from Yahoo Finance
+- [x] NVDA price in watchlist shows real number from Finnhub (via proxy)
 - [x] Fear & Greed shows real value from Alternative.me
-- [x] 60-second localStorage cache works (no redundant calls)
 - [x] Graceful fallback to simulated data if fetch fails
 - [x] No console errors on load
 - [x] Ticker banner updates with real prices
-- [ ] Finnhub/FRED data has a defined UI consumer and server-side key handling
-      before either provider is added
+- [x] Finnhub proxy handles API keys securely via Vercel env vars
 
 ---
 
