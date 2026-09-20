@@ -670,7 +670,13 @@ syncMarketData();
 setInterval(syncMarketData, 60000); // Poll every 60 seconds
 
 // ── TICKER ──
-const BS={cyan:'background:rgba(0,212,170,0.15);color:#00D4AA;border:1px solid rgba(0,212,170,0.3)',red:'background:rgba(255,71,87,0.15);color:#FF4757;border:1px solid rgba(255,71,87,0.3)',amber:'background:rgba(255,184,48,0.15);color:#FFB830;border:1px solid rgba(255,184,48,0.3)',neutral:'background:rgba(255,255,255,0.06);color:#9896B0;border:1px solid rgba(255,255,255,0.1)'};
+// ══ GLOBAL STYLES ══
+window.BS = {
+  cyan: 'background:rgba(0,212,170,0.15);color:#00D4AA;border:1px solid rgba(0,212,170,0.3)',
+  red: 'background:rgba(255,71,87,0.15);color:#FF4757;border:1px solid rgba(255,71,87,0.3)',
+  amber: 'background:rgba(255,184,48,0.15);color:#FFB830;border:1px solid rgba(255,184,48,0.3)',
+  neutral: 'background:rgba(255,255,255,0.06);color:#9896B0;border:1px solid rgba(255,255,255,0.1)'
+};
 function buildTicker(){
   const T = [
     {l:'VIX', v:(MKT.prices.VIX||18.42).toFixed(2), b:(MKT.changes.VIX||1.23)>0?'ELEVATED':'FALLING', c:(MKT.changes.VIX||1.23)>0?'amber':'cyan'},
@@ -683,7 +689,7 @@ function buildTicker(){
     {l:'10Y', v:'4.31%', b:'Stable', c:'neutral'}
   ];
   const items=[...T,...T];
-  set('appTicker',items.map(t=>`<div class="tick-item"><span class="tick-label">${t.l}</span><span class="tick-val">${t.v}</span><span style="font-size:9px;font-weight:700;padding:2px 8px;border-radius:20px;${BS[t.c]}">${t.b}</span></div>`).join(''));
+  set('appTicker',items.map(t=>`<div class="tick-item"><span class="tick-label">${t.l}</span><span class="tick-val">${t.v}</span><span style="font-size:9px;font-weight:700;padding:2px 8px;border-radius:20px;${window.BS[t.c]}">${t.b}</span></div>`).join(''));
 }
 
 // ── WATCHLIST ──

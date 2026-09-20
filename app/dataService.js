@@ -56,12 +56,12 @@ const dataService = {
     };
   },
 
-  // Phase 4: Fetch via secure Netlify Proxy
+  // Phase 4: Fetch via secure Vercel API Proxy
   async fetchFinnhubTicker(ticker) {
     if (this.testMode) throw new Error("Simulated primary API failure");
     
     // Call our serverless proxy function instead of the direct API
-    const url = `/.netlify/functions/quote?symbol=${ticker}`;
+    const url = `/api/quote?symbol=${ticker}`;
     
     const response = await fetch(url);
     if (!response.ok) throw new Error("Proxy fetch failed");
