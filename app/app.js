@@ -293,26 +293,7 @@ $('scorecardOverlay').addEventListener('click', e => { if(e.target === $('scorec
 // Top 20 companies market cap > $200B sorted by IV rank
 // ══════════════════════════════════════════
 const MEGACAP_DATA = [
-  { ticker:'NVDA', name:'NVIDIA Corp',          cap:'3.1T',  capN:3100, price:120.50, chg:+2.11, iv:94.2, ivRank:89, pcRatio:0.68, earningsIn:3,  bias:'BULLISH',  strategy:'Iron Condor or CSP',      color:'red'   },
-  { ticker:'SMCI', name:'Super Micro Computer', cap:'72B',   capN:72,   price:812.40, chg:+1.84, iv:142.3,ivRank:94, pcRatio:0.72, earningsIn:21, bias:'NEUTRAL',  strategy:'Iron Condor (wide)',      color:'red'   },
-  { ticker:'META', name:'Meta Platforms',       cap:'1.3T',  capN:1300, price:504.33, chg:+1.02, iv:44.8, ivRank:62, pcRatio:0.84, earningsIn:30, bias:'BULLISH',  strategy:'Bull Put Spread',         color:'cyan'  },
-  { ticker:'TSLA', name:'Tesla Inc',            cap:'570B',  capN:570,  price:177.88, chg:-1.45, iv:76.8, ivRank:68, pcRatio:0.91, earningsIn:9,  bias:'BEARISH',  strategy:'Bear Call Spread',        color:'amber' },
-  { ticker:'AMZN', name:'Amazon.com Inc',       cap:'2.1T',  capN:2100, price:198.12, chg:+0.87, iv:38.4, ivRank:54, pcRatio:0.76, earningsIn:14, bias:'BULLISH',  strategy:'Cash Secured Put',        color:'cyan'  },
-  { ticker:'AAPL', name:'Apple Inc',            cap:'2.9T',  capN:2900, price:215.30, chg:+0.18, iv:31.8, ivRank:44, pcRatio:0.82, earningsIn:15, bias:'NEUTRAL',  strategy:'Covered Call',            color:'cyan'  },
-  { ticker:'AVGO', name:'Broadcom Inc',         cap:'620B',  capN:620,  price:182.40, chg:+1.24, iv:52.4, ivRank:71, pcRatio:0.64, earningsIn:30, bias:'BULLISH',  strategy:'Bull Put Spread',         color:'cyan'  },
-  { ticker:'LLY',  name:'Eli Lilly & Co',       cap:'720B',  capN:720,  price:820.10, chg:+0.64, iv:41.2, ivRank:58, pcRatio:0.72, earningsIn:45, bias:'BULLISH',  strategy:'Covered Call / CSP',      color:'cyan'  },
-  { ticker:'MSFT', name:'Microsoft Corp',       cap:'3.1T',  capN:3100, price:440.10, chg:+0.54, iv:28.4, ivRank:36, pcRatio:0.74, earningsIn:45, bias:'BULLISH',  strategy:'Cash Secured Put',        color:'cyan'  },
-  { ticker:'AMD',  name:'Adv Micro Devices',    cap:'240B',  capN:240,  price:158.40, chg:-0.82, iv:62.1, ivRank:55, pcRatio:0.79, earningsIn:60, bias:'NEUTRAL',  strategy:'Iron Condor',             color:'amber' },
-  { ticker:'GOOGL',name:'Alphabet Inc',         cap:'2.1T',  capN:2100, price:182.30, chg:+0.44, iv:30.1, ivRank:42, pcRatio:0.68, earningsIn:30, bias:'BULLISH',  strategy:'Bull Put Spread',         color:'cyan'  },
-  { ticker:'NFLX', name:'Netflix Inc',          cap:'280B',  capN:280,  price:640.20, chg:+0.94, iv:46.8, ivRank:64, pcRatio:0.82, earningsIn:30, bias:'BULLISH',  strategy:'Bull Put Spread',         color:'cyan'  },
-  { ticker:'COST', name:'Costco Wholesale',     cap:'380B',  capN:380,  price:850.40, chg:+0.34, iv:22.4, ivRank:28, pcRatio:0.62, earningsIn:28, bias:'BULLISH',  strategy:'Covered Call',            color:'cyan'  },
-  { ticker:'JPM',  name:'JPMorgan Chase',       cap:'560B',  capN:560,  price:202.40, chg:+0.44, iv:24.1, ivRank:32, pcRatio:0.58, earningsIn:60, bias:'NEUTRAL',  strategy:'Cash Secured Put',        color:'cyan'  },
-  { ticker:'WMT',  name:'Walmart Inc',          cap:'620B',  capN:620,  price:224.80, chg:+0.28, iv:20.4, ivRank:24, pcRatio:0.54, earningsIn:60, bias:'NEUTRAL',  strategy:'Covered Call',            color:'cyan'  },
-  { ticker:'V',    name:'Visa Inc',             cap:'560B',  capN:560,  price:278.40, chg:+0.54, iv:21.4, ivRank:26, pcRatio:0.48, earningsIn:60, bias:'BULLISH',  strategy:'Cash Secured Put',        color:'cyan'  },
-  { ticker:'UNH',  name:'UnitedHealth Group',   cap:'490B',  capN:490,  price:508.40, chg:-1.24, iv:34.8, ivRank:48, pcRatio:0.94, earningsIn:45, bias:'BEARISH',  strategy:'Bear Call Spread',        color:'amber' },
-  { ticker:'ORCL', name:'Oracle Corp',          cap:'420B',  capN:420,  price:158.20, chg:+0.44, iv:28.4, ivRank:38, pcRatio:0.72, earningsIn:30, bias:'BULLISH',  strategy:'Bull Put Spread',         color:'cyan'  },
-  { ticker:'XOM',  name:'ExxonMobil Corp',      cap:'490B',  capN:490,  price:114.20, chg:-0.84, iv:26.4, ivRank:34, pcRatio:0.88, earningsIn:45, bias:'BEARISH',  strategy:'Bear Call Spread',        color:'amber' },
-  { ticker:'JNJ',  name:'Johnson & Johnson',    cap:'380B',  capN:380,  price:154.40, chg:-0.34, iv:18.4, ivRank:22, pcRatio:0.68, earningsIn:45, bias:'NEUTRAL',  strategy:'Covered Call',            color:'cyan'  },
+  { ticker:'NVDA', name:'NVIDIA Corp',          cap:'2.7T',  capN:2700, price:222.27, chg:+1.50, iv:31.5, ivRank:32, pcRatio:0.65, earningsIn:65,  bias:'BULLISH',  strategy:'Cash Secured Put',      color:'cyan'   }
 ];
 // Ensure global access for dataService
 window.MEGACAP_DATA = MEGACAP_DATA;
@@ -327,16 +308,21 @@ window.FUNDAMENTALS = FUNDAMENTALS;
 
 async function getCSPSignal(ticker) {
   const data = await dataService.getTickerDetails(ticker);
-  if (!data) return { ready: false, checks: [] };
+  if (!data) {
+    console.error("No data found for", ticker);
+    return { ready: false, checks: [] };
+  }
+  
+  // DEBUG: Verify the data object properties
+  console.log(`Evaluating ${ticker} signal:`, data);
 
   const earningsSafe = data.earningsIn > 5;
   const ivRankSafe = data.ivRank > 30; // Min IV Rank requirement
-  const pullback = Math.random() > 0.5; // Placeholder for EMA/SMA logic
-
+  const pullback = data.chg < 0; // Use actual price momentum as a proxy for pullback
   const checks = [
-    { label: 'Earnings Guardrail (>5d)', status: earningsSafe, value: earningsSafe ? 'Clear' : 'Earnings too close' },
+    { label: 'Earnings Guardrail (>5d)', status: earningsSafe, value: earningsSafe ? `Clear (${data.earningsIn}d)` : `Earnings in ${data.earningsIn}d` },
     { label: 'IV Rank Priority (>30%)', status: ivRankSafe, value: `${data.ivRank}%` },
-    { label: 'Technical Pullback', status: pullback, value: pullback ? 'At Support' : 'Wait' }
+    { label: 'Technical Pullback (Momentum)', status: pullback, value: pullback ? 'Near Support' : 'Wait' }
   ];
 
   return {
