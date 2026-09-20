@@ -293,7 +293,7 @@ $('scorecardOverlay').addEventListener('click', e => { if(e.target === $('scorec
 // Top 20 companies market cap > $200B sorted by IV rank
 // ══════════════════════════════════════════
 const MEGACAP_DATA = [
-  { ticker:'NVDA', name:'NVIDIA Corp',          cap:'2.7T',  capN:2700, price:222.27, chg:+1.50, iv:31.5, ivRank:32, pcRatio:0.65, earningsIn:65,  bias:'BULLISH',  strategy:'Cash Secured Put',      color:'cyan'   }
+  { ticker:'NVDA', name:'NVIDIA Corp',          cap:'2.7T',  capN:2700, price:222.27, chg:-1.50, iv:31.5, ivRank:32, pcRatio:0.65, earningsIn:60,  bias:'BEARISH',  strategy:'Cash Secured Put',      color:'amber'   }
 ];
 // Ensure global access for dataService
 window.MEGACAP_DATA = MEGACAP_DATA;
@@ -372,5 +372,20 @@ function updateDataStatus(status) {
     text.textContent = 'Offline';
     container.title = 'Critical: All data sources offline.';
   }
+}
+
+
+function addCSPTicker() {
+  const input = document.getElementById('cspSearch');
+  const ticker = input.value.toUpperCase().trim();
+  if (!ticker) return;
+
+  if (!STATE.cspTickers) STATE.cspTickers = ['NVDA'];
+  if (!STATE.cspTickers.includes(ticker)) {
+    STATE.cspTickers.push(ticker);
+    saveState();
+    buildCSP(); // Refresh the tab
+  }
+  input.value = '';
 }
 

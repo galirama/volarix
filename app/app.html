@@ -638,8 +638,8 @@ async function fetchWithCache(key, url, ttl = 60) {
 async function syncMarketData() {
   // 1. Fetch F&G (1 hour TTL)
   // Use CORS proxy for Alternative.me if needed, though they often allow direct browser calls
-  const fgData = await fetchWithCache('fg', 'https://api.alternative.me/fng/', 3600);
-  if (fgData && fgData.data && fgData.data[0]) MKT.fg = parseInt(fgData.data[0].value) || MKT.fg;
+  // const fgData = await fetchWithCache('fg', 'https://api.alternative.me/fng/', 3600);
+  // if (fgData && fgData.data && fgData.data[0]) MKT.fg = parseInt(fgData.data[0].value) || MKT.fg;
 
   // 2. Fetch Prices (60s TTL)
   const tickers = [...new Set(['SPY','QQQ','AAPL','NVDA','TSLA','MSFT','AMD','META','VIX', ...STATE.watchlist])];
@@ -877,7 +877,7 @@ async function buildCSP() {
   const dTarget = fg > 60 ? '0.10 - 0.15' : fg < 40 ? '0.20 - 0.25' : '0.15 - 0.20';
   const capDeploy = fg > 60 ? '50% - 60%' : fg < 40 ? '80% - 100%' : '70% - 80%';
   const fgIcon = fg > 60 ? '🤑' : fg < 40 ? '😨' : '😐';
-  const tickers = ['NVDA', 'AAPL', 'TSLA', 'MSFT', 'AMD', 'SPY'];
+  const tickers = STATE.cspTickers || ['NVDA'];
 
   // Fetch all signals concurrently, filtering out failed lookups
   const signalResults = await Promise.all(tickers.map(async (s) => ({ ticker: s, signal: await getCSPSignal(s) })));
@@ -889,7 +889,14 @@ async function buildCSP() {
         <div style="font-size:15px;font-weight:700">🟢 Cash Secured Put (CSP) Bargains</div>
         <div style="font-size:11px;color:var(--text3)">Min 2% monthly return target · $150k capital base</div>
       </div>
-      ${badge(fgIcon + ' Market: ' + (fg > 60 ? 'Greed' : fg < 40 ? 'Fear' : 'Neutral'), fg > 60 ? 'cyan' : fg < 40 ? 'amber' : 'neutral')}
+      <div style="display:flex;gap:8px">
+         ${badge(fgIcon + ' F&G: ' + fg, fg > 60 ? 'cyan' : fg < 40 ? 'amber' : 'neutral')}
+         ${badge('VIX: ' + (MKT.prices.VIX || 'N/A'), MKT.prices.VIX > 25 ? 'red' : 'neutral')}
+      </div>
+      <div style="display:flex;gap:6px">
+        <input type="text" id="cspSearch" placeholder="Ticker (e.g. MSFT)..." style="padding:4px 8px;border-radius:var(--r);border:1px solid var(--border);background:var(--bg3);color:var(--text);font-size:12px;width:120px">
+        <button class="btn btn-secondary btn-sm" onclick="addCSPTicker()">+ Add</button>
+      </div>
     </div>
 
     <div class="stat-row">
@@ -971,6 +978,10 @@ async function buildLEAPS() {
       <div>
         <div style="font-size:15px;font-weight:700">🔵 LEAPS Bargains (Long-Term Leveraged Upside)</div>
         <div style="font-size:11px;color:var(--text3)">Fear-based entry · >1 year expiry · ~0.80 Delta</div>
+      </div>
+      <div style="display:flex;gap:8px">
+         ${badge('F&G: ' + MKT.fg, MKT.fg > 60 ? 'cyan' : MKT.fg < 40 ? 'amber' : 'neutral')}
+         ${badge('VIX: ' + (MKT.prices.VIX || 'N/A'), MKT.prices.VIX > 25 ? 'red' : 'neutral')}
       </div>
       <div style="display:flex;gap:6px">${['Core Watchlist', 'Setup Ready'].map((f, i) => `<button class="btn btn-${i === 0 ? 'primary' : 'secondary'} btn-sm">${f}</button>`).join('')}</div>
     </div>
