@@ -5,10 +5,10 @@
   };
 
   function getClient() {
-    var cfg = root.VOLARIX_SUPABASE_CONFIG || DEFAULT_CONFIG;
-    if (!cfg || !cfg.url || !cfg.publishableKey || !root.supabase || !root.supabase.createClient) return null;
+    var cfg = root.VOLARIX_CONFIG;
+    if (!cfg || !cfg.supabaseUrl || !cfg.supabaseKey || !root.supabase || !root.supabase.createClient) return null;
     if (!root.__volarixAuthClient) {
-      root.__volarixAuthClient = root.supabase.createClient(cfg.url, cfg.publishableKey);
+      root.__volarixAuthClient = root.supabase.createClient(cfg.supabaseUrl, cfg.supabaseKey);
     }
     return root.__volarixAuthClient;
   }

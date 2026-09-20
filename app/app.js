@@ -36,7 +36,7 @@ window.VOLARIX_LLM = (() => {
     model: 'qwen2.5-coder:1.5b',
     apiKey: 'ollama',
     enabled: true
-  }, window.VOLARIX_OLLAMA_CONFIG || {});
+  }, window.VOLARIX_CONFIG.ollama || {});
 
   async function chat(prompt, options = {}) {
     if (!cfg.enabled) {
@@ -375,7 +375,7 @@ function updateDataStatus(status) {
 }
 
 
-function addCSPTicker() {
+async function addCSPTicker() {
   const input = document.getElementById('cspSearch');
   const ticker = input.value.toUpperCase().trim();
   if (!ticker) return;
@@ -384,8 +384,27 @@ function addCSPTicker() {
   if (!STATE.cspTickers.includes(ticker)) {
     STATE.cspTickers.push(ticker);
     saveState();
-    buildCSP(); // Refresh the tab
+    await buildCSP(); // Refresh the tab
+  } else {
+    showToast('ℹ️', 'Ticker already in list', 'blue');
   }
   input.value = '';
 }
+
+async function addLEAPSTicker() {
+  const input = document.getElementById('leapsSearch');
+  const ticker = input.value.toUpperCase().trim();
+  if (!ticker) return;
+
+  if (!STATE.leapsTickers) STATE.leapsTickers = ['QQQ', 'SPY', 'AAPL', 'NVDA', 'MSFT', 'AMZN', 'META', 'GOOGL', 'TSLA'];
+  if (!STATE.leapsTickers.includes(ticker)) {
+    STATE.leapsTickers.push(ticker);
+    saveState();
+    await buildLEAPS(); // Refresh the tab
+  } else {
+    showToast('ℹ️', 'Ticker already in list', 'blue');
+  }
+  input.value = '';
+}
+
 

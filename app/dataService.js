@@ -56,18 +56,18 @@ const dataService = {
     };
   },
 
-  // Phase 4: Finnhub API implementation
+  // Phase 4: Fetch via secure Netlify Proxy
   async fetchFinnhubTicker(ticker) {
     if (this.testMode) throw new Error("Simulated primary API failure");
     
-    // Replace 'YOUR_API_KEY' with your actual key
-    const apiKey = 'YOUR_API_KEY'; 
-    const url = `https://finnhub.io/api/v1/quote?symbol=${ticker}&token=${apiKey}`;
+    // Call our serverless proxy function instead of the direct API
+    const url = `/.netlify/functions/quote?symbol=${ticker}`;
     
     const response = await fetch(url);
-    if (!response.ok) throw new Error("Finnhub API failed");
+    if (!response.ok) throw new Error("Proxy fetch failed");
     const json = await response.json();
     
+    // Validate response (Finnhub returns 0 for price if symbol is invalid)
     if (!json.c) throw new Error("Invalid ticker data from Finnhub");
 
     return {
@@ -87,9 +87,29 @@ const dataService = {
     return await this.fetchWithFallback(primary, secondary);
   },
 
+  // Phase 4: Primary fetcher - Finnhub for Market Data (Batch/Loop)
+  async fetchLiveMarketData(symbols) {
+    if (this.testMode) throw new Error("Simulated primary API failure");
+
+    const apiKey = 'YOUR_API_KEY'; 
+    // Finnhub quote API is per symbol, so we map to an array of promises
+    const promises = symbols.map(async (s) => {
+        const url = `https://finnhub.io/api/v1/quote?symbol=${s}&token=${apiKey}`;
+        const response = await fetch(url);
+        if (!response.ok) return null;
+        const json = await response.json();
+        return { ticker: s, price: json.c, change: json.d };
+    });
+
+    const results = await Promise.all(promises);
+    return results.filter(r => r !== null);
+  },
   async getOptionsChain(ticker) {
     return []; 
   }
 };
+
+window.dataService = dataService;
+
 
 window.dataService = dataService;

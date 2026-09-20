@@ -67,14 +67,11 @@ const price = await fetchWithCache('NVDA_quote', () => fetchYahooQuote('NVDA'), 
 
 ```
 User Action (e.g. open Ticker Analyzer for NVDA)
-  → Check localStorage cache (key: 'NVDA_quote', TTL: 60s)
-  → Cache HIT: return cached data instantly
-  → Cache MISS:
-      → fetch('https://query1.finance.yahoo.com/v8/finance/chart/NVDA')
-      → Normalize response to { price, change, changePct, volume }
-      → Store in localStorage with timestamp
-      → Update MKT.prices['NVDA'] and MKT.changes['NVDA']
-      → Call buildTickerAnalyzer('NVDA') to re-render
+  → Check `dataService` (Primary: Finnhub API via Netlify Proxy, Secondary: Static data)
+  → API SUCCESS: return live data
+  → API FAILURE: fallback to static data and update status indicator to 'degraded'
+  → Update MKT.prices['NVDA'] and MKT.changes['NVDA']
+  → Call buildTickerAnalyzer('NVDA') to re-render
 ```
 
 ---

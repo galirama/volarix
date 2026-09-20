@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<script src="supabase.config.js"></script>
+<script src="config.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="volarix-auth.js"></script>
 <script>
@@ -636,38 +636,23 @@ async function fetchWithCache(key, url, ttl = 60) {
 }
 
 async function syncMarketData() {
-  // 1. Fetch F&G (1 hour TTL)
-  // Use CORS proxy for Alternative.me if needed, though they often allow direct browser calls
-  // const fgData = await fetchWithCache('fg', 'https://api.alternative.me/fng/', 3600);
-  // if (fgData && fgData.data && fgData.data[0]) MKT.fg = parseInt(fgData.data[0].value) || MKT.fg;
-
-  // 2. Fetch Prices (60s TTL)
   const tickers = [...new Set(['SPY','QQQ','AAPL','NVDA','TSLA','MSFT','AMD','META','VIX', ...STATE.watchlist])];
-  for (const t of tickers) {
-    const querySym = t === 'VIX' ? '^VIX' : t;
-    // Yahoo Finance API directly in browser usually fails due to CORS.
-    // In a real production app, you would use a Netlify Function or a dedicated backend proxy.
-    // For this educational prototype, we attempt the fetch and fallback to static MKT data on failure.
-    const d = await fetchWithCache(`quote_${t}`, `https://query1.finance.yahoo.com/v8/finance/chart/${querySym}`, 60);
-    if (d && d.chart && d.chart.result && d.chart.result[0]) {
-      const meta = d.chart.result[0].meta;
-      if (meta.regularMarketPrice) MKT.prices[t] = +(meta.regularMarketPrice).toFixed(2);
-      if (meta.regularMarketPrice && meta.previousClose) {
-        MKT.changes[t] = +(((meta.regularMarketPrice - meta.previousClose)/meta.previousClose)*100).toFixed(2);
-      }
-    }
-  }
   
-  // 3. Force update important values if they are still at old hardcoded defaults
-  // This ensures that even if some fetches fail, we are not stuck on 2024 prices
-  if (MKT.prices.AAPL === 189.45) {
-     // Fallback simulation: apply a random walk drift to keep the UI "live" 
-     // until the user configures a real backend proxy for Yahoo Finance.
-     Object.keys(MKT.prices).forEach(s => {
-       const drift = 1 + (Math.random() - 0.5) * 0.002;
-       MKT.prices[s] = +(MKT.prices[s] * drift).toFixed(2);
-     });
+  try {
+    const liveData = await dataService.fetchLiveMarketData(tickers);
+    
+    // Update MKT object with fresh data
+    liveData.forEach(item => {
+      if (item.price) MKT.prices[item.ticker] = item.price;
+      if (item.change) MKT.changes[item.ticker] = item.change;
+    });
+
+    if (typeof updateDataStatus === 'function') updateDataStatus('live');
+  } catch (err) {
+    console.error("Market data sync failed", err);
+    if (typeof updateDataStatus === 'function') updateDataStatus('offline');
   }
+
 
   // 4. Update DOM Components
   buildWatchlistSidebar();
@@ -968,7 +953,7 @@ async function openCSPChecklist(s) {
 }
 
 async function buildLEAPS() {
-  const tickers = ['QQQ', 'SPY', 'AAPL', 'NVDA', 'MSFT', 'AMZN', 'META', 'GOOGL', 'TSLA'];
+  const tickers = STATE.leapsTickers || ['QQQ', 'SPY', 'AAPL', 'NVDA', 'MSFT', 'AMZN', 'META', 'GOOGL', 'TSLA'];
   // Fetch all signals concurrently, filtering out failed lookups
   const signalResults = await Promise.all(tickers.map(async (s) => ({ ticker: s, signal: await getLEAPSSignal(s) })));
   const signals = signalResults.filter(r => r.signal && r.signal.checks.length > 0);
@@ -983,6 +968,11 @@ async function buildLEAPS() {
          ${badge('F&G: ' + MKT.fg, MKT.fg > 60 ? 'cyan' : MKT.fg < 40 ? 'amber' : 'neutral')}
          ${badge('VIX: ' + (MKT.prices.VIX || 'N/A'), MKT.prices.VIX > 25 ? 'red' : 'neutral')}
       </div>
+      <div style="display:flex;gap:6px">
+        <input type="text" id="leapsSearch" placeholder="Ticker (e.g. MSFT)..." style="padding:4px 8px;border-radius:var(--r);border:1px solid var(--border);background:var(--bg3);color:var(--text);font-size:12px;width:120px">
+        <button class="btn btn-secondary btn-sm" onclick="addLEAPSTicker()">+ Add</button>
+      </div>
+    </div>
       <div style="display:flex;gap:6px">${['Core Watchlist', 'Setup Ready'].map((f, i) => `<button class="btn btn-${i === 0 ? 'primary' : 'secondary'} btn-sm">${f}</button>`).join('')}</div>
     </div>
 

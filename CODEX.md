@@ -30,7 +30,8 @@ volarix/
 ├── app/                   ← Deploy this folder to Netlify
 │   ├── index.html         ← Public landing page
 │   ├── login.html         ← Auth + MFA
-│   └── app.html           ← Full dashboard
+│   ├── app.html           ← Full dashboard
+│   └── config.js          ← Centralized configuration (Supabase, API keys, AI)
 ├── tests/                 ← BDD automated UI test suite (Cucumber + Playwright)
 └── docs/                  ← Architecture, schema, task queue, and handoff
 ```
