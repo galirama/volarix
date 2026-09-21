@@ -2,6 +2,7 @@
 module.exports = async (req, res) => {
   const { symbol } = req.query;
   const apiKey = process.env.FINNHUB_API_KEY;
+  console.log('DEBUG: API Key check:', apiKey ? 'Key found (length ' + apiKey.length + ')' : 'KEY MISSING');
 
   if (!symbol || !apiKey) {
     return res.status(400).json({ error: 'Missing symbol or API key' });
