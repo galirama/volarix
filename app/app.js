@@ -35,7 +35,7 @@ window.VOLARIX_LLM = (() => {
     baseUrl: 'http://localhost:11434/v1',
     model: 'qwen2.5-coder:1.5b',
     apiKey: 'ollama',
-    enabled: true
+    enabled: false
   }, window.VOLARIX_CONFIG.ollama || {});
 
     async function chat(prompt, options = {}) {
@@ -74,6 +74,7 @@ window.VOLARIX_LLM = (() => {
     }
 
   async function smokeTest() {
+    if (!cfg.enabled) return { ok: false, message: 'Ollama disabled' };
     const reply = await chat('Reply with "Ollama OK" only.');
     return { ok: true, model: cfg.model, reply };
   }
@@ -84,7 +85,9 @@ window.VOLARIX_LLM = (() => {
 if (window.VOLARIX_LLM) {
   window.addEventListener('DOMContentLoaded', () => {
     window.VOLARIX_LLM.smokeTest().then((result) => {
-      console.log('VolariX local Ollama test:', result);
+      if (result.ok) {
+        console.log('VolariX local Ollama test:', result);
+      }
     }).catch((error) => {
         // Gracefully handle if Ollama is not installed/running
         if (error.message.includes('Failed to fetch') || error.message.includes('ERR_CONNECTION_REFUSED')) {

@@ -1,4 +1,4 @@
-const CACHE_NAME = 'volarix-v1';
+const CACHE_NAME = 'volarix-v2';
 const ASSETS = [
   '/',
   '/index.html',
