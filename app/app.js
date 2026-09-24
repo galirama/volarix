@@ -81,7 +81,12 @@ if (window.VOLARIX_LLM) {
     window.VOLARIX_LLM.smokeTest().then((result) => {
       console.log('VolariX local Ollama test:', result);
     }).catch((error) => {
-      console.warn('VolariX local Ollama not reachable:', error.message);
+        // Gracefully handle if Ollama is not installed/running
+        if (error.message.includes('Failed to fetch') || error.message.includes('ERR_CONNECTION_REFUSED')) {
+            console.info('VolariX local Ollama is not enabled or reachable. Skipping AI features.');
+        } else {
+            console.warn('VolariX local Ollama issue:', error.message);
+        }
     });
   });
 }
@@ -314,7 +319,7 @@ async function getCSPSignal(ticker) {
   }
   
   // DEBUG: Verify the data object properties
-  console.log(`Evaluating ${ticker} signal:`, data);
+  // console.log(`Evaluating ${ticker} signal:`, data);
 
   const earningsSafe = data.earningsIn > 5;
   const ivRankSafe = data.ivRank > 30; // Min IV Rank requirement
