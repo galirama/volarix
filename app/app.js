@@ -38,35 +38,40 @@ window.VOLARIX_LLM = (() => {
     enabled: true
   }, window.VOLARIX_CONFIG.ollama || {});
 
-  async function chat(prompt, options = {}) {
-    if (!cfg.enabled) {
-      throw new Error('Local Ollama model is disabled.');
+    async function chat(prompt, options = {}) {
+      if (!cfg.enabled) {
+        throw new Error('Local Ollama model is disabled.');
+      }
+
+      const model = options.model || cfg.model;
+      try {
+        const response = await fetch(`${cfg.baseUrl.replace(/\/$/, '')}/chat/completions`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${cfg.apiKey || 'ollama'}`
+          },
+          body: JSON.stringify({
+            model,
+            messages: [{ role: 'user', content: prompt }],
+            temperature: options.temperature ?? 0.3,
+            stream: false
+          })
+        });
+
+        const text = await response.text();
+        if (!response.ok) {
+          throw new Error(`Ollama request failed (${response.status}): ${text}`);
+        }
+
+        const data = JSON.parse(text);
+        const content = data.choices?.[0]?.message?.content || data.message?.content || '';
+        return content.trim();
+      } catch (e) {
+        console.error('Ollama chat failed:', e.message);
+        return 'AI assistant is currently unreachable.';
+      }
     }
-
-    const model = options.model || cfg.model;
-    const response = await fetch(`${cfg.baseUrl.replace(/\/$/, '')}/chat/completions`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${cfg.apiKey || 'ollama'}`
-      },
-      body: JSON.stringify({
-        model,
-        messages: [{ role: 'user', content: prompt }],
-        temperature: options.temperature ?? 0.3,
-        stream: false
-      })
-    });
-
-    const text = await response.text();
-    if (!response.ok) {
-      throw new Error(`Ollama request failed (${response.status}): ${text}`);
-    }
-
-    const data = JSON.parse(text);
-    const content = data.choices?.[0]?.message?.content || data.message?.content || '';
-    return content.trim();
-  }
 
   async function smokeTest() {
     const reply = await chat('Reply with "Ollama OK" only.');
