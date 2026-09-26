@@ -38,7 +38,7 @@ VolariX is built using a highly structured, LLM-first development lifecycle. We 
 ## 4. Key Features
 VolariX currently features a 21-tab interactive dashboard. Highlights include:
 - **Live Market Simulator**: A highly performant 8-second tick simulator updating prices dynamically across the UI.
-- **Fundamental Screener (10-Point Scorecard)**: A specialized algorithm visualizing stock health across Growth, Value, and Momentum metrics.
+- **Fundamental Screener (10-Point Scorecard)**: A specialized algorithm visualizing stock health across Growth, Value, and Momentum metrics, powered by the dedicated `screenerService.js` API integration.
 - **Mega-Cap IV Screener**: Dynamic tracking of Implied Volatility and IV Rank for the top 20 market cap stocks.
 - **Paper Trading & Trade Journaling**: Simulated trade execution with real-time P&L tracking and AI-driven post-mortem notes.
 - **Risk Shield**: Pre-trade concentration and net-delta gating to prevent dangerous account allocations.

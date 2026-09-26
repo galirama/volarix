@@ -13,6 +13,7 @@
 - Sidebar/UI Cleanup: Deprecated unreachable features, prioritized CSP & LEAPS Bargains
 
 ### 🔄 In Progress
+- P11: Fundamental Stock Screener (Phase 1)
 - P10: Weekly Email Digest (Resend.com + Netlify function)
 
 ### ❌ Not Started

@@ -433,3 +433,13 @@ async function addLEAPSTicker() {
 }
 
 
+
+// --- Fundamental Screener Test ---
+window.testScreener = async function() {
+  console.log("Starting Fundamental Screener Test...");
+  const tickers = ['AAPL', 'NVDA', 'AMZN', 'SOFI', 'MSFT', 'TSLA', 'SPY', 'MU'];
+  const data = await window.screenerService.getScreenerData(tickers);
+  console.log("Fundamental Data Fetched:", data);
+  alert("Check console for screener data!");
+};
+

@@ -56,6 +56,24 @@
 
 ---
 
+---
+
+## 🟡 P11 — Fundamental Stock Screener (Phase 1: API Integration)
+**Status:** In Progress
+**Files:** `app/screenerService.js` (new), `app/app.js` (test hook)
+**Requirements:**
+- Create `screenerService.js` for Finnhub API interaction.
+- Ticker list: AAPL, NVDA, AMZN, SOFI, MSFT, TSLA, SPY, MU.
+- Endpoints: `/stock/metric`, `/stock/price-target`, `/quote`.
+- Features: Error handling, rate limiting, caching (localStorage).
+
+**Acceptance criteria:**
+- [ ] `screenerService.js` exports clear data-fetching functions.
+- [ ] Successful console verification of raw data for all tickers.
+- [ ] Graceful handling of rate limits and API errors.
+- [ ] Data correctly cached in `localStorage`.
+
+
 ## ✅ Completed
 
 - [x] P2: Options Profit Calculator (openCalc, buildCalcContent, drawCalcChart)
