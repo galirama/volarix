@@ -398,7 +398,11 @@ async function addCSPTicker() {
     STATE.cspTickers.push(ticker);
     
     // Auto-fetch data immediately
-    await dataService.getTickerDetails(ticker); 
+    const details = await dataService.getTickerDetails(ticker); 
+    if (details) {
+      MKT.prices[ticker] = parseFloat(details.price);
+      MKT.changes[ticker] = details.change || 0;
+    }
     
     saveState();
     buildCSP(); 

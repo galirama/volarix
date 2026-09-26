@@ -819,7 +819,7 @@ async function showTab(id,el){
     if(pg) pg.classList.add('active');
     if(el&&el.classList) el.classList.add('active');
     
-    const B={overview:buildOverview,csp:buildCSP,leaps:buildLEAPS,events:buildEvents,settings:buildSettings};
+    const B={overview:buildOverview,csp:buildCSP,leaps:buildLEAPS,events:buildEvents,settings:buildSettings,checklist:buildChecklistScreener};
     
     if(B[id]) {
       await B[id]();

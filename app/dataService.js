@@ -68,12 +68,13 @@
       if (!response.ok) throw new Error("Proxy fetch failed");
       const json = await response.json();
       
-      // Validate response (Finnhub returns 0 for price if symbol is invalid)
-      if (!json.c) throw new Error("Invalid ticker data from Finnhub");
+      // Validate response (Finnhub returns 0 for c if symbol is invalid)
+      if (!json.c || json.c === 0) throw new Error("Invalid ticker data from Finnhub");
 
       return {
         ticker: ticker,
         price: json.c.toFixed(2),
+        change: json.d || 0,
         ...(await this.getMarketData()).find(d => d.ticker === ticker) || {}
       };
     },
@@ -86,7 +87,7 @@
         // Fallback: If not found, return a default object to keep the UI functional
         return found || { 
           ticker: ticker, name: ticker, cap: 'N/A', capN: 0, price: '0.00', 
-          chg: 0, iv: 0, ivRank: 0, earningsIn: 99, bias: 'NEUTRAL' 
+          chg: 0, change: 0, iv: 0, ivRank: 0, earningsIn: 99, bias: 'NEUTRAL' 
         };
       };
       return await this.fetchWithFallback(primary, secondary);
@@ -102,7 +103,9 @@
           const response = await fetch(url);
           if (!response.ok) return null;
           const json = await response.json();
-          return { ticker: s, price: json.c, change: json.d };
+          // Check for valid data
+          if (!json.c || json.c === 0) return null;
+          return { ticker: s, price: json.c, change: json.d || 0 };
       });
 
       const results = await Promise.all(promises);
