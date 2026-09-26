@@ -313,7 +313,7 @@ const MEGACAP_DATA = [
 ];
 // Ensure global access for dataService
 window.MEGACAP_DATA = MEGACAP_DATA;
-window.MKT = MKT;
+window.MKT = typeof MKT !== 'undefined' ? MKT : {};
 window.FUNDAMENTALS = FUNDAMENTALS;
 
 
