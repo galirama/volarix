@@ -2231,6 +2231,7 @@ function buildHeatmap() {
   `);
 }
 
+
 <script>
 // ══════════════════════════════════════════
 // FUNDAMENTAL CHECKLIST SCREENER
@@ -2240,7 +2241,6 @@ let currentChecklistResults = [];
 function buildChecklistScreener() {
   buildFundamentalScreener();
 }
-
 
 function runChecklistScreenFromInput() {
   const input = $('chkTickers') ? $('chkTickers').value : '';
@@ -2257,8 +2257,6 @@ function runChecklistTopN(n) {
 }
 
 function runChecklistScreen(tickers, presetFilter) {
-
-function runChecklistScreen(tickers, presetFilter) {
   const list = Array.from(new Set(tickers));
   let results = list.map(sym => {
     if (!FUNDAMENTALS[sym]) return { sym, unavailable: true, score: -1 };
@@ -2268,6 +2266,9 @@ function runChecklistScreen(tickers, presetFilter) {
   if (presetFilter === 'moat') results = results.filter(r => !r.unavailable && r.score >= 75);
   else if (presetFilter === 'growth') results = results.filter(r => !r.unavailable && r.checks && r.checks[4] && r.checks[4].res !== 'red');
   else if (presetFilter === 'earnings') results = results.filter(r => !r.unavailable && r.earningsDate !== null && r.earningsDate <= 7);
+  return results;
+}
+</script>
 
   results.sort((a, b) => a.unavailable ? 1 : b.unavailable ? -1 : b.score - a.score || a.sym.localeCompare(b.sym));
   currentChecklistResults = results;
