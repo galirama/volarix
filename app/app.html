@@ -2232,7 +2232,6 @@ function buildHeatmap() {
 }
 
 
-<script>
 // ══════════════════════════════════════════
 // FUNDAMENTAL CHECKLIST SCREENER
 // ══════════════════════════════════════════
@@ -2284,7 +2283,6 @@ function sortChecklist(key) {
   currentChecklistResults.sort((a, b) => a.unavailable ? 1 : b.unavailable ? -1 : b.score - a.score);
   renderChecklistTable(currentChecklistResults);
 }
-</script>
 
 function sortChecklist(key) {
 
