@@ -1,10 +1,5 @@
 // Global helper: Query selector
 const $ = (id) => document.getElementById(id);
-
-// Loaded after app.html's inline dashboard runtime. It uses the shared $ helper
-// and modal elements declared there, so do not move this script into <head>.
-// Fundamental data remains simulated until the production data-provider migration.
-// ══════════════════════════════════════════
 const FUNDAMENTALS = {
   AAPL: { pe:29.2, pb:48.1, ps:7.8, de:1.81, revGrowth:6.1,  epsGrowth:10.4, grossMargin:45.2, currentRatio:0.99, roe:160.1, insiderOwn:0.06, earningsDate:3 },
   NVDA: { pe:64.3, pb:36.2, ps:18.3,de:0.41, revGrowth:122.4,epsGrowth:288.2,grossMargin:74.6, currentRatio:4.17, roe:91.4,  insiderOwn:3.50, earningsDate:3  },
@@ -306,7 +301,9 @@ $('scorecardOverlay').addEventListener('click', e => { if(e.target === $('scorec
 
 
 // Global helper: Query selector
-const $ = (id) => document.getElementById(id);
+if (typeof $ === 'undefined') {
+  window.$ = (id) => document.getElementById(id);
+}
 
 // ══════════════════════════════════════════
 // MEGA-CAP HIGH-IV SCREENER

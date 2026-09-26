@@ -2252,9 +2252,9 @@ function runChecklistTopN(n) {
   const keys = Object.keys(FUNDAMENTALS);
   const combined = Array.from(new Set([...universe, ...keys])).slice(0, n);
   if ($('chkTickers')) $('chkTickers').value = combined.join(', ');
-</script>
   runChecklistScreen(combined);
 }
+</script>
 
 function runChecklistScreen(tickers, presetFilter) {
   const list = Array.from(new Set(tickers));
