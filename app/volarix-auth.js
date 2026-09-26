@@ -1,12 +1,15 @@
 (function (root) {
   var DEFAULT_CONFIG = {
-    url: 'https://ifixqeuxvfsxzkxlytqm.supabase.co',
-    publishableKey: 'sb_publishable_BjcFWrlYoIv2DKqXk1A8iA_uaJB487L'
+    supabaseUrl: 'https://ifixqeuxvfsxzkxlytqm.supabase.co',
+    supabaseKey: 'sb_publishable_BjcFWrlYoIv2DKqXk1A8iA_uaJB487L'
   };
 
   function getClient() {
-    var cfg = root.VOLARIX_CONFIG;
-    if (!cfg || !cfg.supabaseUrl || !cfg.supabaseKey || !root.supabase || !root.supabase.createClient) return null;
+    var cfg = root.VOLARIX_CONFIG || DEFAULT_CONFIG;
+    if (!cfg || !cfg.supabaseUrl || !cfg.supabaseKey || !root.supabase || !root.supabase.createClient) {
+      console.error('Supabase config or library missing.');
+      return null;
+    }
     if (!root.__volarixAuthClient) {
       root.__volarixAuthClient = root.supabase.createClient(cfg.supabaseUrl, cfg.supabaseKey);
     }
@@ -25,7 +28,7 @@
     },
     signInWithPassword: async function (email, password) {
       var client = getClient();
-      if (!client) return { error: { message: 'not configured' }, data: { user: null, session: null } };
+      if (!client) return { error: { message: 'Authentication client not initialized' }, data: { user: null, session: null } };
       return client.auth.signInWithPassword({ email: email, password: password });
     },
     signOut: async function () {
