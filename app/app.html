@@ -2230,34 +2230,8 @@ function buildHeatmap() {
 let currentChecklistResults = [];
 
 function buildChecklistScreener() {
-  set('tab-checklist', `
-    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;flex-wrap:wrap;gap:8px">
-      <div><div style="font-size:20px;font-weight:800">✅ Fundamental Screener</div><div style="font-size:11px;color:var(--text2)">Multi-Stock 10-Point Health Checklist Matrix</div></div>
-      <button class="btn btn-secondary btn-sm" onclick="exportChecklistCSV()">📥 Export CSV</button>
-    </div>
-    <div class="card" style="margin-bottom:14px">
-      <div class="card-header"><div class="card-title">🔍 Select Tickers & Mode</div></div>
-      <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:flex-end">
-        <div style="flex:1;min-width:220px">
-          <div class="stat-label" style="margin-bottom:4px">Manual Tickers (Comma / Space Separated)</div>
-          <input type="text" id="chkTickers" placeholder="AAPL, MSFT, NVDA" value="AAPL, MSFT, NVDA, TSLA, AMZN, GOOGL, META, AMD" style="width:100%;background:var(--bg3);border:1px solid var(--border2);border-radius:var(--r);padding:8px 10px;color:var(--text);font-family:var(--mono);font-size:12px">
-        </div>
-        <button class="btn btn-primary" onclick="runChecklistScreenFromInput()">Run Screener →</button>
-      </div>
-      <div style="display:flex;align-items:center;gap:6px;margin-top:10px;flex-wrap:wrap;padding-top:8px;border-top:1px solid var(--border)">
-        <span class="stat-label">Quick Universe:</span>
-        <button class="btn btn-secondary btn-sm" onclick="runChecklistTopN(10)">Top 10 Mega-Caps</button>
-        <button class="btn btn-secondary btn-sm" onclick="runChecklistTopN(20)">Top 20 Mega-Caps</button>
-        <button class="btn btn-secondary btn-sm" onclick="runChecklistTopN(50)">All Universe</button>
-      </div>
-      <div style="display:flex;align-items:center;gap:6px;margin-top:6px;flex-wrap:wrap">
-        <span class="stat-label">Presets:</span>
-        <button class="btn btn-secondary btn-sm" onclick="runChecklistPreset('all')">All Stocks</button>
-        <button class="btn btn-secondary btn-sm" onclick="runChecklistPreset('moat')">🛡️ Moats (≥75)</button>
-        <button class="btn btn-secondary btn-sm" onclick="runChecklistPreset('growth')">🚀 Growth (>15%)</button>
-        <button class="btn btn-secondary btn-sm" onclick="runChecklistPreset('earnings')">🚨 Earnings (≤7d)</button>
-      </div>
-    </div>
+  buildFundamentalScreener();
+}
     <div class="card">
       <div class="card-header" style="justify-content:space-between"><div class="card-title">📋 Ranked Fundamentals Table</div><div style="font-size:11px;color:var(--text3)" id="chkResultsCount">8 stocks scored</div></div>
       <div style="overflow-x:auto">

@@ -443,3 +443,70 @@ window.testScreener = async function() {
   alert("Check console for screener data!");
 };
 
+
+async function buildFundamentalScreener() {
+  set('tab-checklist', `
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;flex-wrap:wrap;gap:8px">
+      <div><div style="font-size:20px;font-weight:800">✅ Fundamental Screener</div><div style="font-size:11px;color:var(--text2)">Live Finnhub Data Analysis</div></div>
+      <div id="chkSummary" style="display:flex;gap:12px;font-size:11px;color:var(--text2)"></div>
+    </div>
+    <div class="card" style="margin-bottom:14px">
+      <div class="card-header"><div class="card-title">🔍 Filters</div></div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:flex-end">
+        <input type="text" id="chkSearch" placeholder="Search Ticker..." style="background:var(--bg3);border:1px solid var(--border2);border-radius:var(--r);padding:8px;color:var(--text)">
+        <select id="chkPreset" style="background:var(--bg3);border:1px solid var(--border2);border-radius:var(--r);padding:8px;color:var(--text)">
+            <option value="ALL">All Presets</option>
+            <option value="CSP">CSP Candidates</option>
+            <option value="LEAPS">LEAPS Candidates</option>
+        </select>
+        <button class="btn btn-primary" onclick="renderFundamentalTable()">Run Screener</button>
+      </div>
+    </div>
+    <div id="chkTableContainer" class="card">
+        <div style="padding:20px;text-align:center">Loading data...</div>
+    </div>
+  `);
+  renderFundamentalTable();
+}
+
+async function renderFundamentalTable() {
+  const container = document.getElementById('chkTableContainer');
+  const summary = document.getElementById('chkSummary');
+  const search = document.getElementById('chkSearch')?.value.toUpperCase();
+  const preset = document.getElementById('chkPreset')?.value;
+
+  container.innerHTML = '<div style="padding:20px;text-align:center">Fetching data...</div>';
+
+  const tickers = ['AAPL', 'NVDA', 'AMZN', 'SOFI', 'MSFT', 'TSLA', 'SPY', 'MU'];
+  const data = await window.screenerService.getScreenerData(tickers);
+  
+  const filtered = window.filterService.filterFundamentalStocks(data, preset !== 'ALL' ? preset : null);
+  
+  // Update Summary
+  if (summary) {
+    summary.innerHTML = `<span>Scanned: ${Object.keys(data).length}</span><span>Filtered: ${filtered.length}</span>`;
+  }
+  
+  let html = `<table class="data-table" style="width:100%">
+    <thead><tr><th>Ticker</th><th>Price</th><th>52W High</th><th>P/E</th><th>EPS</th><th>Tag</th><th>Action</th></tr></thead>
+    <tbody>`;
+  
+  filtered.forEach(row => {
+    html += `<tr>
+      <td>${row.symbol}</td>
+      <td>${row.price}</td>
+      <td>${row.discount}</td>
+      <td>${row.pe}</td>
+      <td>${row.eps}</td>
+      <td><span class="badge" style="background:var(--purple-bg)">${preset || 'Normal'}</span></td>
+      <td style="display:flex;gap:4px">
+        <button class="btn btn-sm btn-secondary" onclick="addToWatchlist('${row.symbol}');showToast('📋','Added to Watchlist','cyan')">+</button>
+        <button class="btn btn-sm btn-primary" onclick="window.location.hash='ai';$('aiPrompt').value='Analyze ${row.symbol} setup for ${preset || 'trade'} based on fundamental data. Current price: ${row.price}, PE: ${row.pe}.';">Trade</button>
+      </td>
+    </tr>`;
+  });
+  
+  html += `</tbody></table>`;
+  container.innerHTML = html;
+}
+

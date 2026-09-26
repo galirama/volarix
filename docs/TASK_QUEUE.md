@@ -75,6 +75,40 @@
 ## 🟡 P12 — Fundamental Stock Screener (Phase 2: Filtering & Rules)
 **Status:** In Progress
 **Files:** `app/filterService.js` (new)
+
+---
+
+## 🟡 P13 — Fundamental Stock Screener (Phase 3: UI Table & Filters)
+**Status:** In Progress
+**Files:** `app/app.html` (tab addition), `app/app.js` (render logic)
+**Requirements:**
+- Add "Fundamental Screener" tab to sidebar.
+- Implement table displaying ticker metrics (Price, P/E, EPS, 52W High, Target).
+- Add filter controls: Search bar, Presets (All/CSP/LEAPS), and numeric range inputs.
+- Add loading skeletons for fetching states.
+
+---
+
+## 🟡 P14 — Fundamental Stock Screener (Phase 4: Integration)
+**Status:** In Progress
+**Files:** `app/app.js` (integration logic)
+**Requirements:**
+- Connect "Trade" action in table to AI Trade Assistant.
+- Add "Add to Watchlist" functionality to table rows.
+- Display summary metrics (Total Scanned, Filtered, Avg Upside) at top of Screener.
+
+**Acceptance criteria:**
+- [ ] Clicking "Trade" opens Trade Assistant with ticker pre-filled.
+- [ ] Clicking "Watchlist" adds ticker to `STATE.watchlist`.
+- [ ] Screener top banner displays real-time summary statistics.
+
+
+**Acceptance criteria:**
+- [ ] Screener tab renders correctly in dashboard.
+- [ ] Table populates with data from `screenerService` filtered by `filterService`.
+- [ ] Filter controls update the table view dynamically.
+- [ ] UI matches dark theme and aesthetic of existing tables.
+
 **Requirements:**
 - Implement `filterFundamentalStocks` with customizable criteria (PE, EPS, Price/Target, 52wk discount).
 - Define presets for "CSP Candidates" and "LEAPS Candidates".
