@@ -14,6 +14,7 @@
 
 ### 🔄 In Progress
 - P11: Fundamental Stock Screener (Phase 1)
+- P12: Fundamental Stock Screener (Phase 2)
 - P10: Weekly Email Digest (Resend.com + Netlify function)
 
 ### ❌ Not Started

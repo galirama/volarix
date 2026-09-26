@@ -69,6 +69,22 @@
 
 **Acceptance criteria:**
 - [ ] `screenerService.js` exports clear data-fetching functions.
+
+---
+
+## 🟡 P12 — Fundamental Stock Screener (Phase 2: Filtering & Rules)
+**Status:** In Progress
+**Files:** `app/filterService.js` (new)
+**Requirements:**
+- Implement `filterFundamentalStocks` with customizable criteria (PE, EPS, Price/Target, 52wk discount).
+- Define presets for "CSP Candidates" and "LEAPS Candidates".
+- Add mock data fallback logic to ensure the UI doesn't break when APIs are missing data.
+
+**Acceptance criteria:**
+- [ ] `filterFundamentalStocks` function correctly sorts/filters the ticker dataset.
+- [ ] Presets return logical subsets of data.
+- [ ] Missing fields in Finnhub data are handled gracefully.
+
 - [ ] Successful console verification of raw data for all tickers.
 - [ ] Graceful handling of rate limits and API errors.
 - [ ] Data correctly cached in `localStorage`.
