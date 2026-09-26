@@ -1,3 +1,6 @@
+// Global helper: Query selector
+const $ = (id) => document.getElementById(id);
+
 // Loaded after app.html's inline dashboard runtime. It uses the shared $ helper
 // and modal elements declared there, so do not move this script into <head>.
 // Fundamental data remains simulated until the production data-provider migration.
@@ -300,6 +303,10 @@ function openScorecard(sym, mode) {
 
 function closeScorecard() { $('scorecardOverlay').classList.remove('open'); }
 $('scorecardOverlay').addEventListener('click', e => { if(e.target === $('scorecardOverlay')) closeScorecard(); });
+
+
+// Global helper: Query selector
+const $ = (id) => document.getElementById(id);
 
 // ══════════════════════════════════════════
 // MEGA-CAP HIGH-IV SCREENER

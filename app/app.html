@@ -3,6 +3,12 @@
 <head>
 <meta charset="UTF-8">
 <script src="config.js"></script>
+
+<script>
+  const $ = (id) => document.getElementById(id);
+  function showAuth(){window.location.href='login.html';}
+</script>
+
 <script src="dataService.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="volarix-auth.js"></script>
@@ -2224,6 +2230,7 @@ function buildHeatmap() {
   `);
 }
 
+<script>
 // ══════════════════════════════════════════
 // FUNDAMENTAL CHECKLIST SCREENER
 // ══════════════════════════════════════════
@@ -2232,30 +2239,7 @@ let currentChecklistResults = [];
 function buildChecklistScreener() {
   buildFundamentalScreener();
 }
-    <div class="card">
-      <div class="card-header" style="justify-content:space-between"><div class="card-title">📋 Ranked Fundamentals Table</div><div style="font-size:11px;color:var(--text3)" id="chkResultsCount">8 stocks scored</div></div>
-      <div style="overflow-x:auto">
-        <table class="data-table">
-          <thead>
-            <tr>
-              <th>Rank</th>
-              <th>Ticker</th>
-              <th onclick="sortChecklist('score')" style="cursor:pointer">Score ↕</th>
-              <th>Rating</th>
-              <th style="min-width:160px">10 Check Matrix</th>
-              <th>Summary</th>
-              <th>Earnings Proximity</th>
-              <th>Action</th>
-            </tr>
-          </thead>
-          <tbody id="chkTableBody"></tbody>
-        </table>
-      </div>
-      <div style="font-size:10px;color:var(--text3);text-align:center;padding:8px 10px;border-top:1px solid var(--border);margin-top:8px">⚠️ VolariX provides educational tools only. All metrics are educational, not financial advice. Trade at your own risk.</div>
-    </div>
-  `);
-  runChecklistScreenFromInput();
-}
+
 
 function runChecklistScreenFromInput() {
   const input = $('chkTickers') ? $('chkTickers').value : '';
@@ -2268,6 +2252,7 @@ function runChecklistTopN(n) {
   const keys = Object.keys(FUNDAMENTALS);
   const combined = Array.from(new Set([...universe, ...keys])).slice(0, n);
   if ($('chkTickers')) $('chkTickers').value = combined.join(', ');
+</script>
   runChecklistScreen(combined);
 }
 
@@ -2401,6 +2386,8 @@ if(!localStorage.getItem('volarix_onboarded')&&!sessionStorage.getItem('volarix_
 setTimeout(()=>showToast('👋 Welcome back!','VolariX ready. Press ⌘K to search anything.','purple',5000),600);
 </script>
 <!-- Loaded after the inline dashboard runtime: app.js uses its shared DOM helpers. -->
+
+
 
 <script src="app.js"></script>
 </body>
