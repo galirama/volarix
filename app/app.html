@@ -2231,6 +2231,7 @@ function buildHeatmap() {
   `);
 }
 
+<script>
 
 // ══════════════════════════════════════════
 // FUNDAMENTAL CHECKLIST SCREENER
@@ -2318,49 +2319,7 @@ function renderChecklistTable(results) {
   tb.innerHTML = html || '<tr><td colspan="8" style="text-align:center;color:var(--text3);padding:20px">No stocks match criteria.</td></tr>';
 }
 
-function exportChecklistCSV() {
-  if (!currentChecklistResults || !currentChecklistResults.length) {
-    showToast('Notice', 'Run a screener pass before exporting CSV.', 'amber'); return;
-  }
-  let csv = 'Rank,Ticker,Score,Composite,Greens,Ambers,Reds,EarningsDays\n';
-  currentChecklistResults.forEach((r, i) => {
-    if (!r.unavailable) csv += (i + 1) + ',' + r.sym + ',' + r.score + ',' + r.composite + ',' + r.greens + ',' + r.ambers + ',' + r.reds + ',' + (r.earningsDate || 'N/A') + '\n';
-  });
-  const blob = new Blob([csv], { type: 'text/csv' });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a'); a.href = url; a.download = 'volarix_checklist_screener.csv'; a.click();
-  URL.revokeObjectURL(url);
-  showToast('Exported', 'CSV report saved to downloads.', 'cyan');
-}
-<script>
 
-  let html = '';
-  results.forEach((r, idx) => {
-    if (r.unavailable) {
-      html += '<tr style="opacity:.6"><td style="font-family:var(--mono)">-</td><td style="font-family:var(--mono);font-weight:700">' + r.sym + '</td><td colspan="5" style="color:var(--text3);font-style:italic">Data unavailable in FUNDAMENTALS dataset</td><td>' + badge('Unavailable','red') + '</td></tr>';
-      return;
-    }
-    const cCol = r.composite === 'Strong Buy' ? 'cyan' : r.composite === 'Cautious' ? 'amber' : 'red';
-    const dots = r.checks.map((chk, i) => {
-      const dotCol = chk.res === 'green' ? 'cyan' : chk.res === 'yellow' ? 'amber' : 'red';
-      return '<span class="score-dot score-dot-' + dotCol + '" title="' + M[i] + ': ' + chk.val + ' (' + chk.res + ')" style="display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:4px;background:var(--' + dotCol + ')"></span>';
-    }).join('');
-
-    const edBadge = r.earningsDate !== null && r.earningsDate <= 14 ? badge('🚨 ' + r.earningsDate + 'd to Earnings', r.earningsDate <= 7 ? 'red' : 'amber') : '<span style="color:var(--text3);font-size:11px">Safe (>14d)</span>';
-
-    html += '<tr onclick="openScorecard(\'' + r.sym + '\',\'analyze\')" style="cursor:pointer">' +
-      '<td style="font-family:var(--mono);font-weight:700;color:var(--text3)">#' + (idx + 1) + '</td>' +
-      '<td style="font-family:var(--mono);font-weight:700;font-size:13px">' + r.sym + '</td>' +
-      '<td><span style="font-family:var(--mono);font-size:14px;font-weight:700;color:var(--' + cCol + ')">' + r.score + '</span><span style="font-size:10px;color:var(--text3)">/100</span></td>' +
-      '<td>' + badge(r.composite, cCol) + '</td>' +
-      '<td><div style="display:flex;align-items:center">' + dots + '</div></td>' +
-      '<td style="font-family:var(--mono);font-size:11px"><span style="color:var(--cyan)">' + r.greens + ' ✓</span> · <span style="color:var(--amber)">' + r.ambers + ' ~</span> · <span style="color:var(--red)">' + r.reds + ' ✗</span></td>' +
-      '<td>' + edBadge + '</td>' +
-      '<td><button class="btn btn-secondary btn-sm" onclick="event.stopPropagation();openScorecard(\'' + r.sym + '\',\'analyze\')">Scorecard →</button></td>' +
-    '</tr>';
-  });
-  tb.innerHTML = html || '<tr><td colspan="8" style="text-align:center;color:var(--text3);padding:20px">No stocks match criteria.</td></tr>';
-}
 
 function exportChecklistCSV() {
   if (!currentChecklistResults || !currentChecklistResults.length) {
