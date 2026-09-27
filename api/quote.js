@@ -16,6 +16,19 @@ module.exports = async (req, res) => {
       params = `symbol=${symbol}&metric=all`;
     } else if (type === 'price-target') {
       endpoint = 'stock/price-target';
+      params = `symbol=${symbol}`;
+    } else if (type === 'rsi') {
+      endpoint = 'indicator/rsi';
+      params = `symbol=${symbol}&resolution=D&indicator=rsi`;
+    } else if (type === 'macd') {
+      endpoint = 'indicator/macd';
+      params = `symbol=${symbol}&resolution=D&indicator=macd`;
+    } else if (type === 'earnings') {
+      endpoint = 'calendar/earnings';
+      const now = new Date();
+      const to = new Date(now.getTime() + 90 * 24 * 60 * 60 * 1000).toISOString().split('T')[0]; // Next 90 days
+      const from = now.toISOString().split('T')[0];
+      params = `symbol=${symbol}&from=${from}&to=${to}`;
     }
 
     const url = `https://finnhub.io/api/v1/${endpoint}?${params}&token=${apiKey}`;

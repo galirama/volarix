@@ -60,15 +60,17 @@
 
 ## 🟡 P11 — Fundamental Stock Screener (Phase 1: API Integration)
 **Status:** In Progress
-**Files:** `app/screenerService.js` (new), `app/app.js` (test hook)
+**Files:** `app/screenerService.js`, `api/quote.js`
 **Requirements:**
-- Create `screenerService.js` for Finnhub API interaction.
-- Ticker list: AAPL, NVDA, AMZN, SOFI, MSFT, TSLA, SPY, MU.
-- Endpoints: `/stock/metric`, `/stock/price-target`, `/quote`.
-- Features: Error handling, rate limiting, caching (localStorage).
+- [x] Create/Update `screenerService.js` for Finnhub API interaction.
+- [x] Ticker list: AAPL, NVDA, AMZN, SOFI, MSFT, TSLA, SPY, MU, GOOGL, META, AMD, PLTR, NFLX, BABA, INTC.
+- [x] Endpoints: `/stock/metric`, `/stock/price-target`, `/quote`, `/indicator/rsi`, `/indicator/macd`, `/calendar/earnings`.
+- [x] Features: Error handling, rate limiting, caching (localStorage, 1h TTL).
 
 **Acceptance criteria:**
-- [ ] `screenerService.js` exports clear data-fetching functions.
+- [ ] `screenerService.js` exports `fetchScreenerData` with batch processing.
+- [ ] `api/quote.js` supports all required endpoints.
+- [ ] Fallback to mock data on API failure.
 
 ---
 
@@ -80,21 +82,28 @@
 
 ## 🟢 P13 — Fundamental Stock Screener (Phase 3: UI Table & Filters)
 **Status:** Completed
-**Files:** `app/app.html` (tab addition), `app/app.js` (render logic)
-**Requirements:**
-- [x] Add "Fundamental Screener" tab to sidebar.
-- [x] Implement table displaying ticker metrics (Price, P/E, EPS, 52W High, Target).
-- [x] Add filter controls: Search bar, Presets (All/CSP/LEAPS), and numeric range inputs.
-- [x] Add loading skeletons for fetching states.
+**Files:** `app/app.html`, `app/app.js`
+**Details:** Implemented UI table with summary stats, filters, and skeleton loading animation.
+
+**Verification:**
+- Verified UI table renders correctly.
+- Filter presets (All, CSP, LEAPS) toggle correctly.
+- Skeleton loading animation triggers before data load.
+- "Analyze" button functionality stubbed.
 
 ---
 
-## 🟡 P14 — Fundamental Stock Screener (Phase 4: Integration)
+## 🟡 P14 — AI Assistant & Trade Setup Integration
 **Status:** In Progress
-**Files:** `app/app.js` (integration logic)
+**Files:** `app/app.js` (integration logic), `app/screenerService.js`
+
 **Requirements:**
-- Connect "Trade" action in table to AI Trade Assistant.
-- Add "Add to Watchlist" functionality to table rows.
+- Connect table "Analyze Setup" buttons directly to the AI Assistant prompt box with full technical context.
+- Pre-fill context-aware prompts (CSP Setup vs LEAPS Setup).
+- Add "Add to Watchlist" quick action button per row.
+- Add "CSV Export" button for the filtered table.
+- Display summary metrics (Total Scanned, Filtered, Avg Upside) at top of Screener.
+
 - Display summary metrics (Total Scanned, Filtered, Avg Upside) at top of Screener.
 
 **Acceptance criteria:**

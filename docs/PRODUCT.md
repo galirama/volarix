@@ -65,13 +65,19 @@ VolariX protects retail options traders from losing money through ignorance. It 
 - [ ] Vercel hosting + Cron jobs
 - [ ] Real-time WebSocket price updates
 
-### 💳 Phase 4 — Monetization
+### 🤖 Phase 4 — AI Assistant & Trade Setup Integration
+- [ ] Connect table "Analyze Setup" to AI Assistant
+- [ ] Context-aware prompt generation (CSP vs LEAPS)
+- [ ] Add "Add to Watchlist" quick action
+- [ ] Add "CSV Export" functionality
+
+### 💳 Phase 5 — Monetization
 - [ ] Stripe subscription integration
 - [ ] Free vs Premium feature gating
 - [ ] Usage analytics (Posthog free tier)
 - [ ] Referral system
 
-### 🔌 Phase 5 — Brokerage Integration
+### 🔌 Phase 6 — Brokerage Integration
 - [ ] SnapTrade OAuth adapter
 - [ ] IBKR API adapter
 - [ ] Live order routing

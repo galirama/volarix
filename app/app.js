@@ -453,20 +453,43 @@ async function buildFundamentalScreener() {
       <div><div style="font-size:20px;font-weight:800">✅ Fundamental Screener</div><div style="font-size:11px;color:var(--text2)">Live Finnhub Data Analysis</div></div>
       <div id="chkSummary" style="display:flex;gap:12px;font-size:11px;color:var(--text2)"></div>
     </div>
+    
+    <!-- Top Summary Cards -->
+    <div style="display:flex;gap:12px;margin-bottom:14px">
+      <div class="card" style="flex:1;padding:12px">
+        <div style="font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:0.05em">Total Scanned</div>
+        <div style="font-size:18px;font-weight:700" id="statScanned">0</div>
+      </div>
+      <div class="card" style="flex:1;padding:12px">
+        <div style="font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:0.05em">Oversold CSP Setups</div>
+        <div style="font-size:18px;font-weight:700;color:var(--green)" id="statCSP">0</div>
+      </div>
+      <div class="card" style="flex:1;padding:12px">
+        <div style="font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:0.05em">Bullish LEAPS Setups</div>
+        <div style="font-size:18px;font-weight:700;color:var(--blue)" id="statLEAPS">0</div>
+      </div>
+    </div>
+
     <div class="card" style="margin-bottom:14px">
-      <div class="card-header"><div class="card-title">🔍 Filters</div></div>
-      <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:flex-end">
-        <input type="text" id="chkSearch" placeholder="Search Ticker..." style="background:var(--bg3);border:1px solid var(--border2);border-radius:var(--r);padding:8px;color:var(--text)">
-        <select id="chkPreset" style="background:var(--bg3);border:1px solid var(--border2);border-radius:var(--r);padding:8px;color:var(--text)">
-            <option value="ALL">All Presets</option>
-            <option value="CSP">CSP Candidates</option>
-            <option value="LEAPS">LEAPS Candidates</option>
-        </select>
-        <button class="btn btn-primary" onclick="renderFundamentalTable()">Run Screener</button>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
+        <input type="text" id="chkSearch" placeholder="Search Ticker..." style="background:var(--bg3);border:1px solid var(--border2);border-radius:var(--r);padding:8px;color:var(--text);width:150px">
+        
+        <div style="display:flex;gap:4px">
+            <button class="btn btn-sm btn-secondary" onclick="setPreset('ALL')">All</button>
+            <button class="btn btn-sm btn-secondary" onclick="setPreset('CSP')">CSP Put Bargains</button>
+            <button class="btn btn-sm btn-secondary" onclick="setPreset('LEAPS')">LEAPS Call Momentum</button>
+        </div>
+        
+        <div style="display:flex;gap:8px;font-size:12px;margin-left:auto">
+            <label style="display:flex;align-items:center;gap:4px"><input type="checkbox" id="chkHideEarnings"> Hide Earnings < 14d</label>
+            <label style="display:flex;align-items:center;gap:4px"><input type="checkbox" id="chkOversoldOnly"> Oversold Only (RSI < 40)</label>
+        </div>
       </div>
     </div>
     <div id="chkTableContainer" class="card">
-        <div style="padding:20px;text-align:center">Loading data...</div>
+        <div style="padding:40px;text-align:center;color:var(--text3)">
+          <div class="skeleton" style="height:200px;width:100%"></div>
+        </div>
     </div>
   `);
   renderFundamentalTable();
@@ -474,42 +497,86 @@ async function buildFundamentalScreener() {
 
 async function renderFundamentalTable() {
   const container = document.getElementById('chkTableContainer');
-  const summary = document.getElementById('chkSummary');
   const search = document.getElementById('chkSearch')?.value.toUpperCase();
-  const preset = document.getElementById('chkPreset')?.value;
+  const hideEarnings = document.getElementById('chkHideEarnings')?.checked;
+  const oversoldOnly = document.getElementById('chkOversoldOnly')?.checked;
+  
+  // Set placeholder skeleton
+  container.innerHTML = '<div style="padding:40px;text-align:center;color:var(--text3)"><div class="skeleton" style="height:200px;width:100%"></div></div>';
 
-  container.innerHTML = '<div style="padding:20px;text-align:center">Fetching data...</div>';
-
-  const tickers = ['AAPL', 'NVDA', 'AMZN', 'SOFI', 'MSFT', 'TSLA', 'SPY', 'MU'];
+  // Fetch data
+  const tickers = ['AAPL', 'NVDA', 'AMZN', 'SOFI', 'MSFT', 'TSLA', 'SPY', 'MU', 'GOOGL', 'META', 'AMD', 'PLTR', 'NFLX', 'BABA', 'INTC'];
   const data = await window.screenerService.getScreenerData(tickers);
   
-  const filtered = window.filterService.filterFundamentalStocks(data, preset !== 'ALL' ? preset : null);
+  // Filter logic
+  let filtered = window.filterService.filterFundamentalStocks(data, window.currentScreenerPreset || 'ALL');
   
-  // Update Summary
-  if (summary) {
-    summary.innerHTML = `<span>Scanned: ${Object.keys(data).length}</span><span>Filtered: ${filtered.length}</span>`;
-  }
+  if (search) filtered = filtered.filter(row => row.symbol.includes(search));
+  if (hideEarnings) filtered = filtered.filter(row => (row.earningsDate || 99) > 14);
+  if (oversoldOnly) filtered = filtered.filter(row => row.rsi < 40);
+
+  // Update Summary Stats
+  document.getElementById('statScanned').innerText = Object.keys(data).length;
+  document.getElementById('statCSP').innerText = filtered.filter(r => r.strategy === 'CSP').length;
+  document.getElementById('statLEAPS').innerText = filtered.filter(r => r.strategy === 'LEAPS').length;
   
-  let html = `<table class="data-table" style="width:100%">
-    <thead><tr><th>Ticker</th><th>Price</th><th>52W High</th><th>P/E</th><th>EPS</th><th>Tag</th><th>Action</th></tr></thead>
+  // Render Table
+  let html = `<table class="data-table" style="width:100%;text-align:left;font-size:12px">
+    <thead>
+      <tr style="color:var(--text3);border-bottom:1px solid var(--border)">
+        <th style="padding:10px">Ticker</th>
+        <th style="padding:10px">Price / Disc</th>
+        <th style="padding:10px">P/E & EPS</th>
+        <th style="padding:10px">RSI</th>
+        <th style="padding:10px">MACD</th>
+        <th style="padding:10px">Upside</th>
+        <th style="padding:10px">Earnings</th>
+        <th style="padding:10px">Strategy</th>
+        <th style="padding:10px">Action</th>
+      </tr>
+    </thead>
     <tbody>`;
   
   filtered.forEach(row => {
-    html += `<tr>
-      <td>${row.symbol}</td>
-      <td>${row.price}</td>
-      <td>${row.discount}</td>
-      <td>${row.pe}</td>
-      <td>${row.eps}</td>
-      <td><span class="badge" style="background:var(--purple-bg)">${preset || 'Normal'}</span></td>
-      <td style="display:flex;gap:4px">
-        <button class="btn btn-sm btn-secondary" onclick="addToWatchlist('${row.symbol}');showToast('📋','Added to Watchlist','cyan')">+</button>
-        <button class="btn btn-sm btn-primary" onclick="window.location.hash='ai';$('aiPrompt').value='Analyze ${row.symbol} setup for ${preset || 'trade'} based on fundamental data. Current price: ${row.price}, PE: ${row.pe}.';">Trade</button>
-      </td>
-    </tr>`;
+    const rsiColor = row.rsi < 40 ? 'green' : (row.rsi > 70 ? 'red' : 'purple');
+    const earnWarning = (row.earningsDate && row.earningsDate < 14) ? `<span class="badge badge-amber">⚠️ ${row.earningsDate}d</span>` : `${row.earningsDate}d`;
+    
+    html += `
+      <tr style="border-bottom:1px solid var(--border)">
+        <td style="padding:10px;font-weight:600">${row.symbol}</td>
+        <td style="padding:10px">$${row.price}<div style="font-size:10px;color:var(--text3)">${row.discount}% off</div></td>
+        <td style="padding:10px">${row.pe}<div style="font-size:10px;color:var(--text3)">${row.eps}</div></td>
+        <td style="padding:10px"><span class="badge badge-${rsiColor}">${row.rsi}</span></td>
+        <td style="padding:10px">${row.macd === 'Bullish' ? '📈' : '➖'}</td>
+        <td style="padding:10px" class="text-green">+${row.upside}%</td>
+        <td style="padding:10px">${earnWarning}</td>
+        <td style="padding:10px"><span class="badge" style="background:var(--bg3)">${row.strategy}</span></td>
+        <td style="padding:10px">
+            <button class="btn btn-sm btn-primary" onclick="analyzeSetup('${row.symbol}')">Analyze</button>
+        </td>
+      </tr>`;
   });
   
   html += `</tbody></table>`;
   container.innerHTML = html;
 }
+
+// Analyze setup placeholder
+function analyzeSetup(ticker) {
+    showToast('🔍', `Analyzing ${ticker}...`, 'cyan');
+    window.location.hash = 'ai';
+    const input = document.getElementById('aiPrompt');
+    if (input) {
+        input.value = `Analyze ${ticker} setup for trade. Current price, RSI, MACD, and fundamental trends.`;
+    }
+}
+
+// Helper for preset switching
+window.currentScreenerPreset = 'ALL';
+function setPreset(val) {
+    window.currentScreenerPreset = val;
+    renderFundamentalTable();
+}
+
+
 

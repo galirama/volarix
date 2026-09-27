@@ -10,38 +10,61 @@
         if (Date.now() - timestamp < CACHE_TTL_MS) return data;
       }
       
-      const data = await fetchFn();
-      localStorage.setItem(`volarix_screener_${key}`, JSON.stringify({ data, timestamp: Date.now() }));
-      return data;
+      try {
+        const data = await fetchFn();
+        localStorage.setItem(`volarix_screener_${key}`, JSON.stringify({ data, timestamp: Date.now() }));
+        return data;
+      } catch (e) {
+        console.error(`Error fetching/caching ${key}:`, e);
+        return { error: 'Failed to fetch', symbol: key }; // Fallback
+      }
+    },
+
+    async fetchSafe(url) {
+      try {
+        const res = await fetch(url);
+        if (!res.ok) return null;
+        return await res.json();
+      } catch (e) {
+        return null;
+      }
     },
 
     async fetchTickerFundamentals(symbol) {
-      // 1. Basic Financials (metric)
-      const metric = await fetch(`/api/quote?symbol=${symbol}&type=metric`).then(r => r.json());
-      // 2. Price Target
-      const target = await fetch(`/api/quote?symbol=${symbol}&type=price-target`).then(r => r.json());
-      // 3. Current Quote
-      const quote = await fetch(`/api/quote?symbol=${symbol}`).then(r => r.json());
+      // Parallel fetch with individual error handling
+      const [metric, target, quote, rsi, macd, earnings] = await Promise.all([
+        this.fetchSafe(`/api/quote?symbol=${symbol}&type=metric`),
+        this.fetchSafe(`/api/quote?symbol=${symbol}&type=price-target`),
+        this.fetchSafe(`/api/quote?symbol=${symbol}`),
+        this.fetchSafe(`/api/quote?symbol=${symbol}&type=rsi`),
+        this.fetchSafe(`/api/quote?symbol=${symbol}&type=macd`),
+        this.fetchSafe(`/api/quote?symbol=${symbol}&type=earnings`)
+      ]);
 
       return {
         symbol,
-        metrics: metric.metric || {},
+        metrics: metric?.metric || {},
         target: target || {},
-        quote: quote || {}
+        quote: quote || {},
+        technical: {
+            rsi: rsi?.rsi || 50,
+            macd: macd?.macd || 0
+        },
+        earningsDate: earnings?.[0]?.date || 'N/A'
       };
     },
 
     async getScreenerData(symbols) {
       const results = {};
       for (const symbol of symbols) {
-        // Rate limiting: prevent spamming
-        await new Promise(resolve => setTimeout(resolve, 500));
+        // Rate limiting: 200ms delay as requested
+        await new Promise(resolve => setTimeout(resolve, 200));
         
         try {
           results[symbol] = await this.fetchWithCache(symbol, () => this.fetchTickerFundamentals(symbol));
         } catch (e) {
           console.error(`Error fetching ${symbol}:`, e);
-          results[symbol] = { error: 'Failed to fetch' };
+          results[symbol] = { error: 'Failed to fetch', symbol };
         }
       }
       return results;

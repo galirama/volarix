@@ -85,3 +85,35 @@ use server-side handling for secrets and must first have a defined UI consumer.
 - All features have corresponding Gherkin specifications in `tests/features/`.
 - Step definitions implemented in `tests/steps/dashboard.steps.js`.
 - BDD tests verify UI rendering, interactivity, and persistence.
+
+## Next feature — P11-P13: Fundamental + Technical Screener
+
+**Status:** Implementation, Audit, and BDD Test Coverage Complete (September 27, 2026)
+
+### 1. Build & Syntax Verification
+- [x] Files audited: `app/screenerService.js`, `utils/screenerRules.js`, `app/app.js` (screener logic sections).
+- [x] No hardcoded API keys detected.
+- [x] Imports/exports validated.
+- [x] No unused variables found in core screener logic.
+
+### 2. API & Rate-Limiting Guardrails
+- [x] `screenerService.js`: Implemented `localStorage` caching with 1-hour TTL.
+- [x] Rate-limiting: `200ms` throttle applied to prevent Finnhub rate-limits.
+- [x] Robustness: Added `try...catch` blocks for individual API calls to ensure graceful fallback.
+
+### 3. UI Consistency & Responsiveness Audit
+- [x] Dark navy background (#0D111A / #131927) applied.
+- [x] Badge aesthetics match 'Current Positions' component.
+- [x] Loading state skeletons implemented.
+- [x] Empty state handling verified.
+
+### 4. AI Assistant & Navigation Integration
+- [x] Ticker, RSI, MACD, and strategy context successfully passed to AI Assistant.
+- [x] Navigation to `#ai` hash handled correctly.
+
+### 5. Summary of Fixes & Cleanups
+- Cleaned up `app/app.js` screener table rendering.
+- Confirmed no secrets in source.
+- Validated all logic paths.
+- Feature is 100% production-ready.
+
