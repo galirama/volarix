@@ -72,20 +72,20 @@
 
 ---
 
-## 🟡 P12 — Fundamental Stock Screener (Phase 2: Filtering & Rules)
-**Status:** In Progress
+## 🟢 P12 — Fundamental Stock Screener (Phase 2: Filtering & Rules)
+**Status:** Completed
 **Files:** `app/filterService.js` (new)
 
 ---
 
-## 🟡 P13 — Fundamental Stock Screener (Phase 3: UI Table & Filters)
-**Status:** In Progress
+## 🟢 P13 — Fundamental Stock Screener (Phase 3: UI Table & Filters)
+**Status:** Completed
 **Files:** `app/app.html` (tab addition), `app/app.js` (render logic)
 **Requirements:**
-- Add "Fundamental Screener" tab to sidebar.
-- Implement table displaying ticker metrics (Price, P/E, EPS, 52W High, Target).
-- Add filter controls: Search bar, Presets (All/CSP/LEAPS), and numeric range inputs.
-- Add loading skeletons for fetching states.
+- [x] Add "Fundamental Screener" tab to sidebar.
+- [x] Implement table displaying ticker metrics (Price, P/E, EPS, 52W High, Target).
+- [x] Add filter controls: Search bar, Presets (All/CSP/LEAPS), and numeric range inputs.
+- [x] Add loading skeletons for fetching states.
 
 ---
 
