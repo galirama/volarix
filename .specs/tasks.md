@@ -43,7 +43,6 @@
 
 | Tab | Builder Function | Status | Notes |
 |---|---|---|---|
-| Overview | `buildOverview()` | ✅ | P&L sparkline, F&G gauge, VIX, risk score, positions table |
 | Ticker Analyzer | `buildTickerAnalyzer()` | ✅ | Candlestick + RSI Canvas charts, fundamentals, IV history |
 | IV Screener | `buildScreener()` | ✅ | Sortable IV rank table |
 | Mega-Cap IV Screener | `buildMegacap()` | ✅ | 20 companies >$200B, sorted by IV rank |

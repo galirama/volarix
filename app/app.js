@@ -457,15 +457,23 @@ async function buildFundamentalScreener() {
     <!-- Top Summary Cards -->
     <div style="display:flex;gap:12px;margin-bottom:14px">
       <div class="card" style="flex:1;padding:12px">
+        <div style="font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:0.05em">VIX</div>
+        <div style="font-size:18px;font-weight:700" id="statVix">--</div>
+      </div>
+      <div class="card" style="flex:1;padding:12px">
+        <div style="font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:0.05em">Fear & Greed</div>
+        <div style="font-size:18px;font-weight:700" id="statFng">--</div>
+      </div>
+      <div class="card" style="flex:1;padding:12px">
         <div style="font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:0.05em">Total Scanned</div>
         <div style="font-size:18px;font-weight:700" id="statScanned">0</div>
       </div>
       <div class="card" style="flex:1;padding:12px">
-        <div style="font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:0.05em">Oversold CSP Setups</div>
+        <div style="font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:0.05em">Oversold CSP</div>
         <div style="font-size:18px;font-weight:700;color:var(--green)" id="statCSP">0</div>
       </div>
       <div class="card" style="flex:1;padding:12px">
-        <div style="font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:0.05em">Bullish LEAPS Setups</div>
+        <div style="font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:0.05em">Bullish LEAPS</div>
         <div style="font-size:18px;font-weight:700;color:var(--blue)" id="statLEAPS">0</div>
       </div>
     </div>

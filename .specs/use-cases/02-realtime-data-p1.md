@@ -69,7 +69,7 @@ If network requests fail, API limits are reached, or no connection is available,
 2. **Step 2:** Build `fetchYahooPrice(ticker)` wrapper function.
 3. **Step 3:** Build `fetchFearAndGreed()` wrapper function for Alternative.me.
 4. **Step 4:** Integrate API calls into `refreshMarketData()` / ticker banner updater.
-5. **Step 5:** Test price updates on watchlist sidebar and main overview tab.
+5. **Step 5:** Test price updates on watchlist sidebar and main dashboard.
 6. **Step 6:** Verify zero console errors when switching tabs or loading offline.
 
 ---

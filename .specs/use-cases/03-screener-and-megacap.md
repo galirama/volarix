@@ -55,6 +55,8 @@ This module handles market-wide screening across options volatility metrics (IV 
 #### Problem Being Solved
 Traders want to answer *"Which of these stocks has the healthiest fundamentals?"* or *"Which mega-caps pass the most check points?"* side-by-side. The existing single-ticker Scorecard modal only checks one stock at a time; this dedicated tab provides a ranked multi-stock checklist view built on top of the existing `scoreStock(sym)` logic.
 
+Additionally, this tab now includes **VIX** and **Fear & Greed Index** at the top for immediate market sentiment context.
+
 #### Input UI Modes (User selects one)
 - **Mode A — Manual Tickers:** Free-text input accepting comma or space-separated ticker strings (e.g. `AAPL, MSFT NVDA`). Parse on submit — trim, uppercase, deduplicate, split on `/[,\s]+/`.
 - **Mode B — Top-N by Market Cap:** Buttons or dropdown for Top 10 / Top 20 / Top 50, pulling tickers from `MEGACAP_DATA` sorted by `capN` descending.
