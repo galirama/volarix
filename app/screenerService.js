@@ -67,14 +67,13 @@
       }
 
       // Fix Price Source
-      const rawPrice = quote?.c || quote?.currentPrice || quote?.price || window.MKT?.prices?.[symbol] || 0;
-      const price = parseFloat(rawPrice);
+      const price = Number(quote?.c || quote?.price || window.MKT?.prices?.[symbol] || 0);
       
-      const high52 = metric?.metric?.['52WeekHigh'] || 0;
+      const high52 = parseFloat(metric?.metric?.['52WeekHigh'] || 0);
       
-      let discount = 0;
-      if (price > 0 && high52 > 0) {
-        discount = ((high52 - price) / high52) * 100;
+      let discountVal = '0.0';
+      if (price > 0 && high52 > price) {
+        discountVal = (((high52 - price) / high52) * 100).toFixed(1);
       }
 
       return {
@@ -88,7 +87,7 @@
         },
         price: price,
         high52: high52,
-        discount: (price === 0 || high52 === 0 || high52 <= price) ? 0 : parseFloat(discount.toFixed(1)),
+        discount: discountVal,
         earningsDate: earnings?.[0]?.date || 'N/A'
       };
     },
