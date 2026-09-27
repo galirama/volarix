@@ -24,9 +24,11 @@
       Object.entries(dataMap).forEach(([symbol, data]) => {
         if (data.error) return; // Skip failed fetches
 
-        // Handle missing data with safe defaults
-        const pe = data.metrics?.pe || 999;
-        const eps = data.metrics?.eps || 0;
+        // Handle missing data with safe defaults and fallback to hardcoded FUNDAMENTALS
+        const fallback = (window.FUNDAMENTALS && window.FUNDAMENTALS[symbol]) ? window.FUNDAMENTALS[symbol] : {};
+        
+        const pe = data.metrics?.pe || data.metrics?.peNormalizedAnnual || fallback.pe || 999;
+        const eps = data.metrics?.eps || data.metrics?.epsNormalizedAnnual || fallback.eps || 0;
         const currentPrice = data.quote?.c || 0;
         const high52 = data.metrics?.['52WeekHigh'] || 0;
         const targetPrice = data.target?.targetMean || 0;

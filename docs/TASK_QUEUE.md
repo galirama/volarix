@@ -118,6 +118,7 @@
 - [ ] `filterFundamentalStocks` function correctly sorts/filters the ticker dataset.
 - [ ] Presets return logical subsets of data.
 - [ ] Missing fields in Finnhub data are handled gracefully.
+- [x] Missing fields in Finnhub data are handled gracefully (fallback to static FUNDAMENTALS)
 
 - [ ] Successful console verification of raw data for all tickers.
 - [ ] Graceful handling of rate limits and API errors.

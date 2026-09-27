@@ -16,6 +16,8 @@
 - P11: Fundamental Stock Screener (Phase 1)
 - P12: Fundamental Stock Screener (Phase 2)
 - P13: Fundamental Stock Screener (Phase 3)
+
+### ✅ Completed
 - P14: Fundamental Stock Screener (Phase 4)
 - P10: Weekly Email Digest (Resend.com + Netlify function)
 
