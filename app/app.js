@@ -529,6 +529,13 @@ async function renderFundamentalTable() {
   document.getElementById('statLEAPS').innerText = filtered.filter(r => r.strategy === 'LEAPS').length;
   
   // Render Table
+
+const calculateDiscount = (price, high52) => {
+  if (!price || !high52 || price <= 0 || high52 <= 0) return null;
+  const discount = ((high52 - price) / high52) * 100;
+  return discount > 0 ? discount.toFixed(1) : 0;
+};
+
   let html = `<table class="data-table" style="width:100%;text-align:left;font-size:12px">
     <thead>
       <tr style="color:var(--text3);border-bottom:1px solid var(--border)">
@@ -546,13 +553,20 @@ async function renderFundamentalTable() {
     <tbody>`;
   
   filtered.forEach(row => {
+    console.log('Screener Raw Row Data:', row);
     const rsiColor = row.rsi < 40 ? 'green' : (row.rsi > 70 ? 'red' : 'purple');
     const earnWarning = (row.earningsDate && row.earningsDate < 14) ? `<span class="badge badge-amber">⚠️ ${row.earningsDate}d</span>` : `${row.earningsDate}d`;
+    
+    // Price / Discount calculation
+    const discount = calculateDiscount(parseFloat(row.price), parseFloat(row.high52));
+    const priceDisplay = (row.price && parseFloat(row.price) > 0) 
+        ? `$${parseFloat(row.price).toFixed(2)}<div style="font-size:10px;color:var(--text3)">${discount !== null ? `${discount}% off` : '--'}</div>`
+        : '--';
     
     html += `
       <tr style="border-bottom:1px solid var(--border)">
         <td style="padding:10px;font-weight:600">${row.symbol}</td>
-        <td style="padding:10px">$${row.price}<div style="font-size:10px;color:var(--text3)">${row.discount}% off</div></td>
+        <td style="padding:10px">${priceDisplay}</td>
         <td style="padding:10px">${row.pe}<div style="font-size:10px;color:var(--text3)">${row.eps}</div></td>
         <td style="padding:10px"><span class="badge badge-${rsiColor}">${row.rsi}</span></td>
         <td style="padding:10px">${row.macd === 'Bullish' ? '📈' : '➖'}</td>

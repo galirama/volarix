@@ -66,7 +66,10 @@
           return { symbol, error: 'Rate limit', isMock: false };
       }
 
-      const price = quote?.c || 0;
+      // Fix Price Source
+      const rawPrice = quote?.c || quote?.currentPrice || quote?.price || window.MKT?.prices?.[symbol] || 0;
+      const price = parseFloat(rawPrice);
+      
       const high52 = metric?.metric?.['52WeekHigh'] || 0;
       
       let discount = 0;
@@ -85,7 +88,7 @@
         },
         price: price,
         high52: high52,
-        discount: price === 0 || high52 === 0 ? '0%' : `${discount.toFixed(1)}%`,
+        discount: (price === 0 || high52 === 0 || high52 <= price) ? 0 : parseFloat(discount.toFixed(1)),
         earningsDate: earnings?.[0]?.date || 'N/A'
       };
     },
