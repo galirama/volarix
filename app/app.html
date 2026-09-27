@@ -411,7 +411,7 @@ textarea{resize:vertical;min-height:80px}
       <div class="nav-item"><span class="nav-icon">🛡️</span>Risk Shield</div>
       <div class="nav-item"><span class="nav-icon">🔔</span>Alerts</div>
       <div class="nav-bottom">
-        <div class="nav-item" onclick="showTab('settings',this)"><span class="nav-icon">⚙️</span>Settings</div>
+        <div class="nav-item" onclick="window.showTab('settings',this)"><span class="nav-icon">⚙️</span>Settings</div>
       <div class="nav-item" onclick="logout()" style="color:var(--red)"><span class="nav-icon">🚪</span>Sign Out</div>
         <div class="nav-user"><div>Sign in to access all features</div><div style="color:var(--purple)">Free plan available →</div></div>
       </div>
@@ -562,11 +562,11 @@ textarea{resize:vertical;min-height:80px}
     </div>
     <div style="height:1px;background:var(--border);margin:4px 0"></div>
     <div class="nav-section">Core</div>
-    <div class="nav-item active" onclick="showTab('overview',this)"><span class="nav-icon">📊</span>Overview<span class="nav-dot"></span></div>
-    <div class="nav-item" onclick="showTab('csp',this)"><span class="nav-icon">🟢</span>CSP Bargains</div>
-    <div class="nav-item" onclick="showTab('leaps',this)"><span class="nav-icon">🔵</span>LEAPS Bargains</div>
-    <div class="nav-item" onclick="showTab('checklist',this)"><span class="nav-icon">✅</span>Fundamental Screener</div>
-    <div class="nav-item" onclick="showTab('events',this)"><span class="nav-icon">📅</span>Key events calendar</div>
+    <div class="nav-item active" onclick="window.showTab('overview',this)"><span class="nav-icon">📊</span>Overview<span class="nav-dot"></span></div>
+    <div class="nav-item" onclick="window.showTab('csp',this)"><span class="nav-icon">🟢</span>CSP Bargains</div>
+    <div class="nav-item" onclick="window.showTab('leaps',this)"><span class="nav-icon">🔵</span>LEAPS Bargains</div>
+    <div class="nav-item" onclick="window.showTab('checklist',this)"><span class="nav-icon">✅</span>Fundamental Screener</div>
+    <div class="nav-item" onclick="window.showTab('events',this)"><span class="nav-icon">📅</span>Key events calendar</div>
     <div class="nav-section">Upcoming / Future</div>
     <div style="padding:0 10px;font-size:11px;color:var(--text3);line-height:1.8">
       • AI Assistant<br>• IV Scanner<br>• MEGA CAP IV<br>• Options Chain<br>• Strategy Builder<br>• Flow Heatmap<br>• Alt Data<br>• Track Record<br>• Sector Rotation<br>• Exit Automation<br>• Import Portfolio<br>• Risk Shield<br>• Alerts<br>• Ticker Analyzer<br>• Unusual Activity<br>• Paper Trading<br>• Live Trading<br>• Backtesting<br>• Position Sizing
@@ -710,7 +710,7 @@ function buildWatchlistSidebar(){
 }
 function addToWatchlist(s){s=s.toUpperCase().trim();if(!s||STATE.watchlist.includes(s))return;STATE.watchlist.push(s);if(!MKT.prices[s]){MKT.prices[s]=+(100+Math.random()*400).toFixed(2);MKT.changes[s]=+((Math.random()-0.5)*4).toFixed(2);}buildWatchlistSidebar();showToast('📋 Watchlist',s+' added','cyan');}
 function removeWL(s){STATE.watchlist=STATE.watchlist.filter(x=>x!==s);buildWatchlistSidebar();}
-function loadTicker(s){showTab('ticker',document.querySelector('[onclick*=\'ticker\']'));setTimeout(()=>buildTickerAnalyzer(s),50);}
+function loadTicker(s){window.showTab('ticker',document.querySelector('[onclick*=\'ticker\']'));setTimeout(()=>buildTickerAnalyzer(s),50);}
 
 // ── TOASTS ──
 function showToast(title,body,type='cyan',duration=4000){
@@ -728,20 +728,20 @@ setInterval(()=>{if(Math.random()<0.12)testNotification();},25000);
 
 // ── CMD PALETTE ──
 const CMD=[
-  {icon:'📊',title:'Overview',sub:'Dashboard home',action:()=>showTab('overview')},
-  {icon:'🔍',title:'Ticker Analyzer',sub:'Analyze any stock',action:()=>showTab('ticker')},
-  {icon:'📡',title:'IV Screener',sub:'High IV scanner',action:()=>showTab('screener')},
-  {icon:'🎯',title:'Options Chain',sub:'Full chain + Greeks',action:()=>showTab('options')},
-  {icon:'🏗️',title:'Strategy Builder',sub:'Multi-leg constructor',action:()=>showTab('strategy')},
-  {icon:'📅',title:'Earnings Calendar',sub:'IV crush risk calendar',action:()=>showTab('earnings')},
-  {icon:'⚡',title:'Unusual Activity',sub:'Institutional flow scanner',action:()=>showTab('uoa')},
-  {icon:'🏛️',title:'Alt Data',sub:'Congressional & insider trades',action:()=>showTab('congress')},
-  {icon:'🌀',title:'Sector Rotation',sub:'Capital flow matrix (PRO)',action:()=>showTab('sectors')},
-  {icon:'📝',title:'Paper Trading',sub:'$100K virtual portfolio',action:()=>showTab('paper')},
-  {icon:'🔁',title:'Backtesting',sub:'2 years real data',action:()=>showTab('backtest')},
-  {icon:'🎯',title:'Exit Automation',sub:'Profit targets & stop losses',action:()=>showTab('exit')},
-  {icon:'📥',title:'Import Portfolio',sub:'CSV or manual entry',action:()=>showTab('import')},
-  {icon:'⚙️',title:'Settings',sub:'Risk thresholds, MFA, theme',action:()=>showTab('settings')},
+  {icon:'📊',title:'Overview',sub:'Dashboard home',action:()=>window.showTab('overview')},
+  {icon:'🔍',title:'Ticker Analyzer',sub:'Analyze any stock',action:()=>window.showTab('ticker')},
+  {icon:'📡',title:'IV Screener',sub:'High IV scanner',action:()=>window.showTab('screener')},
+  {icon:'🎯',title:'Options Chain',sub:'Full chain + Greeks',action:()=>window.showTab('options')},
+  {icon:'🏗️',title:'Strategy Builder',sub:'Multi-leg constructor',action:()=>window.showTab('strategy')},
+  {icon:'📅',title:'Earnings Calendar',sub:'IV crush risk calendar',action:()=>window.showTab('earnings')},
+  {icon:'⚡',title:'Unusual Activity',sub:'Institutional flow scanner',action:()=>window.showTab('uoa')},
+  {icon:'🏛️',title:'Alt Data',sub:'Congressional & insider trades',action:()=>window.showTab('congress')},
+  {icon:'🌀',title:'Sector Rotation',sub:'Capital flow matrix (PRO)',action:()=>window.showTab('sectors')},
+  {icon:'📝',title:'Paper Trading',sub:'$100K virtual portfolio',action:()=>window.showTab('paper')},
+  {icon:'🔁',title:'Backtesting',sub:'2 years real data',action:()=>window.showTab('backtest')},
+  {icon:'🎯',title:'Exit Automation',sub:'Profit targets & stop losses',action:()=>window.showTab('exit')},
+  {icon:'📥',title:'Import Portfolio',sub:'CSV or manual entry',action:()=>window.showTab('import')},
+  {icon:'⚙️',title:'Settings',sub:'Risk thresholds, MFA, theme',action:()=>window.showTab('settings')},
   {icon:'🚪',title:'Sign Out',sub:'End session',action:logout},
   ...['AAPL','NVDA','TSLA','MSFT','AMD','SPY','QQQ','META','GME','SMCI'].map(t=>({icon:'📋',title:'Add '+t+' to watchlist',sub:'$'+(MKT.prices[t]||'--'),action:()=>addToWatchlist(t)})),
 ];
@@ -818,7 +818,7 @@ function drawEqCurve(id){
 }
 
 // ── NAV ──
-async function showTab(id,el){
+window.showTab = async function(id,el){
   try {
     document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
     document.querySelectorAll('#appShell .nav-item').forEach(n=>n.classList.remove('active'));
@@ -962,7 +962,7 @@ async function openCSPChecklist(s) {
       </div>
     </div>
     <div style="display:flex;gap:10px">
-      <button class="btn btn-primary" style="flex:1;justify-content:center" onclick="closeScorecard();showTab('strategy');loadTicker('${s}')">Open Strategy Builder</button>
+      <button class="btn btn-primary" style="flex:1;justify-content:center" onclick="closeScorecard();window.showTab('strategy');loadTicker('${s}')">Open Strategy Builder</button>
       <button class="btn btn-secondary" style="flex:1;justify-content:center" onclick="closeScorecard()">Close</button>
     </div>
   `;
@@ -1053,7 +1053,7 @@ async function openLEAPSChecklist(s) {
       </div>
     </div>
     <div style="display:flex;gap:10px">
-      <button class="btn btn-primary" style="flex:1;justify-content:center" onclick="closeScorecard();showTab('options');loadTicker('${s}')">View 1-2Y Chain</button>
+      <button class="btn btn-primary" style="flex:1;justify-content:center" onclick="closeScorecard();window.showTab('options');loadTicker('${s}')">View 1-2Y Chain</button>
       <button class="btn btn-secondary" style="flex:1;justify-content:center" onclick="closeScorecard()">Close</button>
     </div>
   `;
@@ -1089,14 +1089,14 @@ function sparks(vals,ac,dc){return `<div class="spark">${vals.map((v,i,a)=>`<div
 function buildOverview(){
   set('tab-overview',`
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px">
-      <div class="card card-body" style="border-left:4px solid var(--green);cursor:pointer" onclick="showTab('csp')">
+      <div class="card card-body" style="border-left:4px solid var(--green);cursor:pointer" onclick="window.showTab('csp')">
         <div style="display:flex;justify-content:space-between;align-items:flex-start">
           <div><div style="font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.05em">Active CSP Bargains</div><div style="font-size:18px;font-weight:800;color:var(--green);margin-top:2px">3 Ready Setups</div></div>
           <div style="font-size:20px">🟢</div>
         </div>
         <div style="font-size:11px;color:var(--text2);margin-top:6px">Average Yield: <strong>22.4%</strong> · Fear & Greed: <strong>${MKT.fg}</strong></div>
       </div>
-      <div class="card card-body" style="border-left:4px solid var(--blue);cursor:pointer" onclick="showTab('leaps')">
+      <div class="card card-body" style="border-left:4px solid var(--blue);cursor:pointer" onclick="window.showTab('leaps')">
         <div style="display:flex;justify-content:space-between;align-items:flex-start">
           <div><div style="font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.05em">Active LEAPS Bargains</div><div style="font-size:18px;font-weight:800;color:var(--blue);margin-top:2px">1 Ready Setup</div></div>
           <div style="font-size:20px">🔵</div>
@@ -1111,7 +1111,7 @@ function buildOverview(){
       <div class="stat-card">${lbl('Portfolio Risk')}<div class="stat-val" style="color:var(--amber)">62<span style="font-size:13px;color:var(--text3)">/100</span></div><div class="stat-sub">${badge('⚠️ Moderate','amber')}</div><div style="margin-top:8px;height:4px;border-radius:2px;overflow:hidden;background:var(--bg4)"><div style="width:62%;height:100%;background:linear-gradient(to right,var(--cyan),var(--amber));border-radius:2px"></div></div><button class="btn btn-red btn-sm" style="margin-top:8px;width:100%;justify-content:center" onclick="openRisk()">View Risk Shield →</button></div>
     </div>
     <div class="card" style="margin-bottom:12px">
-      <div class="card-header"><div class="card-title">📋 Current Positions</div><div style="display:flex;gap:8px"><button class="btn btn-secondary btn-sm" onclick="showTab('import')">📥 Import</button><button class="btn btn-secondary btn-sm">↻</button></div></div>
+      <div class="card-header"><div class="card-title">📋 Current Positions</div><div style="display:flex;gap:8px"><button class="btn btn-secondary btn-sm" onclick="window.showTab('import')">📥 Import</button><button class="btn btn-secondary btn-sm">↻</button></div></div>
       <div style="overflow-x:auto"><table class="data-table"><thead><tr><th>Ticker</th><th>Type</th><th>Strike</th><th>Expiry</th><th>Qty</th><th>Delta</th><th>Theta</th><th>IV</th><th>P&L</th><th>Ret</th><th></th></tr></thead>
       <tbody>${STATE.positions.map(p=>`<tr><td style="font-family:var(--mono);font-weight:700">${p.ticker}</td><td>${badge(p.type,p.type==='Call'?'cyan':'red')}</td><td style="font-family:var(--mono)">$${p.strike}</td><td style="color:var(--text2);font-size:11px">${p.exp}</td><td style="font-family:var(--mono)">${p.qty}</td><td style="font-family:var(--mono);color:${p.delta>0?'var(--cyan)':'var(--red)'}">${p.delta.toFixed(2)}</td><td style="font-family:var(--mono);color:var(--amber)">${p.theta.toFixed(2)}</td><td>${badge(p.iv,'neutral')}</td><td style="font-family:var(--mono);font-weight:700;color:var(--${p.color})">${p.pnl>0?'+':''}$${Math.abs(p.pnl)}</td><td>${badge((p.pct>0?'+':'')+p.pct+'%',p.color)}</td><td><button class="btn btn-secondary btn-sm" onclick="openRisk('${p.ticker}')">Risk</button></td></tr>`).join('')}</tbody></table></div>
     </div>
@@ -1192,7 +1192,7 @@ function buildScreener(){
   set('tab-screener',`
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;flex-wrap:wrap;gap:10px"><div><div style="font-size:15px;font-weight:700">📡 High-IV Options Screener</div><div style="font-size:11px;color:var(--text3)">Sorted by IV Rank · 15min updates</div></div><div style="display:flex;gap:6px">${['All','IV>80%','Rank>85'].map((f,i)=>`<button class="btn btn-${i===0?'primary':'secondary'} btn-sm">${f}</button>`).join('')}</div></div>
     <div class="card"><div style="overflow-x:auto"><table class="data-table"><thead><tr><th>Symbol</th><th>Price</th><th>Chg</th><th>IV Rank</th><th>IV%</th><th>Cap</th><th>Signal</th><th></th></tr></thead>
-    <tbody>${rows.map(([sym,name,price,chg,ivr,iv,cap,bias,c])=>`<tr><td><div style="font-family:var(--mono);font-weight:700">${sym}</div><div style="font-size:10px;color:var(--text3)">${name}</div></td><td style="font-family:var(--mono)">$${price}</td><td>${badge((chg>=0?'+':'')+chg+'%',chg>=0?'cyan':'red')}</td><td><div style="display:flex;align-items:center;gap:6px"><div class="iv-bar-track"><div class="iv-bar-fill" style="width:${ivr}%;background:var(--${c})"></div></div><span style="font-family:var(--mono);font-size:11px;font-weight:700;color:var(--${c})">${ivr}</span></div></td><td>${badge(iv+'%',c)}</td><td style="font-size:11px;color:var(--text2)">${cap}</td><td>${badge(bias,c)}</td><td><div style="display:flex;gap:4px"><button class="btn btn-secondary btn-sm" onclick="loadTicker('${sym}')">Analyze</button><button class="btn btn-secondary btn-sm" onclick="showTab('options')">Chain</button></div></td></tr>`).join('')}
+    <tbody>${rows.map(([sym,name,price,chg,ivr,iv,cap,bias,c])=>`<tr><td><div style="font-family:var(--mono);font-weight:700">${sym}</div><div style="font-size:10px;color:var(--text3)">${name}</div></td><td style="font-family:var(--mono)">$${price}</td><td>${badge((chg>=0?'+':'')+chg+'%',chg>=0?'cyan':'red')}</td><td><div style="display:flex;align-items:center;gap:6px"><div class="iv-bar-track"><div class="iv-bar-fill" style="width:${ivr}%;background:var(--${c})"></div></div><span style="font-family:var(--mono);font-size:11px;font-weight:700;color:var(--${c})">${ivr}</span></div></td><td>${badge(iv+'%',c)}</td><td style="font-size:11px;color:var(--text2)">${cap}</td><td>${badge(bias,c)}</td><td><div style="display:flex;gap:4px"><button class="btn btn-secondary btn-sm" onclick="loadTicker('${sym}')">Analyze</button><button class="btn btn-secondary btn-sm" onclick="window.window.showTab('options')">Chain</button></div></td></tr>`).join('')}
     </tbody></table></div></div>
   `);
 }
@@ -1569,8 +1569,8 @@ buildPaper = function() {
 }
 
 // ── ADD megacap to builder map ──
-const _origShowTab = showTab;
-showTab = function(id, el) {
+const _origShowTab = window.showTab;
+window.showTab = function(id, el) {
   _origShowTab(id, el);
   if (id === 'megacap') buildMegacap();
 }
@@ -1692,7 +1692,7 @@ function buildCalcContent(sym, strategy, strike, premium, dte) {
     </div>
 
     <div style="display:flex;gap:10px">
-      <button class="btn btn-primary" style="flex:1;justify-content:center" onclick="closeCalc();showTab('paper')">Open Paper Trade →</button>
+      <button class="btn btn-primary" style="flex:1;justify-content:center" onclick="closeCalc();window.showTab('paper')">Open Paper Trade →</button>
       <button class="btn btn-secondary" style="flex:1;justify-content:center" onclick="closeCalc()">Close</button>
     </div>
     <div style="font-size:10px;color:var(--text3);text-align:center;margin-top:10px">⚠️ Not financial advice. Educational tool only.</div>
@@ -2230,6 +2230,8 @@ function buildHeatmap() {
     </div>
   `);
 }
+</script>
+
 
 <script>
 
@@ -2339,12 +2341,19 @@ function exportChecklistCSV() {
 }
 
 // ── Wire new tabs into showTab + Paper Trading sub-tab ──
-const _origShowTab2 = showTab;
-showTab = function(id, el) {
-  _origShowTab2(id, el);
-  const extras = { economic:buildEconomic, heatmap:buildHeatmap, sizing:buildSizingCalc, journal:buildJournalStats, checklist:buildChecklistScreener };
-  if(extras[id]) extras[id]();
-}
+window.addEventListener('load', () => {
+  // Use window.showTab as the base
+  if (typeof window.showTab === 'undefined') {
+    console.error("window.showTab is undefined!");
+    return;
+  }
+  const _origShowTab2 = window.showTab;
+  window.showTab = function(id, el) {
+    _origShowTab2(id, el);
+    const extras = { economic:buildEconomic, heatmap:buildHeatmap, sizing:buildSizingCalc, journal:buildJournalStats, checklist:buildChecklistScreener };
+    if(extras[id]) extras[id]();
+  }
+});
 
 // Add Journal Stats and Position Sizing to Paper Trading sub-tabs
 const _origBuildPaper2 = buildPaper;
