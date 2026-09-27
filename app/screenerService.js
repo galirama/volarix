@@ -47,9 +47,11 @@
         target: target || {},
         quote: quote || {},
         technical: {
-            rsi: rsi?.rsi || 50,
-            macd: macd?.macd || 0
+            rsi: rsi?.rsi || 45, // Default RSI to 45
+            macd: macd?.macd || 'Neutral' // Default MACD to 'Neutral'
         },
+        // Ensure price uses 'c' (current price)
+        price: quote?.c || 0,
         earningsDate: earnings?.[0]?.date || 'N/A'
       };
     },

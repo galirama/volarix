@@ -11,17 +11,34 @@ This module handles market-wide screening across options volatility metrics (IV 
 
 ---
 
-## 2. Target Files & Code Locations
+## 3. UnifiedScreenerHub (NEW)
+This module replaces the three separate sidebar views with a single UnifiedScreenerHub containing a top-level Segmented Controller / Tab Bar.
+
+### 3.1 Tab Structure
+The UnifiedScreenerHub uses a shared table component that dynamically adjusts columns based on the selected Tab:
+- **[ Tab 1: Fundamental Screener ]**: P/E & EPS, RSI badge, MACD status, Analyst Upside %, Earnings Date.
+- **[ Tab 2: CSP Bargains Mode ]**: IV Rank, IV Status %, Checklist criteria (✓✓✓), Delta guidance, Target Strike.
+- **[ Tab 3: LEAPS Bargains Mode ]**: Golden Rule Setup status (✓✓✗ pass/fail breakdown), Status (WAITING / READY), Target Expiry / Delta (~0.80 Delta).
+
+### 3.2 Shared Columns (All Tabs)
+- Ticker
+- Current Price
+- Strategy Badge
+- Action Button ('Analyze Setup' / 'Checklist')
+
+### 3.3 Integration with Local AI Assistant & Sidebar
+1. **AI Assistant Data Transfer:** Clicking 'Analyze' or 'Checklist' in any row transfers full ticker data (Price, RSI, MACD, IV Rank, Strategy) to the Local AI Trade Assistant chat prompt at the bottom.
+2. **Navigation:** Left sidebar navigation points 'Fundamental Screener', 'CSP Bargains', and 'LEAPS Bargains' to this single UnifiedScreenerHub route with active tab state parameters.
+
+---
+
+## 4. Target Files & Code Locations
 - `app/app.html`
-  - Sidebar nav item under Markets: `<div class="nav-item" onclick="showTab('checklist',this)"><span class="nav-icon">✅</span>Fundamental Screener</div>`
-  - `buildScreener()` — Standard IV Screener tab (`#tab-screener`)
-  - `buildMegacap()` — Mega-Cap IV Screener tab (`#tab-megacap`)
-  - `buildChecklistScreener()` — Fundamental Screener tab (`#tab-checklist`)
-  - `runChecklistScreen(tickers)` — Processing logic reusing `scoreStock(sym)`
-  - Data sources: `FUNDAMENTALS` object (24 tickers) & `MEGACAP_DATA` array (20 tickers)
-  - Modal integration: `openScorecard(sym, 'analyze')` / `scorecardOverlay`
-- `app/login.html` — Login page with interactive preview mockups & demo entry
-- `app/index.html` — Educational marketing landing page
+  - Sidebar nav item: `<div class="nav-item" onclick="showTab('screener-hub',this)"><span class="nav-icon">📊</span>Unified Screener Hub</div>`
+  - `buildUnifiedScreenerHub()` — Main hub controller.
+  - `renderScreenerTab(tabId)` — Tab-specific rendering function for the hub.
+  - Data sources: `FUNDAMENTALS` object & `MEGACAP_DATA` array.
+  - Modal integration: `openScorecard(sym, 'analyze')` / `scorecardOverlay`.
 
 ---
 

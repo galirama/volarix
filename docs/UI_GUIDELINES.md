@@ -84,3 +84,15 @@ Close: `el.classList.remove('open')`
 - Bearish/negative: `#FF4757`
 - RSI/equity line:  `#8B7FFF`
 - Zero line:        `rgba(255,255,255,0.12)` dashed
+
+## Component Patterns
+
+### Segmented Controller / Tab Bar
+```html
+<div class="tab-bar">
+  <button class="tab-btn active" onclick="switchTab(this, 'tab-id')">Tab Name</button>
+  <button class="tab-btn" onclick="switchTab(this, 'tab-id')">Tab Name</button>
+</div>
+```
+*   **Logic:** `switchTab()` should toggle the `.active` class on the clicked button and reveal the corresponding content container while hiding others.
+

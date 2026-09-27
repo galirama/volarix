@@ -10,7 +10,7 @@
 - Data Resilience Layer: Fetch with Retry + Fallback mechanisms
 - Connection Status Indicator: Real-time Live/Degraded/Offline feedback
 - Centralized Configuration: Moved all keys to `app/config.js`
-- Sidebar/UI Cleanup: Deprecated unreachable features, prioritized CSP & LEAPS Bargains
+- Sidebar/UI Cleanup: Consolidated Screener views into `UnifiedScreenerHub`
 - P11-P13: Fundamental Stock Screener (All Phases: Logic, UI, Integration)
 
 ### 🔄 In Progress
@@ -20,7 +20,7 @@
 - P10: Weekly Email Digest (Resend.com + Netlify function)
 - P11: Fundamental Stock Screener (Phase 1)
 - P12: Fundamental Stock Screener (Phase 2)
-- P13: Fundamental Stock Screener (Phase 3: Screener UI Dashboard & Interactive Table)
+- P13: Fundamental Stock Screener (Phase 3: Unified Screener Hub & Interactive Table)
 
 ### ❌ Not Started
 - Next.js Migration (Phase 3)

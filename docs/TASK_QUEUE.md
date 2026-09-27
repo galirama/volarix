@@ -97,41 +97,17 @@
 **Status:** In Progress
 **Files:** `app/app.js` (integration logic), `app/screenerService.js`
 
-**Requirements:**
-- Connect table "Analyze Setup" buttons directly to the AI Assistant prompt box with full technical context.
-- Pre-fill context-aware prompts (CSP Setup vs LEAPS Setup).
-- Add "Add to Watchlist" quick action button per row.
-- Add "CSV Export" button for the filtered table.
-- Display summary metrics (Total Scanned, Filtered, Avg Upside) at top of Screener.
+**Requirements (Step 3: Unified Dynamic Data Table):**
+- [ ] Implement single shared Table component that dynamically adjusts columns based on Tab.
+- [ ] Shared Columns: Ticker, Current Price, Strategy Badge, Action Button ('Analyze Setup' / 'Checklist').
+- [ ] Tab 1 (Fundamental): Adds P/E & EPS, RSI badge, MACD status, Analyst Upside %, Earnings Date.
+- [ ] Tab 2 (CSP): Adds IV Rank, IV Status %, Checklist criteria (✓✓✓), Delta guidance, Target Strike.
+- [ ] Tab 3 (LEAPS): Adds Golden Rule Setup status (✓✓✗ pass/fail breakdown), Status (WAITING / READY), Target Expiry / Delta (~0.80 Delta).
 
-- Display summary metrics (Total Scanned, Filtered, Avg Upside) at top of Screener.
-
-**Acceptance criteria:**
-- [ ] Clicking "Trade" opens Trade Assistant with ticker pre-filled.
-- [ ] Clicking "Watchlist" adds ticker to `STATE.watchlist`.
-- [ ] Screener top banner displays real-time summary statistics.
-
-
-**Acceptance criteria:**
-- [ ] Screener tab renders correctly in dashboard.
-- [ ] Table populates with data from `screenerService` filtered by `filterService`.
-- [ ] Filter controls update the table view dynamically.
-- [ ] UI matches dark theme and aesthetic of existing tables.
-
-**Requirements:**
-- Implement `filterFundamentalStocks` with customizable criteria (PE, EPS, Price/Target, 52wk discount).
-- Define presets for "CSP Candidates" and "LEAPS Candidates".
-- Add mock data fallback logic to ensure the UI doesn't break when APIs are missing data.
-
-**Acceptance criteria:**
-- [ ] `filterFundamentalStocks` function correctly sorts/filters the ticker dataset.
-- [ ] Presets return logical subsets of data.
-- [ ] Missing fields in Finnhub data are handled gracefully.
-- [x] Missing fields in Finnhub data are handled gracefully (fallback to static FUNDAMENTALS)
-
-- [ ] Successful console verification of raw data for all tickers.
-- [ ] Graceful handling of rate limits and API errors.
-- [ ] Data correctly cached in `localStorage`.
+**Requirements (Step 4: Integration with Local AI Assistant & Sidebar):**
+- [ ] Clicking 'Analyze'/'Checklist' in any row transfers full ticker data (Price, RSI, MACD, IV Rank, Strategy) to the Local AI Trade Assistant chat prompt at the bottom.
+- [ ] Update left sidebar navigation to point 'Fundamental Screener', 'CSP Bargains', and 'LEAPS Bargains' to this single UnifiedScreenerHub route with active tab state parameters.
+- [ ] Clean up redundant component files once the unified component is working and tested.
 
 
 ## ✅ Completed
