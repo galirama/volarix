@@ -58,6 +58,9 @@
             price: currentPrice.toFixed(2),
             rsi: data.technical?.rsi || 45,
             macd: data.technical?.macd || 'Neutral',
+            technical: data.technical || {},
+            low52: data.low52 || 0,
+            high52: data.high52 || 0,
             upside: upside.toFixed(1),
             earningsDate: data.earningsDate || 'N/A',
             strategy: strategy
