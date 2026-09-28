@@ -73,6 +73,7 @@
       const price = Number(quote?.c || quote?.price || window.MKT?.prices?.[symbol] || 0);
       
       const high52 = parseFloat(metric?.metric?.['52WeekHigh'] || 0);
+      const low52 = parseFloat(metric?.metric?.['52WeekLow'] || 0);
       
       let discountVal = '0.0';
       if (price > 0 && high52 > price) {
