@@ -4,6 +4,29 @@
   window.USE_MOCK_DATA = window.USE_MOCK_DATA || false; // Toggle for mock data
 
   const screenerService = {
+    // Utility: Calculate SMA
+    calculateSMA(prices, period) {
+      if (!prices || !Array.isArray(prices) || prices.length < period) return null;
+      const slice = prices.slice(-period);
+      const sum = slice.reduce((a, b) => a + b, 0);
+      return (sum / period).toFixed(2);
+    },
+
+    // Utility: Calculate Upside
+    calculateUpside(price, targetPrice) {
+      const p = parseFloat(price);
+      const t = parseFloat(targetPrice);
+      if (!p || !t || p <= 0 || t <= 0) return '--';
+      const upside = ((t - p) / p) * 100;
+      return `${upside >= 0 ? '+' : ''}${upside.toFixed(1)}%`;
+    },
+
+    // Utility: Format Earnings
+    formatEarnings(days) {
+      if (days === null || days === undefined || isNaN(days)) return 'N/A';
+      return `${days}d`;
+    },
+
     async fetchWithCache(key, fetchFn) {
       const cached = localStorage.getItem(`volarix_screener_${key}`);
       if (cached && !window.USE_MOCK_DATA) {
@@ -70,7 +93,7 @@
       }
 
       // Fix Price Source
-      const price = Number(quote?.c || quote?.price || window.MKT?.prices?.[symbol] || 0);
+      const price = Number(quote?.c || quote?.price || window.MKT?.prices?.[symbol] || window.APP_WATCHLIST?.[symbol]?.price || 0);
       
       const high52 = parseFloat(metric?.metric?.['52WeekHigh'] || 0);
       const low52 = parseFloat(metric?.metric?.['52WeekLow'] || 0);
@@ -81,17 +104,14 @@
       }
       
       const targetPrice = parseFloat(target?.targetHigh || target?.priceTarget || 0);
-      let upsideVal = '--';
-      if (price > 0 && targetPrice > price) {
-          upsideVal = (((targetPrice - price) / price) * 100).toFixed(1) + '%';
-      }
+      const upsideVal = this.calculateUpside(price, targetPrice);
 
       let earningsDisplay = 'N/A';
       if (earnings && earnings[0] && earnings[0].date) {
           const eDate = new Date(earnings[0].date);
           const now = new Date();
           const diffDays = Math.ceil((eDate - now) / (1000 * 60 * 60 * 24));
-          earningsDisplay = diffDays >= 0 ? `${diffDays}d` : 'N/A';
+          earningsDisplay = this.formatEarnings(diffDays);
       }
 
       return {
@@ -102,29 +122,9 @@
         technical: {
             rsi: rsi?.rsi !== undefined ? rsi.rsi : '--',
             macd: macd?.macd !== undefined ? macd.macd : '--',
-            sma7: sma7?.sma ? parseFloat(sma7.sma[0]).toFixed(2) : '--',
-            sma20: sma20?.sma ? parseFloat(sma20.sma[0]).toFixed(2) : '--',
-            sma200: sma200?.sma ? parseFloat(sma200.sma[0]).toFixed(2) : '--'
-        },
-        price: price,
-        high52: high52,
-        low52: low52,
-        discount: discountVal,
-        upside: upsideVal,
-        earningsDate: earningsDisplay
-      };
-
-      return {
-        symbol,
-        metrics: metric?.metric || {},
-        target: target || {},
-        quote: quote || {},
-        technical: {
-            rsi: rsi?.rsi !== undefined ? rsi.rsi : '--',
-            macd: macd?.macd !== undefined ? macd.macd : '--',
-            sma7: sma7?.sma ? parseFloat(sma7.sma[0]).toFixed(2) : '--',
-            sma20: sma20?.sma ? parseFloat(sma20.sma[0]).toFixed(2) : '--',
-            sma200: sma200?.sma ? parseFloat(sma200.sma[0]).toFixed(2) : '--'
+            sma7: sma7?.sma ? this.calculateSMA(sma7.sma, 7) || '--' : '--',
+            sma20: sma20?.sma ? this.calculateSMA(sma20.sma, 20) || '--' : '--',
+            sma200: sma200?.sma ? this.calculateSMA(sma200.sma, 200) || '--' : '--'
         },
         price: price,
         high52: high52,
