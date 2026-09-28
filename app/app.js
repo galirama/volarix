@@ -567,7 +567,7 @@ const calculateDiscount = (price, high52) => {
     <tbody>`;
   
   filtered.forEach(row => {
-    console.log('Screener Raw Row Data:', row);
+    // console.log('Screener Raw Row Data:', row);
     const rsiColor = row.rsi < 40 ? 'green' : (row.rsi > 70 ? 'red' : 'purple');
     const earnWarning = (row.earningsDate && row.earningsDate < 14) ? `<span class="badge badge-amber">⚠️ ${row.earningsDate}d</span>` : `${row.earningsDate}d`;
     
