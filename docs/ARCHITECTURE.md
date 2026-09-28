@@ -41,6 +41,10 @@ Live at: https://volarix.netlify.app
 | IV/options data | Finnhub free | 60 req/min | EOD |
 | Congressional | quiverquant.com | Public | Daily |
 
+
+### 52-Week Range & Moving Averages (Added P15)
+The system now includes 52-Week Range and SMA (7D/20D/200D) indicators. These are fetched via the Finnhub `/stock/metric` and `/stock/candle` (or indicator helper) endpoints, processed in the `screenerService` batch queue, and visualized in the `UnifiedScreenerHub`.
+
 ---
 
 ## Client-Side Cache Pattern (localStorage, 60s TTL)

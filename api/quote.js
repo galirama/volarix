@@ -23,6 +23,10 @@ module.exports = async (req, res) => {
     } else if (type === 'macd') {
       endpoint = 'indicator/macd';
       params = `symbol=${symbol}&resolution=D&indicator=macd`;
+    } else if (type === 'sma') {
+      const period = req.query.period || '14';
+      endpoint = 'indicator/sma';
+      params = `symbol=${symbol}&resolution=D&indicator=sma&timeperiod=${period}`;
     } else if (type === 'earnings') {
       endpoint = 'calendar/earnings';
       const now = new Date();

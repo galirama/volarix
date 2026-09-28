@@ -52,13 +52,16 @@
       }
 
       // Parallel fetch with individual error handling
-      const [metric, target, quote, rsi, macd, earnings] = await Promise.all([
+      const [metric, target, quote, rsi, macd, earnings, sma7, sma20, sma200] = await Promise.all([
         this.fetchSafe(`/api/quote?symbol=${symbol}&type=metric`),
         this.fetchSafe(`/api/quote?symbol=${symbol}&type=price-target`),
         this.fetchSafe(`/api/quote?symbol=${symbol}`),
         this.fetchSafe(`/api/quote?symbol=${symbol}&type=rsi`),
         this.fetchSafe(`/api/quote?symbol=${symbol}&type=macd`),
-        this.fetchSafe(`/api/quote?symbol=${symbol}&type=earnings`)
+        this.fetchSafe(`/api/quote?symbol=${symbol}&type=earnings`),
+        this.fetchSafe(`/api/quote?symbol=${symbol}&type=sma&period=7`),
+        this.fetchSafe(`/api/quote?symbol=${symbol}&type=sma&period=20`),
+        this.fetchSafe(`/api/quote?symbol=${symbol}&type=sma&period=200`)
       ]);
 
       // Check for rate limiting
@@ -75,6 +78,20 @@
       if (price > 0 && high52 > price) {
         discountVal = (((high52 - price) / high52) * 100).toFixed(1);
       }
+      
+      const targetPrice = parseFloat(target?.targetHigh || target?.priceTarget || 0);
+      let upsideVal = '--';
+      if (price > 0 && targetPrice > price) {
+          upsideVal = (((targetPrice - price) / price) * 100).toFixed(1) + '%';
+      }
+
+      let earningsDisplay = 'N/A';
+      if (earnings && earnings[0] && earnings[0].date) {
+          const eDate = new Date(earnings[0].date);
+          const now = new Date();
+          const diffDays = Math.ceil((eDate - now) / (1000 * 60 * 60 * 24));
+          earningsDisplay = diffDays >= 0 ? `${diffDays}d` : 'N/A';
+      }
 
       return {
         symbol,
@@ -83,44 +100,67 @@
         quote: quote || {},
         technical: {
             rsi: rsi?.rsi !== undefined ? rsi.rsi : '--',
-            macd: macd?.macd !== undefined ? macd.macd : '--'
+            macd: macd?.macd !== undefined ? macd.macd : '--',
+            sma7: sma7?.sma ? parseFloat(sma7.sma[0]).toFixed(2) : '--',
+            sma20: sma20?.sma ? parseFloat(sma20.sma[0]).toFixed(2) : '--',
+            sma200: sma200?.sma ? parseFloat(sma200.sma[0]).toFixed(2) : '--'
         },
         price: price,
         high52: high52,
+        low52: low52,
         discount: discountVal,
-        earningsDate: earnings?.[0]?.date || 'N/A'
+        upside: upsideVal,
+        earningsDate: earningsDisplay
+      };
+
+      return {
+        symbol,
+        metrics: metric?.metric || {},
+        target: target || {},
+        quote: quote || {},
+        technical: {
+            rsi: rsi?.rsi !== undefined ? rsi.rsi : '--',
+            macd: macd?.macd !== undefined ? macd.macd : '--',
+            sma7: sma7?.sma ? parseFloat(sma7.sma[0]).toFixed(2) : '--',
+            sma20: sma20?.sma ? parseFloat(sma20.sma[0]).toFixed(2) : '--',
+            sma200: sma200?.sma ? parseFloat(sma200.sma[0]).toFixed(2) : '--'
+        },
+        price: price,
+        high52: high52,
+        low52: low52,
+        discount: discountVal,
+        upside: upsideVal,
+        earningsDate: earningsDisplay
       };
     },
 
-    async getScreenerData(symbols) {
+    async getScreenerData(symbols, onProgress) {
       const results = {};
-      for (const symbol of symbols) {
-        // Rate limiting: 200ms delay
-        await new Promise(resolve => setTimeout(resolve, 200));
+      // Process in chunks of 2
+      const chunkSize = 2;
+      for (let i = 0; i < symbols.length; i += chunkSize) {
+        const chunk = symbols.slice(i, i + chunkSize);
         
-        try {
-          const data = await this.fetchWithCache(symbol, () => this.fetchTickerFundamentals(symbol));
-          if (data.error === 'Rate limit' || window.USE_MOCK_DATA) {
-             // If rate limited or forcing mock, return a safe mock object for the UI
-             results[symbol] = {
-                 symbol,
-                 price: '--',
-                 high52: '--',
-                 discount: '0%',
-                 technical: { rsi: '--', macd: '--' },
-                 earningsDate: 'N/A',
-                 isMock: true
-             };
-          } else {
-             results[symbol] = data;
-          }
-        } catch (e) {
-          console.error(`Error fetching ${symbol}:`, e);
-          results[symbol] = { symbol, error: 'Failed to fetch' };
+        // Notify progress for chunk
+        if (onProgress) {
+            chunk.forEach(s => onProgress(s, 'loading'));
+        }
+
+        const promises = chunk.map(symbol => this.fetchWithCache(symbol, () => this.fetchTickerFundamentals(symbol)));
+        const chunkResults = await Promise.all(promises);
+
+        chunk.forEach((symbol, index) => {
+            results[symbol] = chunkResults[index];
+            if (onProgress) onProgress(symbol, 'done');
+        });
+
+        // 300ms delay between chunks
+        if (i + chunkSize < symbols.length) {
+            await new Promise(resolve => setTimeout(resolve, 300));
         }
       }
       return results;
-    }
+    },
   };
 
   window.screenerService = screenerService;

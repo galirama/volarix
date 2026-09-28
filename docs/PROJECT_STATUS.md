@@ -14,6 +14,7 @@
 - P11-P13: Fundamental Stock Screener (All Phases: Logic, UI, Integration)
 
 ### 🔄 In Progress
+- P14: API Rate-Limit Queue & Bug Fixes
 - P14: AI Assistant & Trade Setup Integration (Phase 4)
 
 ### ✅ Completed
@@ -23,6 +24,7 @@
 - P13: Fundamental Stock Screener (Phase 3: Unified Screener Hub & Interactive Table)
 
 ### ❌ Not Started
+- P16: Screener: Interactive Table Sorting & Column Customization (Not Started)
 - Next.js Migration (Phase 3)
 
 ---

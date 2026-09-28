@@ -1,7 +1,34 @@
+## 🟢 P16 — Screener: Interactive Table Sorting & Column Customization
+**Status:** Not Started
+**Files:** `app/app.js`, `app/screenerService.js`
+
+**Acceptance criteria:**
+- [ ] Sort State in Table Component: Add state for sortColumn and sortDirection.
+- [ ] Header Click Handles: Clickable headers with ▲ / ▼ visual indicators.
+- [ ] Smart Default Sort: Discount % (Desc) or RSI (Asc) default.
+- [ ] Sorting Logic: Robust handling for numerical and string fields (no NaN errors).
+- [ ] Loading State: Sorting must persist/operate during loading spinner states.
+
+---
+
+
 # VolariX Task Queue
 **One task per session. Check off when done. Update PROJECT_STATUS.md after each.**
 
 ---
+## 🟢 P15 — Screener Enhancements (52W Range & Moving Averages)
+**Status:** In Progress
+**Files:** `app/screenerService.js`, `app/app.js`
+
+**Acceptance criteria:**
+- [ ] 52-Week High/Low integrated into `fetchTickerFundamentals`
+- [ ] SMA 7/20/200 calculated/fetched and passed to UI
+- [ ] UI Table renders 52W Range column
+- [ ] UI Table renders Moving Averages with conditional color coding (Price vs SMA)
+- [ ] Batching queue maintained to prevent 429 errors
+
+---
+
 
 ## 🟡 P0 — Private Supabase Authentication
 **Status:** Code cutover complete; awaiting owner dashboard confirmation  
@@ -105,8 +132,8 @@
 - [ ] Tab 3 (LEAPS): Adds Golden Rule Setup status (✓✓✗ pass/fail breakdown), Status (WAITING / READY), Target Expiry / Delta (~0.80 Delta).
 
 **Requirements (Step 4: Integration with Local AI Assistant & Sidebar):**
-- [ ] Clicking 'Analyze'/'Checklist' in any row transfers full ticker data (Price, RSI, MACD, IV Rank, Strategy) to the Local AI Trade Assistant chat prompt at the bottom.
-- [ ] Update left sidebar navigation to point 'Fundamental Screener', 'CSP Bargains', and 'LEAPS Bargains' to this single UnifiedScreenerHub route with active tab state parameters.
+- [x] Clicking 'Analyze'/'Checklist' in any row transfers full ticker data (Price, RSI, MACD, IV Rank, Strategy) to the Local AI Trade Assistant chat prompt at the bottom.
+- [x] Update left sidebar navigation to point only to 'Fundamental Screener' (the unified hub). CSP Bargains and LEAPS Bargains are sub-views inside the Fundamental Screener view.
 - [ ] Clean up redundant component files once the unified component is working and tested.
 
 

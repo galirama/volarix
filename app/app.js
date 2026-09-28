@@ -448,49 +448,59 @@ window.testScreener = async function() {
 
 
 async function buildFundamentalScreener() {
+  const preset = window.currentScreenerPreset || 'ALL';
+  
+  let headerContent = '';
+  if (preset === 'CSP') {
+      headerContent = `<div class="card" style="margin-bottom:14px;padding:16px;border-left:4px solid var(--green)">
+        <div style="font-size:16px;font-weight:700;color:var(--green)">CSP Bargains (Macro Rule Engine)</div>
+        <div style="color:var(--text3);font-size:12px">Delta Target 0.20-0.25 · Capital Deployment % · Monthly Yield Target · VIX/F&G Badges.</div>
+      </div>`;
+  } else if (preset === 'LEAPS') {
+       headerContent = `<div class="card" style="margin-bottom:14px;padding:16px;border-left:4px solid var(--blue)">
+        <div style="font-size:16px;font-weight:700;color:var(--blue)">LEAPS Bargains ('The Golden Rule')</div>
+        <div style="color:var(--text3);font-size:12px">Fear + Oversold + MACD Reversal + Strong Business -> Buy ~0.80 Delta LEAPS.</div>
+      </div>`;
+  } else {
+      headerContent = `
+        <div style="display:flex;gap:12px;margin-bottom:14px">
+          <div class="card" style="flex:1;padding:12px">
+            <div style="font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:0.05em">Total Scanned</div>
+            <div style="font-size:18px;font-weight:700" id="statScanned">0</div>
+          </div>
+          <div class="card" style="flex:1;padding:12px">
+            <div style="font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:0.05em">Oversold CSP</div>
+            <div style="font-size:18px;font-weight:700;color:var(--green)" id="statCSP">0</div>
+          </div>
+          <div class="card" style="flex:1;padding:12px">
+            <div style="font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:0.05em">Bullish LEAPS</div>
+            <div style="font-size:18px;font-weight:700;color:var(--blue)" id="statLEAPS">0</div>
+          </div>
+        </div>`;
+  }
+
   set('tab-checklist', `
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;flex-wrap:wrap;gap:8px">
       <div><div style="font-size:20px;font-weight:800">✅ Fundamental Screener</div><div style="font-size:11px;color:var(--text2)">Live Finnhub Data Analysis</div></div>
       <div id="chkSummary" style="display:flex;gap:12px;font-size:11px;color:var(--text2)"></div>
     </div>
     
-    <!-- Top Summary Cards -->
-    <div style="display:flex;gap:12px;margin-bottom:14px">
-      <div class="card" style="flex:1;padding:12px">
-        <div style="font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:0.05em">VIX</div>
-        <div style="font-size:18px;font-weight:700" id="statVix">--</div>
-      </div>
-      <div class="card" style="flex:1;padding:12px">
-        <div style="font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:0.05em">Fear & Greed</div>
-        <div style="font-size:18px;font-weight:700" id="statFng">--</div>
-      </div>
-      <div class="card" style="flex:1;padding:12px">
-        <div style="font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:0.05em">Total Scanned</div>
-        <div style="font-size:18px;font-weight:700" id="statScanned">0</div>
-      </div>
-      <div class="card" style="flex:1;padding:12px">
-        <div style="font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:0.05em">Oversold CSP</div>
-        <div style="font-size:18px;font-weight:700;color:var(--green)" id="statCSP">0</div>
-      </div>
-      <div class="card" style="flex:1;padding:12px">
-        <div style="font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:0.05em">Bullish LEAPS</div>
-        <div style="font-size:18px;font-weight:700;color:var(--blue)" id="statLEAPS">0</div>
-      </div>
+    <!-- Tab Toggle -->
+    <div style="display:flex;gap:8px;margin-bottom:14px">
+        <button class="btn btn-sm ${preset === 'ALL' ? 'btn-primary' : 'btn-secondary'}" onclick="setPreset('ALL')">All Candidates</button>
+        <button class="btn btn-sm ${preset === 'CSP' ? 'btn-primary' : 'btn-secondary'}" onclick="setPreset('CSP')">CSP Bargains</button>
+        <button class="btn btn-sm ${preset === 'LEAPS' ? 'btn-primary' : 'btn-secondary'}" onclick="setPreset('LEAPS')">LEAPS Bargains</button>
     </div>
 
+    ${headerContent}
+    
     <div class="card" style="margin-bottom:14px">
       <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
-        <input type="text" id="chkSearch" placeholder="Search Ticker..." style="background:var(--bg3);border:1px solid var(--border2);border-radius:var(--r);padding:8px;color:var(--text);width:150px">
-        
-        <div style="display:flex;gap:4px">
-            <button class="btn btn-sm btn-secondary" onclick="setPreset('ALL')">All</button>
-            <button class="btn btn-sm btn-secondary" onclick="setPreset('CSP')">CSP Put Bargains</button>
-            <button class="btn btn-sm btn-secondary" onclick="setPreset('LEAPS')">LEAPS Call Momentum</button>
-        </div>
+         <input type="text" id="chkSearch" placeholder="Search Ticker..." style="background:var(--bg3);border:1px solid var(--border2);border-radius:var(--r);padding:8px;color:var(--text);width:150px" oninput="renderFundamentalTable()">
         
         <div style="display:flex;gap:8px;font-size:12px;margin-left:auto">
-            <label style="display:flex;align-items:center;gap:4px"><input type="checkbox" id="chkHideEarnings"> Hide Earnings < 14d</label>
-            <label style="display:flex;align-items:center;gap:4px"><input type="checkbox" id="chkOversoldOnly"> Oversold Only (RSI < 40)</label>
+            <label style="display:flex;align-items:center;gap:4px"><input type="checkbox" id="chkHideEarnings" onchange="renderFundamentalTable()"> Hide Earnings < 14d</label>
+            <label style="display:flex;align-items:center;gap:4px"><input type="checkbox" id="chkOversoldOnly" onchange="renderFundamentalTable()"> Oversold Only (RSI < 40)</label>
         </div>
       </div>
     </div>
@@ -500,8 +510,10 @@ async function buildFundamentalScreener() {
         </div>
     </div>
   `);
+  
   renderFundamentalTable();
 }
+
 
 async function renderFundamentalTable() {
   const container = document.getElementById('chkTableContainer');
@@ -523,10 +535,10 @@ async function renderFundamentalTable() {
   if (hideEarnings) filtered = filtered.filter(row => (row.earningsDate || 99) > 14);
   if (oversoldOnly) filtered = filtered.filter(row => row.rsi < 40);
 
-  // Update Summary Stats
-  document.getElementById('statScanned').innerText = Object.keys(data).length;
-  document.getElementById('statCSP').innerText = filtered.filter(r => r.strategy === 'CSP').length;
-  document.getElementById('statLEAPS').innerText = filtered.filter(r => r.strategy === 'LEAPS').length;
+  // Update Summary Stats (only if elements exist)
+  if (document.getElementById('statScanned')) document.getElementById('statScanned').innerText = Object.keys(data).length;
+  if (document.getElementById('statCSP')) document.getElementById('statCSP').innerText = filtered.filter(r => r.strategy === 'CSP').length;
+  if (document.getElementById('statLEAPS')) document.getElementById('statLEAPS').innerText = filtered.filter(r => r.strategy === 'LEAPS').length;
   
   // Render Table
 
@@ -541,6 +553,8 @@ const calculateDiscount = (price, high52) => {
       <tr style="color:var(--text3);border-bottom:1px solid var(--border)">
         <th style="padding:10px">Ticker</th>
         <th style="padding:10px">Price / Disc</th>
+        <th style="padding:10px">52W Range</th>
+        <th style="padding:10px">MAs (7/20/200)</th>
         <th style="padding:10px">P/E & EPS</th>
         <th style="padding:10px">RSI</th>
         <th style="padding:10px">MACD</th>
@@ -562,11 +576,23 @@ const calculateDiscount = (price, high52) => {
     const priceDisplay = (row.price && parseFloat(row.price) > 0) 
         ? `$${parseFloat(row.price).toFixed(2)}<div style="font-size:10px;color:var(--text3)">${discount !== null ? `${discount}% off` : '--'}</div>`
         : '--';
+
+    // MA Color Logic
+    const getMAColor = (price, sma) => {
+        if (!sma || sma === '--') return '';
+        return parseFloat(price) > parseFloat(sma) ? 'color:green' : 'color:red';
+    };
     
     html += `
       <tr style="border-bottom:1px solid var(--border)">
         <td style="padding:10px;font-weight:600">${row.symbol}</td>
         <td style="padding:10px">${priceDisplay}</td>
+        <td style="padding:10px;font-size:11px">$${parseFloat(row.low52).toFixed(2)} - $${parseFloat(row.high52).toFixed(2)}</td>
+        <td style="padding:10px;font-size:11px">
+            <span style="${getMAColor(row.price, row.technical.sma7)}">7D:${row.technical.sma7}</span> | 
+            <span style="${getMAColor(row.price, row.technical.sma20)}">20D:${row.technical.sma20}</span> | 
+            <span style="${getMAColor(row.price, row.technical.sma200)}">200D:${row.technical.sma200}</span>
+        </td>
         <td style="padding:10px">${row.pe}<div style="font-size:10px;color:var(--text3)">${row.eps}</div></td>
         <td style="padding:10px"><span class="badge badge-${rsiColor}">${row.rsi}</span></td>
         <td style="padding:10px">${row.macd === 'Bullish' ? '📈' : '➖'}</td>
@@ -597,7 +623,7 @@ function analyzeSetup(ticker) {
 window.currentScreenerPreset = 'ALL';
 function setPreset(val) {
     window.currentScreenerPreset = val;
-    renderFundamentalTable();
+    buildFundamentalScreener();
 }
 
 

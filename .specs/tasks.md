@@ -41,6 +41,21 @@
 
 ## 3. Dashboard Tabs
 
+## 4. Screener Improvements (P14)
+
+| Task | Status | Notes |
+|---|---|---|
+| Sequential Batch Queue | ❌ | 2 tickers at a time, 300ms delay, loader spinner |
+| P16 | Interactive Table Sorting & Customization | ❌ | State management, header clicks, smart defaults, loading resilience |
+| GOOGL Price Fix | ❌ | Map Finnhub `/quote` (c) or fallback |
+| Earnings Format Fix | ❌ | 'N/A' not 'N/Ad', cleaner day calc |
+| Metric Math Fixes | ❌ | Discount & Upside logic implementation |
+| Strategy Badge Logic | ❌ | 'CSP Ready' (RSI < 45, Price < 52WH 10%) |
+| Strategy Badge Logic | ❌ | 'LEAPS Ready' (Upside > 15%, MACD Bullish) |
+
+---
+
+
 | Tab | Builder Function | Status | Notes |
 |---|---|---|---|
 | Ticker Analyzer | `buildTickerAnalyzer()` | ✅ | Candlestick + RSI Canvas charts, fundamentals, IV history |

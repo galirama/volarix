@@ -28,9 +28,23 @@ The UnifiedScreenerHub uses a shared table component that dynamically adjusts co
 
 ### 3.3 Integration with Local AI Assistant & Sidebar
 1. **AI Assistant Data Transfer:** Clicking 'Analyze' or 'Checklist' in any row transfers full ticker data (Price, RSI, MACD, IV Rank, Strategy) to the Local AI Trade Assistant chat prompt at the bottom.
-2. **Navigation:** Left sidebar navigation points 'Fundamental Screener', 'CSP Bargains', and 'LEAPS Bargains' to this single UnifiedScreenerHub route with active tab state parameters.
+2. **Navigation:** Left sidebar navigation now points only to 'Fundamental Screener' (the unified hub). CSP Bargains and LEAPS Bargains are accessible as sub-tabs within this view, selected via URL parameter or tab state.
 
 ---
+
+### 3.4 Technical Data Loading Enhancements (P14)
+- **Sequential Batch Queue:** Implemented in `screenerService.js`. Requests are processed in batches of 2 tickers with a 300ms delay between intervals to prevent Finnhub rate limiting.
+- **Loading UI:** Ticker rows display a skeleton/spinner state during the fetch.
+- **Data Logic Fixes:**
+  - **Earnings:** If no date, display 'N/A'.
+  - **Discount %:** `((52W_High - Price) / 52W_High) * 100`.
+  - **Upside %:** `((Analyst_Target - Price) / Price) * 100`. (Default to '--' if invalid).
+  - **Strategy Badges:**
+    - `CSP Ready`: RSI < 45 AND Price < 52W High by >10%.
+    - `LEAPS Ready`: Analyst Upside > 15% AND MACD Bullish.
+    - `Neutral`: Fallback.
+
+
 
 ## 4. Target Files & Code Locations
 - `app/app.html`

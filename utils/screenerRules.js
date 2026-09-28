@@ -40,56 +40,34 @@ const getMACDTrend = (macdLine, signalLine, histogram) => {
  */
 const screenTickers = (tickers) => {
     return tickers.map(ticker => {
-        const discount = calculateDiscount(ticker.price, ticker.high52w);
-        const upside = calculateAnalystUpside(ticker.price, ticker.analystTargetPrice);
+        const discount = calculateDiscount(ticker.price, ticker.high52);
+        // Requirement: Price < 52W High by >10%
+        const isDiscounted = discount > 10; 
+        
         const rsiStatus = getRSIStatus(ticker.rsi);
         const macdTrend = getMACDTrend(ticker.macdLine, ticker.signalLine, ticker.histogram);
-
-        const tags = [];
-        const warnings = [];
-
-        // CSP Setup Logic
-        // CSP Setup (Cash Secured Put): Good Fundamentals (PE < 35, EPS > 0) + Discounted from 52W High + RSI < 45 (Oversold/Dip buy).
-        const isFundamentalGood = ticker.pe < 35 && ticker.eps > 0;
-        const isDiscounted = discount > 0; 
-        const isRSIForCSP = ticker.rsi < 45;
         
-        if (isFundamentalGood && isDiscounted && isRSIForCSP) {
-            tags.push('CSP Setup');
-        }
-
-        // LEAPS Call Setup Logic
-        // LEAPS Call Setup: High Analyst Upside (>20%) + MACD Bullish Crossover + Momentum recovering.
-        const isUpsideGood = upside > 20;
-        const isMACDBullish = macdTrend === 'Bullish Crossover';
+        // Strategy Badges
+        // 'CSP Ready' (if RSI < 45 and Price < 52W High by >10%)
+        // 'LEAPS Ready' (if Analyst Upside > 15% and MACD Bullish)
+        // 'Neutral' (if neither setup triggers).
         
-        if (isUpsideGood && isMACDBullish) {
-            tags.push('LEAPS Call Setup');
-        }
-
-        // Risk Warnings
-        // Flag any ticker with Next Earnings Date within 14 days or RSI > 70 (Too overbought to sell puts safely).
-        if (ticker.nextEarningsDate) {
-            const daysToEarnings = Math.ceil((new Date(ticker.nextEarningsDate) - new Date()) / (1000 * 60 * 60 * 24));
-            if (daysToEarnings <= 14 && daysToEarnings >= 0) {
-                warnings.push('Upcoming Earnings');
-            }
-        }
-        
-        if (ticker.rsi > 70) {
-            warnings.push('Too Overbought');
+        let strategy = 'Neutral';
+        if (ticker.rsi < 45 && isDiscounted) {
+            strategy = 'CSP Ready';
+        } else if (parseFloat(ticker.upside) > 15 && macdTrend === 'Bullish Crossover') {
+            strategy = 'LEAPS Ready';
         }
 
         return {
             ...ticker,
             metrics: {
                 discount,
-                upside,
+                upside: ticker.upside,
                 rsiStatus,
                 macdTrend
             },
-            tags,
-            warnings
+            strategy
         };
     });
 };
