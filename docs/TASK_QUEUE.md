@@ -1,13 +1,18 @@
-## 🟢 P16 — Screener: Interactive Table Sorting & Column Customization
+## 🟢 P16 — Screener: Moving Averages Popover & Interactive Table Sorting
 **Status:** Not Started
 **Files:** `app/app.js`, `app/screenerService.js`
 
 **Acceptance criteria:**
-- [ ] Sort State in Table Component: Add state for sortColumn and sortDirection.
-- [ ] Header Click Handles: Clickable headers with ▲ / ▼ visual indicators.
-- [ ] Smart Default Sort: Discount % (Desc) or RSI (Asc) default.
-- [ ] Sorting Logic: Robust handling for numerical and string fields (no NaN errors).
-- [ ] Loading State: Sorting must persist/operate during loading spinner states.
+- [ ] Moving Averages Popover:
+    - Remove cluttered MAs (7/20/200) raw columns from table.
+    - Add 'MA Details' icon/badge to column.
+    - Implement hover/click popover showing 7D, 20D, 200D SMA.
+    - Highlight 200D SMA (Green if Price > 200, Red if < 200).
+- [ ] Interactive Column Sorting:
+    - Make headers (Price, Discount, P/E, RSI, Upside, Strategy) clickable.
+    - Add sort arrows (▲/▼).
+    - Implement dynamic ascending/descending logic.
+- [ ] Polish: Verify spacious UI, legibility, and zero string formatting bugs.
 
 ---
 

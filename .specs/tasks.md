@@ -46,7 +46,7 @@
 | Task | Status | Notes |
 |---|---|---|
 | Sequential Batch Queue | ❌ | 2 tickers at a time, 300ms delay, loader spinner |
-| P16 | Interactive Table Sorting & Customization | ❌ | State management, header clicks, smart defaults, loading resilience |
+| P16 | Moving Averages Popover & Table Sorting | ❌ | State management, popover UI, sort logic, header interactions |
 | GOOGL Price Fix | ❌ | Map Finnhub `/quote` (c) or fallback |
 | Earnings Format Fix | ❌ | 'N/A' not 'N/Ad', cleaner day calc |
 | Metric Math Fixes | ❌ | Discount & Upside logic implementation |

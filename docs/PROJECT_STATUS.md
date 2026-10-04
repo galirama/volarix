@@ -24,7 +24,7 @@
 - P13: Fundamental Stock Screener (Phase 3: Unified Screener Hub & Interactive Table)
 
 ### ❌ Not Started
-- P16: Screener: Interactive Table Sorting & Column Customization (Not Started)
+- P16: Screener: Moving Averages Popover & Interactive Table Sorting (Not Started)
 - Next.js Migration (Phase 3)
 
 ---

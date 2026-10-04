@@ -16,15 +16,30 @@
     calculateUpside(price, targetPrice) {
       const p = parseFloat(price);
       const t = parseFloat(targetPrice);
-      if (!p || !t || p <= 0 || t <= 0) return '--';
-      const upside = ((t - p) / p) * 100;
-      return `${upside >= 0 ? '+' : ''}${upside.toFixed(1)}%`;
+      if (!p || !t || p <= 0 || t <= 0 || isNaN(p) || isNaN(t)) return null;
+      return ((t - p) / p) * 100;
     },
 
     // Utility: Format Earnings
     formatEarnings(days) {
       if (days === null || days === undefined || isNaN(days)) return 'N/A';
       return `${days}d`;
+    },
+
+    // Strategy Tag Logic
+    getStrategy(data) {
+      const price = parseFloat(data.price);
+      const high52 = parseFloat(data.high52);
+      const rsi = parseFloat(data.technical.rsi);
+      const upside = data.upside;
+      const macd = data.technical.macd;
+
+      const isCspBargain = (high52 > 0 && price < (high52 * 0.9)) && (rsi < 45);
+      const isLeapsCandidate = (upside !== null && upside > 15) && (macd === 'Bullish' || (typeof macd === 'number' && macd > 0));
+
+      if (isCspBargain) return 'CSP Bargain';
+      if (isLeapsCandidate) return 'LEAPS Candidate';
+      return 'Neutral';
     },
 
     async fetchWithCache(key, fetchFn) {
@@ -114,11 +129,12 @@
           earningsDisplay = this.formatEarnings(diffDays);
       }
 
-      return {
+      // Build data object to calculate strategy
+      const tickerData = {
         symbol,
-        metrics: metric?.metric || {},
-        target: target || {},
-        quote: quote || {},
+        price,
+        high52,
+        low52,
         technical: {
             rsi: rsi?.rsi !== undefined ? rsi.rsi : '--',
             macd: macd?.macd !== undefined ? macd.macd : '--',
@@ -126,12 +142,22 @@
             sma20: sma20?.sma ? this.calculateSMA(sma20.sma, 20) || '--' : '--',
             sma200: sma200?.sma ? this.calculateSMA(sma200.sma, 200) || '--' : '--'
         },
+        upside: upsideVal
+      };
+
+      return {
+        symbol,
+        metrics: metric?.metric || {},
+        target: target || {},
+        quote: quote || {},
+        technical: tickerData.technical,
         price: price,
         high52: high52,
         low52: low52,
         discount: discountVal,
         upside: upsideVal,
-        earningsDate: earningsDisplay
+        earningsDate: earningsDisplay,
+        strategy: this.getStrategy(tickerData)
       };
     },
 
