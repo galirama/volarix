@@ -531,13 +531,23 @@ const formatUpside = (val) => {
 };
 
 async function renderFundamentalTable() {
-  const container = document.getElementById('chkTableContainer');
+  const container = document.getElementById('chkTableContainer') || 
+                    document.getElementById('screener-table-body') || 
+                    document.getElementById('fundamental-table-body') || 
+                    document.querySelector('#fundamental-screener-view tbody') || 
+                    document.querySelector('.screener-table-body');
+  
+  if (!container) {
+    console.error('renderFundamentalTable failed: Could not find table body container in DOM.');
+    return;
+  }
   const search = document.getElementById('chkSearch')?.value.toUpperCase();
   const hideEarnings = document.getElementById('chkHideEarnings')?.checked;
   const oversoldOnly = document.getElementById('chkOversoldOnly')?.checked;
   
   // Set placeholder skeleton
   container.innerHTML = '<div style="padding:40px;text-align:center;color:var(--text3)"><div class="skeleton" style="height:200px;width:100%"></div></div>';
+
 
   // Fetch data
   const tickers = ['AAPL', 'NVDA', 'AMZN', 'SOFI', 'MSFT', 'TSLA', 'SPY', 'MU', 'GOOGL', 'META', 'AMD', 'PLTR', 'NFLX', 'BABA', 'INTC'];
