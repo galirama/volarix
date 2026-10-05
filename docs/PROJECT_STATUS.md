@@ -12,6 +12,7 @@
 - Centralized Configuration: Moved all keys to `app/config.js`
 - Sidebar/UI Cleanup: Consolidated Screener views into `UnifiedScreenerHub`
 - P11-P13: Fundamental Stock Screener (All Phases: Logic, UI, Integration)
+- **Refactoring:** Consolidated `window.showTab` router and fixed scope errors for Fundamental Screener.
 
 ### 🔄 In Progress
 - P14: API Rate-Limit Queue & Bug Fixes

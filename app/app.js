@@ -447,7 +447,7 @@ window.testScreener = async function() {
 };
 
 
-async function buildFundamentalScreener() {
+window.buildFundamentalScreener = async function() {
   const preset = window.currentScreenerPreset || 'ALL';
   
   let headerContent = '';
@@ -678,7 +678,7 @@ function analyzeSetup(ticker) {
 window.currentScreenerPreset = 'ALL';
 function setPreset(val) {
     window.currentScreenerPreset = val;
-    buildFundamentalScreener();
+    window.buildFundamentalScreener();
 }
 
 

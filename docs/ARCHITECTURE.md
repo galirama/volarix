@@ -179,6 +179,24 @@ self.addEventListener('fetch', e =>
 
 ---
 
+## UI Router: TAB_BUILDERS Pattern
+To avoid global scope collisions and infinite recursion with `showTab` overrides, we now use a centralized `TAB_BUILDERS` configuration object in `app.html` for routing.
+
+```javascript
+const TAB_BUILDERS = {
+  overview: buildOverview,
+  checklist: buildChecklistScreener,
+  // ...
+};
+
+window.showTab = async function(id, el) {
+  // ... logic
+  if(TAB_BUILDERS[id]) await TAB_BUILDERS[id]();
+}
+```
+Always register new tab builder functions in `TAB_BUILDERS`.
+
+
 ## Brokerage Adapter Interface (Future)
 
 ```typescript

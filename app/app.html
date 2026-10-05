@@ -816,7 +816,27 @@ function drawEqCurve(id){
 }
 
 // ── NAV ──
-window.showTab = async function(id,el){
+// ══════════════════════════════════════════
+// TAB ROUTER
+// ══════════════════════════════════════════
+const TAB_BUILDERS = {
+  overview: buildOverview,
+  csp: buildCSP,
+  leaps: buildLEAPS,
+  events: buildEvents,
+  settings: buildSettings,
+  checklist: buildChecklistScreener,
+  megacap: buildMegacap,
+  economic: buildEconomic,
+  heatmap: buildHeatmap,
+  sizing: buildSizingCalc,
+  journal: buildJournalStats,
+  ticker: () => {}, // Placeholder for ticker builder if needed
+  options: () => {}, // Placeholder
+  strategy: () => {} // Placeholder
+};
+
+window.showTab = async function(id, el) {
   try {
     document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
     document.querySelectorAll('#appShell .nav-item').forEach(n=>n.classList.remove('active'));
@@ -824,10 +844,8 @@ window.showTab = async function(id,el){
     if(pg) pg.classList.add('active');
     if(el&&el.classList) el.classList.add('active');
     
-    const B={overview:buildOverview,csp:buildCSP,leaps:buildLEAPS,events:buildEvents,settings:buildSettings,checklist:buildChecklistScreener};
-    
-    if(B[id]) {
-      await B[id]();
+    if(TAB_BUILDERS[id]) {
+      await TAB_BUILDERS[id]();
     } else {
       console.warn('Tab builder not found for:', id);
     }
@@ -835,6 +853,7 @@ window.showTab = async function(id,el){
     console.error('Error showing tab:', id, err);
   }
 }
+
 
 async function askLocalAssistant(){
   const input = document.getElementById('aiPrompt');
@@ -1567,14 +1586,10 @@ buildPaper = function() {
 }
 
 // ── ADD megacap to builder map ──
-const _origShowTab = window.showTab;
-window.showTab = function(id, el) {
-  _origShowTab(id, el);
-  if (id === 'megacap') buildMegacap();
-}
-
+// (Megacap is now handled by TAB_BUILDERS)
 
 // ══════════════════════════════════════════
+
 // P2 — OPTIONS PROFIT CALCULATOR
 // ══════════════════════════════════════════
 function openCalc(sym, strategy, strike, premium, dte) {
@@ -2239,7 +2254,7 @@ function buildHeatmap() {
 let currentChecklistResults = [];
 
 function buildChecklistScreener() {
-  buildFundamentalScreener();
+  window.buildFundamentalScreener();
 }
 
 function runChecklistScreenFromInput() {
@@ -2339,21 +2354,10 @@ function exportChecklistCSV() {
 }
 
 // ── Wire new tabs into showTab + Paper Trading sub-tab ──
-window.addEventListener('load', () => {
-  // Use window.showTab as the base
-  if (typeof window.showTab === 'undefined') {
-    console.error("window.showTab is undefined!");
-    return;
-  }
-  const _origShowTab2 = window.showTab;
-  window.showTab = function(id, el) {
-    _origShowTab2(id, el);
-    const extras = { economic:buildEconomic, heatmap:buildHeatmap, sizing:buildSizingCalc, journal:buildJournalStats, checklist:buildChecklistScreener };
-    if(extras[id]) extras[id]();
-  }
-});
+// (Handled by TAB_BUILDERS)
 
 // Add Journal Stats and Position Sizing to Paper Trading sub-tabs
+
 const _origBuildPaper2 = buildPaper;
 buildPaper = function() {
   _origBuildPaper2();
