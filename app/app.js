@@ -515,6 +515,21 @@ window.buildFundamentalScreener = async function() {
 }
 
 
+
+const formatUpside = (val) => {
+  if (val === null || val === undefined || val === '') return '--';
+  // If it's already a formatted string, return it directly
+  if (typeof val === 'string') {
+    if (val.includes('%') || val === '--') return val;
+    val = parseFloat(val);
+  }
+  // If it's a valid number, apply toFixed
+  if (typeof val === 'number' && !isNaN(val)) {
+    return `${val >= 0 ? '+' : ''}${val.toFixed(1)}%`;
+  }
+  return '--';
+};
+
 async function renderFundamentalTable() {
   const container = document.getElementById('chkTableContainer');
   const search = document.getElementById('chkSearch')?.value.toUpperCase();
@@ -616,9 +631,7 @@ async function renderFundamentalTable() {
         : '--';
 
     // Upside display
-    const upsideDisplay = (row.upside !== null) 
-        ? `<span style="color:#34D399">${row.upside >= 0 ? '+' : ''}${row.upside.toFixed(1)}%</span>` 
-        : '--';
+    const upsideDisplay = `<span style="color:#34D399">${formatUpside(row.upside)}</span>`;
 
     // Strategy Color Logic
     const getStrategyStyle = (strategy) => {
