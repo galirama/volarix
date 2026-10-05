@@ -66,6 +66,9 @@ targetEl.classList.add('active');
 if (typeof window.buildChecklistScreener === 'function') window.buildChecklistScreener();
 }
 }
+else {
+  console.error('Unknown tab key:', tabName);
+}
 };
 
   window.buildChecklistScreener = window.buildChecklistScreener || function() {
@@ -627,8 +630,8 @@ textarea{resize:vertical;min-height:80px}
     </div>
     <div style="height:1px;background:var(--border);margin:4px 0"></div>
     <div class="nav-section">Core</div>
-    <div class="nav-item" onclick="window.showTab('checklist',this)"><span class="nav-icon">✅</span>Fundamental Screener</div>
-    <div class="nav-item" onclick="window.showTab('events',this)"><span class="nav-icon">📅</span>Key events calendar</div>
+    <div class="nav-item" data-tab="fundamental" onclick="window.showTab('fundamental',this)"><span class="nav-icon">✅</span>Fundamental Screener</div>
+    <div class="nav-item" data-tab="events" onclick="window.showTab('events',this)"><span class="nav-icon">📅</span>Key events calendar</div>
     <div class="nav-section">Upcoming / Future</div>
     <div style="padding:0 10px;font-size:11px;color:var(--text3);line-height:1.8">
       • AI Assistant<br>• IV Scanner<br>• MEGA CAP IV<br>• Options Chain<br>• Strategy Builder<br>• Flow Heatmap<br>• Alt Data<br>• Track Record<br>• Sector Rotation<br>• Exit Automation<br>• Import Portfolio<br>• Risk Shield<br>• Alerts<br>• Ticker Analyzer<br>• Unusual Activity<br>• Paper Trading<br>• Live Trading<br>• Backtesting<br>• Position Sizing
@@ -949,6 +952,14 @@ window.showTab = function(tabName) {
       if (typeof window.buildChecklistScreener === 'function') {
         window.buildChecklistScreener();
       }
+    } else if (tabName === 'events') {
+      if (typeof window.buildEventsCalendar === 'function') {
+        window.buildEventsCalendar();
+      } else if (typeof window.renderEvents === 'function') {
+        window.renderEvents();
+      }
+    } else {
+      console.error('Unknown tab key:', tabName);
     }
   } catch (err) {
     console.error(`Error rendering view for tab "${tabName}":`, err);
