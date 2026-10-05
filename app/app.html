@@ -10,19 +10,43 @@ window.$ = (id) => document.getElementById(id);
 function showAuth(){window.location.href='login.html';}
 
   window.showTab = function(tabName) {
-    console.log('Showing tab:', tabName);
-    const views = document.querySelectorAll('.tab-content, .view-section');
-    views.forEach(v => v.style.display = 'none');
+  console.log('Navigating to tab:', tabName);
+  
+  // Normalize tab names if needed
+  const tabKey = tabName.toLowerCase().replace(/\s+/g, '');
 
-    const target = document.getElementById(tabName) || document.getElementById(`${tabName}-view`);
-    if (target) target.style.display = 'block';
+  // 1. Update Active Navigation UI State
+  document.querySelectorAll('.nav-item, .tab-btn').forEach(el => {
+    el.classList.remove('active');
+  });
+  const activeNav = document.querySelector(`[onclick*="${tabName}"]`);
+  if (activeNav) activeNav.classList.add('active');
 
-    if (tabName === 'fundamental' && typeof window.buildFundamentalScreener === 'function') {
-      window.buildFundamentalScreener();
-    } else if (tabName === 'checklist' && typeof window.buildChecklistScreener === 'function') {
-      window.buildChecklistScreener();
-    }
-  };
+  // 2. Hide All Tab Content Sections
+  document.querySelectorAll('.tab-content, .view-section, section[id$="-view"], .page').forEach(el => {
+    el.style.display = 'none';
+    el.classList.remove('active');
+  });
+
+  // 3. Map Tab Keys to HTML Container IDs and Builder Functions
+  if (tabKey === 'fundamental' || tabKey === 'screener') {
+    const el = document.getElementById('fundamental-screener-view') || document.getElementById('screener-view') || document.getElementById('fundamental');
+    if (el) { el.style.display = 'block'; el.classList.add('active'); }
+    if (typeof window.buildFundamentalScreener === 'function') window.buildFundamentalScreener();
+    else if (typeof window.renderFundamentalTable === 'function') window.renderFundamentalTable();
+  }
+  else if (tabKey === 'events' || tabKey === 'keyevents') {
+    const el = document.getElementById('events-view') || document.getElementById('key-events-view') || document.getElementById('events') || document.getElementById('tab-events');
+    if (el) { el.style.display = 'block'; el.classList.add('active'); }
+    if (typeof window.buildEventsCalendar === 'function') window.buildEventsCalendar();
+    else if (typeof window.renderEvents === 'function') window.renderEvents();
+  }
+  else if (tabKey === 'checklist') {
+    const el = document.getElementById('checklist-view') || document.getElementById('checklist') || document.getElementById('tab-checklist');
+    if (el) { el.style.display = 'block'; el.classList.add('active'); }
+    if (typeof window.buildChecklistScreener === 'function') window.buildChecklistScreener();
+  }
+};
 
   window.buildChecklistScreener = window.buildChecklistScreener || function() {
     console.log('Checklist view loaded');
