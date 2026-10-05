@@ -8,6 +8,26 @@
 // Global helpers
 window.$ = (id) => document.getElementById(id);
 function showAuth(){window.location.href='login.html';}
+
+  window.showTab = function(tabName) {
+    console.log('Showing tab:', tabName);
+    const views = document.querySelectorAll('.tab-content, .view-section');
+    views.forEach(v => v.style.display = 'none');
+
+    const target = document.getElementById(tabName) || document.getElementById(`${tabName}-view`);
+    if (target) target.style.display = 'block';
+
+    if (tabName === 'fundamental' && typeof window.buildFundamentalScreener === 'function') {
+      window.buildFundamentalScreener();
+    } else if (tabName === 'checklist' && typeof window.buildChecklistScreener === 'function') {
+      window.buildChecklistScreener();
+    }
+  };
+
+  window.buildChecklistScreener = window.buildChecklistScreener || function() {
+    console.log('Checklist view loaded');
+  };
+
 </script>
 
 <script src="dataService.js"></script>
@@ -596,6 +616,8 @@ textarea{resize:vertical;min-height:80px}
 
 <script>
 'use strict';
+const LS_KEY = 'screener_app_state_v1';
+
 const $ = id => document.getElementById(id);
 const set = (id, html) => { const el=$(id); if(el) el.innerHTML=html; };
 const badge = (t,c) => `<span class="badge badge-${c}">${t}</span>`;
@@ -1813,7 +1835,7 @@ function drawCalcChart(sym, strategy, strike, premium) {
 // ══════════════════════════════════════════
 // P3 — LOCALSTORAGE PERSISTENCE
 // ══════════════════════════════════════════
-const LS_KEY = 'volarix_state';
+
 
 function saveState() {
   try {
@@ -2429,7 +2451,7 @@ pTab = function(id, el) {
   if(id==='journal') { const jd=$('p2-journal'); if(jd) { jd.style.display='block'; buildJournalStats(); } }
 }
 
-loadState();
+try { loadState(); } catch(e) { console.error('Initial loadState failed', e); }
 buildTicker();
 initPWA();
 loadSession();

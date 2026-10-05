@@ -542,21 +542,6 @@ async function renderFundamentalTable() {
   
   // Render Table
 
-  // Helper for 52W Range Bar
-  const getRangeBar = (price, low52, high52) => {
-    const p = parseFloat(price);
-    const l = parseFloat(low52);
-    const h = parseFloat(high52);
-    if (isNaN(p) || isNaN(l) || isNaN(h) || h <= l) return '--';
-    const percentage = Math.min(Math.max(((p - l) / (h - l)) * 100, 0), 100);
-    return `
-        <div style="width:100px;height:6px;background:var(--bg3);border-radius:3px;overflow:hidden">
-            <div style="width:${percentage}%;height:100%;background:var(--green)"></div>
-        </div>
-        <div style="font-size:10px;color:#94A3B8;margin-top:2px">${percentage.toFixed(0)}% of range</div>
-    `;
-  };
-
   // Calculate Discount helper
   const calculateDiscount = (price, high52) => {
     if (!price || !high52 || price <= 0 || high52 <= 0) return null;
