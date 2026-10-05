@@ -11,41 +11,61 @@ function showAuth(){window.location.href='login.html';}
 
   window.showTab = function(tabName) {
   console.log('Navigating to tab:', tabName);
-  
-  // Normalize tab names if needed
-  const tabKey = tabName.toLowerCase().replace(/\s+/g, '');
+  if (!tabName) return;
 
-  // 1. Update Active Navigation UI State
-  document.querySelectorAll('.nav-item, .tab-btn').forEach(el => {
-    el.classList.remove('active');
-  });
-  const activeNav = document.querySelector(`[onclick*="${tabName}"]`);
-  if (activeNav) activeNav.classList.add('active');
+  const normalized = tabName.toLowerCase().replace(/[^a-z0-9]/g, '');
+// 1. Hide ALL view containers
+const allViews = document.querySelectorAll('.tab-content, .view-section, [id$="-view"]');
+allViews.forEach(el => {
+el.style.display = 'none';
+el.classList.remove('active');
+});
 
-  // 2. Hide All Tab Content Sections
-  document.querySelectorAll('.tab-content, .view-section, section[id$="-view"], .page').forEach(el => {
-    el.style.display = 'none';
-    el.classList.remove('active');
-  });
+// 2. Active Tab UI state
+document.querySelectorAll('.nav-item, .tab-btn').forEach(el => {
+el.classList.remove('active');
+});
+const activeNav = document.querySelector(`[onclick*="${tabName}"]`);
+if (activeNav) activeNav.classList.add('active');
 
-  // 3. Map Tab Keys to HTML Container IDs and Builder Functions
-  if (tabKey === 'fundamental' || tabKey === 'screener') {
-    const el = document.getElementById('fundamental-screener-view') || document.getElementById('screener-view') || document.getElementById('fundamental');
-    if (el) { el.style.display = 'block'; el.classList.add('active'); }
-    if (typeof window.buildFundamentalScreener === 'function') window.buildFundamentalScreener();
-    else if (typeof window.renderFundamentalTable === 'function') window.renderFundamentalTable();
-  }
-  else if (tabKey === 'events' || tabKey === 'keyevents') {
-    const el = document.getElementById('events-view') || document.getElementById('key-events-view') || document.getElementById('events') || document.getElementById('tab-events');
-    if (el) { el.style.display = 'block'; el.classList.add('active'); }
-    if (typeof window.buildEventsCalendar === 'function') window.buildEventsCalendar();
-    else if (typeof window.renderEvents === 'function') window.renderEvents();
-  }
-  else if (tabKey === 'checklist') {
-    const el = document.getElementById('checklist-view') || document.getElementById('checklist') || document.getElementById('tab-checklist');
-    if (el) { el.style.display = 'block'; el.classList.add('active'); }
-    if (typeof window.buildChecklistScreener === 'function') window.buildChecklistScreener();
-  }
+// 3. Find target element with fallback checks
+let targetEl = null;
+if (normalized.includes('fundamental') || normalized.includes('screener')) {
+targetEl = document.getElementById('fundamental-screener-view') ||
+document.getElementById('screener-view') ||
+document.getElementById('fundamental');
+
+if (targetEl) {
+  targetEl.style.display = 'block';
+  targetEl.classList.add('active');
+  if (typeof window.buildFundamentalScreener === 'function') window.buildFundamentalScreener();
+  if (typeof window.renderFundamentalTable === 'function') window.renderFundamentalTable();
+} else {
+  console.error('CRITICAL: Could not find Fundamental Screener container element in DOM!');
+}
+}
+else if (normalized.includes('event')) {
+targetEl = document.getElementById('events-view') ||
+document.getElementById('key-events-view') ||
+document.getElementById('events');
+
+if (targetEl) {
+  targetEl.style.display = 'block';
+  targetEl.classList.add('active');
+  if (typeof window.buildEventsCalendar === 'function') window.buildEventsCalendar();
+  if (typeof window.renderEvents === 'function') window.renderEvents();
+} else {
+  console.error('CRITICAL: Could not find Key Events container element in DOM!');
+}
+}
+else if (normalized.includes('checklist')) {
+targetEl = document.getElementById('checklist-view') || document.getElementById('checklist');
+if (targetEl) {
+targetEl.style.display = 'block';
+targetEl.classList.add('active');
+if (typeof window.buildChecklistScreener === 'function') window.buildChecklistScreener();
+}
+}
 };
 
   window.buildChecklistScreener = window.buildChecklistScreener || function() {
@@ -623,7 +643,8 @@ textarea{resize:vertical;min-height:80px}
     <div class="page" id="tab-csp"></div>
     <div class="page" id="tab-leaps"></div>
     <div class="page" id="tab-ticker"></div>
-    <div class="page" id="tab-checklist"></div>
+    <div class="page tab-content" id="fundamental-screener-view"></div>
+    <div class="page tab-content" id="checklist-view"></div>
     <div class="page" id="tab-earnings"></div>
     <div class="page" id="tab-economic"></div>
     <div class="page" id="tab-uoa"></div>
@@ -633,7 +654,7 @@ textarea{resize:vertical;min-height:80px}
     <div class="page" id="tab-sizing"></div>
     <div class="page" id="tab-settings"></div>
     <!-- REMOVED FOR SIZE: tab-ai, tab-screener, tab-megacap, tab-options, tab-congress, tab-signals, tab-sectors, tab-heatmap, tab-exit, tab-import, tab-alerts, tab-journal, tab-strategy -->
-    <div class="page" id="tab-events"></div>
+    <div class="page tab-content" id="events-view"></div>
 
   </div>
 </div>
